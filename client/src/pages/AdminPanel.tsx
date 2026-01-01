@@ -189,6 +189,35 @@ export default function AdminPanel() {
           </div>
         )}
 
+        {/* Add New Item Form */}
+        <Card className="p-6 mb-8">
+          <h2 className="text-xl font-medium text-neutral-900 mb-4">Add New Inventory Item</h2>
+          <div className="grid md:grid-cols-2 gap-6">
+            <div>
+              <Label htmlFor="product-select">Select Product</Label>
+              <Select>
+                <SelectTrigger id="product-select">
+                  <SelectValue placeholder="Choose a product" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="new">+ Create New Product</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label htmlFor="sku">SKU</Label>
+              <Input id="sku" placeholder="e.g., SK-001-0-3M" />
+            </div>
+            <div className="md:col-span-2">
+              <Label htmlFor="condition">Condition Notes</Label>
+              <Textarea id="condition" placeholder="Item condition details..." />
+            </div>
+            <div className="md:col-span-2">
+              <Button className="w-full">Add to Inventory</Button>
+            </div>
+          </div>
+        </Card>
+
         <div className="grid md:grid-cols-3 gap-8">
           {/* Inventory Table */}
           <div className="md:col-span-2">

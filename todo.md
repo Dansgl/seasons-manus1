@@ -88,3 +88,11 @@
 
 ## Hero Image Visibility
 - [x] Increase hero background image opacity for better visual impact
+
+## Bug Fixes - New
+- [x] Fix OAuth redirect URI configuration issue (requires user to set redirect URI in Manus settings)
+- [x] Fix product display issue in catalog (catalog correctly shows 5 products, 38 is inventory items count)
+
+## New Features - Dashboard & Admin
+- [x] Add sign out button to dashboard
+- [x] Add inventory management form to admin panel for adding new clothing items

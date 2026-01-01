@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Link, useLocation } from "wouter";
-import { Loader2, ShoppingBag, Calendar, Package, Download } from "lucide-react";
+import { Loader2, ShoppingBag, Calendar, Package, Download, LogOut } from "lucide-react";
 import { toast } from "sonner";
 import { getLoginUrl } from "@/const";
 
@@ -41,6 +41,12 @@ export default function Dashboard() {
   });
 
   const utils = trpc.useUtils();
+
+  const logout = trpc.auth.logout.useMutation({
+    onSuccess: () => {
+      window.location.href = '/';
+    },
+  });
 
   if (authLoading || !isAuthenticated) {
     if (!authLoading && !isAuthenticated) {
@@ -112,6 +118,15 @@ export default function Dashboard() {
                 Admin
               </Link>
             )}
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={() => logout.mutate()}
+              className="text-sm text-neutral-600 hover:text-neutral-900"
+            >
+              <LogOut className="w-4 h-4 mr-2" />
+              Sign Out
+            </Button>
           </div>
         </div>
       </nav>
