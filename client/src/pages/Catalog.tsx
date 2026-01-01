@@ -1,9 +1,9 @@
-import { useState, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { Plus, Heart, Loader2, ShoppingBag } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/_core/hooks/useAuth";
@@ -11,7 +11,17 @@ import { getLoginUrl } from "@/const";
 
 export default function Catalog() {
   const { isAuthenticated } = useAuth();
+  const [location] = useLocation();
   const [selectedBrand, setSelectedBrand] = useState<string>("");
+
+  // Handle URL query parameters for brand filtering
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const brandParam = params.get('brand');
+    if (brandParam) {
+      setSelectedBrand(brandParam);
+    }
+  }, [location]);
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [selectedAgeRange, setSelectedAgeRange] = useState<string>("");
   const [selectedSeason, setSelectedSeason] = useState<string>("");

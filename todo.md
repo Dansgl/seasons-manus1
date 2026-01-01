@@ -112,3 +112,7 @@
 - [x] Add all missing sections to navigation
 - [x] Update typography to match SEASONS logo (bold, geometric style)
 - [x] Apply consistent font across all pages
+
+## Bug Fixes - Brand Filtering
+- [x] Fix brand links from homepage causing 404 errors
+- [x] Implement URL query parameter handling in Catalog page for brand filtering
