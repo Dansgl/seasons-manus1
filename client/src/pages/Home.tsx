@@ -2,7 +2,7 @@ import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { getLoginUrl } from "@/const";
 import { Link } from "wouter";
-import { Sparkles, Leaf, Shield, RotateCcw } from "lucide-react";
+import { Sparkles, Leaf, Shield, RotateCcw, Heart } from "lucide-react";
 
 export default function Home() {
   const { user, isAuthenticated } = useAuth();
@@ -70,7 +70,7 @@ export default function Home() {
         {/* Features */}
         <section className="bg-white py-20">
           <div className="container mx-auto px-6">
-            <div className="grid md:grid-cols-4 gap-12">
+            <div className="grid md:grid-cols-5 gap-8">
               <div className="text-center">
                 <div className="w-12 h-12 rounded-full bg-neutral-100 flex items-center justify-center mx-auto mb-4">
                   <Sparkles className="w-6 h-6 text-neutral-700" />
@@ -107,6 +107,50 @@ export default function Home() {
                   New styles every 3 months as your baby grows
                 </p>
               </div>
+              <div className="text-center">
+                <div className="w-12 h-12 rounded-full bg-neutral-100 flex items-center justify-center mx-auto mb-4">
+                  <Heart className="w-6 h-6 text-neutral-700" />
+                </div>
+                <h3 className="font-medium text-neutral-900 mb-2">Mess No Stress</h3>
+                <p className="text-sm text-neutral-600">
+                  Wear and tear included. Play freely without worry.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Mess No Stress - Hero Section */}
+        <section className="relative py-20 overflow-hidden">
+          {/* Background image with overlay */}
+          <div 
+            className="absolute inset-0 bg-cover bg-center opacity-20"
+            style={{
+              backgroundImage: 'url(https://medias.eventsunited.net/uploads/product/801180_large_dwXU7ZuoIY2tJz1Gg8eT.jpg)',
+              backgroundPosition: 'center right',
+            }}
+          />
+          {/* Dark overlay for text readability */}
+          <div className="absolute inset-0 bg-gradient-to-r from-white via-white/95 to-white/70" />
+          
+          {/* Content */}
+          <div className="container mx-auto px-6 relative z-10">
+            <div className="max-w-2xl">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 rounded-full bg-neutral-900 text-white flex items-center justify-center">
+                  <Heart className="w-5 h-5" />
+                </div>
+                <span className="text-sm font-medium text-neutral-700 uppercase tracking-wide">Peace of Mind</span>
+              </div>
+              <h2 className="text-4xl md:text-5xl font-light text-neutral-900 mb-6">
+                Mess No Stress
+              </h2>
+              <p className="text-lg text-neutral-700 mb-6 leading-relaxed">
+                We don't charge for stains, wear, tear, or even holes. That's all part of growing up. We account for it in our pricing model, so you can let your little one play freely without worry.
+              </p>
+              <p className="text-neutral-600">
+                Spilled juice? Grass stains? A rip from climbing? It's covered. That's the Seasons promise.
+              </p>
             </div>
           </div>
         </section>
