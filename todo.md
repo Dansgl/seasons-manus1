@@ -96,3 +96,13 @@
 ## New Features - Dashboard & Admin
 - [x] Add sign out button to dashboard
 - [x] Add inventory management form to admin panel for adding new clothing items
+
+## Homepage Redesign (TINY Style)
+- [x] Redesign hero section with 100% opacity product image and text highlight overlay
+- [x] Create 6-product preview grid (3×2) with links to product pages
+- [x] Add newsletter CTA section with email capture
+- [x] Build 3-brand showcase grid with filtered catalog links
+- [x] Add blog preview section with 4 article cards
+- [x] Create blog system with routes and sample articles
+- [x] Add FAQ section with expandable questions
+- [x] Generate minimal bold peach SEASONS wordmark logo

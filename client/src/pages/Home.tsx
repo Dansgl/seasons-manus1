@@ -1,245 +1,433 @@
 import { useAuth } from "@/_core/hooks/useAuth";
+import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
-import { getLoginUrl } from "@/const";
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import { Link } from "wouter";
-import { Sparkles, Leaf, Shield, RotateCcw, Heart } from "lucide-react";
+import { 
+  Leaf, Shield, Package, RefreshCw, Heart, ChevronDown, Mail,
+  Sparkles, Clock, Truck
+} from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
 
 export default function Home() {
-  const { user, isAuthenticated } = useAuth();
+  const { user } = useAuth();
+  const [email, setEmail] = useState("");
+  const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
+
+  // Fetch 6 products for preview
+  const { data: products } = trpc.products.list.useQuery({});
+
+  const handleNewsletterSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (email) {
+      toast.success("Thanks for subscribing!");
+      setEmail("");
+    }
+  };
+
+  const benefits = [
+    {
+      icon: <Leaf className="w-8 h-8" />,
+      title: "Circular Fashion",
+      description: "Sustainable luxury through rental and reuse"
+    },
+    {
+      icon: <Shield className="w-8 h-8" />,
+      title: "Ozone Cleaned",
+      description: "Medical-grade sanitation for every item"
+    },
+    {
+      icon: <Package className="w-8 h-8" />,
+      title: "Curated Boxes",
+      description: "5 premium pieces every 3 months"
+    },
+    {
+      icon: <RefreshCw className="w-8 h-8" />,
+      title: "Easy Swaps",
+      description: "Refresh your wardrobe quarterly"
+    },
+    {
+      icon: <Heart className="w-8 h-8" />,
+      title: "Mess No Stress",
+      description: "Wear, tear & stains included"
+    },
+  ];
+
+  const brands = [
+    {
+      name: "Studio Koter",
+      image: "https://medias.eventsunited.net/uploads/product/801180_large_dwXU7ZuoIY2tJz1Gg8eT.jpg",
+      filter: "Studio Koter"
+    },
+    {
+      name: "MORI",
+      image: "https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?w=800&h=600&fit=crop",
+      filter: "MORI"
+    },
+    {
+      name: "Mini Rodini",
+      image: "https://images.unsplash.com/photo-1503944583220-79d8926ad5e2?w=800&h=600&fit=crop",
+      filter: "Mini Rodini"
+    },
+  ];
+
+  const blogPosts = [
+    {
+      title: "The Rise of Circular Baby Fashion",
+      excerpt: "Why rental is the future of sustainable parenting",
+      image: "https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?w=800&h=600&fit=crop",
+      date: "Dec 15, 2025",
+      slug: "circular-baby-fashion"
+    },
+    {
+      title: "How Ozone Cleaning Works",
+      excerpt: "The science behind our medical-grade sanitation",
+      image: "https://images.unsplash.com/photo-1519689373023-dd07c7988603?w=800&h=600&fit=crop",
+      date: "Dec 10, 2025",
+      slug: "ozone-cleaning-explained"
+    },
+    {
+      title: "Building a Capsule Wardrobe for Baby",
+      excerpt: "5 essential pieces for every season",
+      image: "https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?w=800&h=600&fit=crop",
+      date: "Dec 5, 2025",
+      slug: "capsule-wardrobe-baby"
+    },
+    {
+      title: "Luxury Brands We Love",
+      excerpt: "Meet the designers in our collection",
+      image: "https://images.unsplash.com/photo-1503944583220-79d8926ad5e2?w=800&h=600&fit=crop",
+      date: "Nov 28, 2025",
+      slug: "luxury-brands-we-love"
+    },
+  ];
+
+  const faqs = [
+    {
+      question: "How does the subscription work?",
+      answer: "Select 5 items, pay €70 quarterly, wear for 3 months, then swap for new pieces. Return shipping is included."
+    },
+    {
+      question: "What if my baby damages an item?",
+      answer: "Wear, tear, and stains are completely covered. We account for it in our pricing model—no extra charges."
+    },
+    {
+      question: "How are items cleaned?",
+      answer: "Every returned item goes through a 5-day Ozone treatment process, providing medical-grade sanitation without harsh chemicals."
+    },
+    {
+      question: "Can I pause my subscription?",
+      answer: "Yes! Pause anytime from your dashboard. Resume when you're ready."
+    },
+    {
+      question: "What brands do you carry?",
+      answer: "We feature luxury brands like Studio Koter, MORI, Mini Rodini, Bonpoint, Liewood, and more."
+    },
+  ];
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#FDFBF7]">
+    <div className="min-h-screen bg-[#FDFBF7]">
       {/* Navigation */}
-      <nav className="border-b border-neutral-200 bg-white/80 backdrop-blur-sm sticky top-0 z-50">
+      <nav className="absolute top-0 left-0 right-0 z-50 border-b border-white/20 bg-transparent backdrop-blur-sm">
         <div className="container mx-auto px-6 py-4 flex items-center justify-between">
-          <Link href="/" className="text-2xl font-light tracking-wide text-neutral-900">
-            Seasons
+          <Link href="/">
+            <img src="/seasons-logo-bold.png" alt="SEASONS" className="h-8" />
           </Link>
           <div className="flex items-center gap-6">
-            <Link href="/catalog" className="text-sm text-neutral-600 hover:text-neutral-900 transition-colors">
+            <Link href="/catalog" className="text-sm text-white hover:text-white/80 transition-colors font-medium">
               Browse
             </Link>
-            {isAuthenticated ? (
-              <>
-                <Link href="/dashboard" className="text-sm text-neutral-600 hover:text-neutral-900 transition-colors">
-                  Dashboard
-                </Link>
-                {user?.role === 'admin' && (
-                  <Link href="/admin" className="text-sm text-neutral-600 hover:text-neutral-900 transition-colors">
-                    Admin
-                  </Link>
-                )}
-              </>
+            {user ? (
+              <Link href="/dashboard" className="text-sm text-white hover:text-white/80 transition-colors font-medium">
+                Dashboard
+              </Link>
             ) : (
-              <a href={getLoginUrl()} className="text-sm text-neutral-600 hover:text-neutral-900 transition-colors">
-                Sign In
-              </a>
+              <Link href="/catalog">
+                <span className="inline-block">
+                  <Button variant="outline" size="sm" className="bg-white/10 text-white border-white/30 hover:bg-white/20">
+                    Sign In
+                  </Button>
+                </span>
+              </Link>
             )}
           </div>
         </div>
       </nav>
 
-      {/* Hero Section */}
-      <main className="flex-1">
-        <section className="relative container mx-auto px-6 py-24 md:py-32 overflow-hidden">
-          {/* Background image */}
-          <div 
-            className="absolute inset-0 bg-cover bg-center opacity-70"
-            style={{
-              backgroundImage: 'url(https://medias.eventsunited.net/uploads/product/801180_large_dwXU7ZuoIY2tJz1Gg8eT.jpg)',
-              backgroundPosition: 'center',
-            }}
-          />
-          {/* Gradient overlay for text readability */}
-          <div className="absolute inset-0 bg-gradient-to-b from-white/60 via-white/70 to-white/80" />
-          <div className="max-w-3xl mx-auto text-center relative z-10">
-            <h1 className="text-5xl md:text-6xl font-light tracking-tight text-neutral-900 mb-6">
-              Luxury Baby Clothing,
+      {/* Hero Section - Full Opacity Image with Text Highlight */}
+      <section className="relative h-[80vh] overflow-hidden">
+        <img 
+          src="https://medias.eventsunited.net/uploads/product/801180_large_dwXU7ZuoIY2tJz1Gg8eT.jpg"
+          alt="Luxury baby clothing"
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="text-center px-6">
+            <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-6">
+              <span className="inline-block bg-black text-white px-6 py-3 mb-2">
+                Luxury Baby Clothing,
+              </span>
               <br />
-              <span className="italic">Sustainably Yours</span>
+              <span className="inline-block bg-black text-white px-6 py-3 italic font-light">
+                Sustainably Yours
+              </span>
             </h1>
-            <p className="text-lg text-neutral-600 mb-12 leading-relaxed">
-              A quarterly subscription service delivering curated boxes of premium baby clothing. 
-              Wear for 3 months, return, and refresh. Zero stress, maximum style.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/catalog">
-                <span className="inline-block">
-                  <Button size="lg" className="rounded-full px-8 bg-neutral-900 hover:bg-neutral-800">
-                    Browse Collection
-                  </Button>
-                </span>
-              </Link>
-              <Button size="lg" variant="outline" className="rounded-full px-8 border-neutral-300">
-                How It Works
-              </Button>
-            </div>
-          </div>
-        </section>
-
-        {/* Features */}
-        <section className="bg-white py-20">
-          <div className="container mx-auto px-6">
-            <div className="grid md:grid-cols-5 gap-8">
-              <div className="text-center">
-                <div className="w-12 h-12 rounded-full bg-neutral-100 flex items-center justify-center mx-auto mb-4">
-                  <Sparkles className="w-6 h-6 text-neutral-700" />
-                </div>
-                <h3 className="font-medium text-neutral-900 mb-2">Luxury Brands</h3>
-                <p className="text-sm text-neutral-600">
-                  MORI, Mini Rodini, Bonpoint, and more premium labels
-                </p>
-              </div>
-              <div className="text-center">
-                <div className="w-12 h-12 rounded-full bg-neutral-100 flex items-center justify-center mx-auto mb-4">
-                  <Shield className="w-6 h-6 text-neutral-700" />
-                </div>
-                <h3 className="font-medium text-neutral-900 mb-2">Ozone Cleaned</h3>
-                <p className="text-sm text-neutral-600">
-                  Medical-grade cleaning between every rental
-                </p>
-              </div>
-              <div className="text-center">
-                <div className="w-12 h-12 rounded-full bg-neutral-100 flex items-center justify-center mx-auto mb-4">
-                  <Leaf className="w-6 h-6 text-neutral-700" />
-                </div>
-                <h3 className="font-medium text-neutral-900 mb-2">Circular Economy</h3>
-                <p className="text-sm text-neutral-600">
-                  Sustainable fashion for your growing baby
-                </p>
-              </div>
-              <div className="text-center">
-                <div className="w-12 h-12 rounded-full bg-neutral-100 flex items-center justify-center mx-auto mb-4">
-                  <RotateCcw className="w-6 h-6 text-neutral-700" />
-                </div>
-                <h3 className="font-medium text-neutral-900 mb-2">Quarterly Refresh</h3>
-                <p className="text-sm text-neutral-600">
-                  New styles every 3 months as your baby grows
-                </p>
-              </div>
-              <div className="text-center">
-                <div className="w-12 h-12 rounded-full bg-neutral-100 flex items-center justify-center mx-auto mb-4">
-                  <Heart className="w-6 h-6 text-neutral-700" />
-                </div>
-                <h3 className="font-medium text-neutral-900 mb-2">Mess No Stress</h3>
-                <p className="text-sm text-neutral-600">
-                  Wear and tear included. Play freely without worry.
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Mess No Stress - Hero Section */}
-        <section className="relative py-20 overflow-hidden">
-          {/* Background image with overlay */}
-          <div 
-            className="absolute inset-0 bg-cover bg-center opacity-40"
-            style={{
-              backgroundImage: 'url(https://medias.eventsunited.net/uploads/product/801180_large_dwXU7ZuoIY2tJz1Gg8eT.jpg)',
-              backgroundPosition: 'center right',
-            }}
-          />
-          {/* Gradient overlay for text readability */}
-          <div className="absolute inset-0 bg-gradient-to-r from-white/90 via-white/85 to-white/50" />
-          
-          {/* Content */}
-          <div className="container mx-auto px-6 relative z-10">
-            <div className="max-w-2xl">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-full bg-neutral-900 text-white flex items-center justify-center">
-                  <Heart className="w-5 h-5" />
-                </div>
-                <span className="text-sm font-medium text-neutral-700 uppercase tracking-wide">Peace of Mind</span>
-              </div>
-              <h2 className="text-4xl md:text-5xl font-light text-neutral-900 mb-6">
-                Mess No Stress
-              </h2>
-              <p className="text-lg text-neutral-700 mb-6 leading-relaxed">
-                We don't charge for stains, wear, tear, or even holes. That's all part of growing up. We account for it in our pricing model, so you can let your little one play freely without worry.
-              </p>
-              <p className="text-neutral-600">
-                Spilled juice? Grass stains? A rip from climbing? It's covered. That's the Seasons promise.
-              </p>
-            </div>
-          </div>
-        </section>
-
-        {/* How It Works */}
-        <section className="py-20">
-          <div className="container mx-auto px-6">
-            <h2 className="text-3xl font-light text-center text-neutral-900 mb-16">How It Works</h2>
-            <div className="max-w-4xl mx-auto space-y-12">
-              <div className="flex gap-6 items-start">
-                <div className="w-10 h-10 rounded-full bg-neutral-900 text-white flex items-center justify-center flex-shrink-0 font-medium">
-                  1
-                </div>
-                <div>
-                  <h3 className="text-xl font-medium text-neutral-900 mb-2">Select Your 5 Items</h3>
-                  <p className="text-neutral-600">
-                    Browse our curated collection and choose exactly 5 pieces for your quarterly box.
-                  </p>
-                </div>
-              </div>
-              <div className="flex gap-6 items-start">
-                <div className="w-10 h-10 rounded-full bg-neutral-900 text-white flex items-center justify-center flex-shrink-0 font-medium">
-                  2
-                </div>
-                <div>
-                  <h3 className="text-xl font-medium text-neutral-900 mb-2">Subscribe for €70/Quarter</h3>
-                  <p className="text-neutral-600">
-                    One simple price covers everything: luxury items, insurance, and Ozone cleaning.
-                  </p>
-                </div>
-              </div>
-              <div className="flex gap-6 items-start">
-                <div className="w-10 h-10 rounded-full bg-neutral-900 text-white flex items-center justify-center flex-shrink-0 font-medium">
-                  3
-                </div>
-                <div>
-                  <h3 className="text-xl font-medium text-neutral-900 mb-2">Enjoy for 3 Months</h3>
-                  <p className="text-neutral-600">
-                    Wear without worry. All wear and tear is included in your subscription.
-                  </p>
-                </div>
-              </div>
-              <div className="flex gap-6 items-start">
-                <div className="w-10 h-10 rounded-full bg-neutral-900 text-white flex items-center justify-center flex-shrink-0 font-medium">
-                  4
-                </div>
-                <div>
-                  <h3 className="text-xl font-medium text-neutral-900 mb-2">Swap & Refresh</h3>
-                  <p className="text-neutral-600">
-                    10 days before your cycle ends, select your next 5 items. Return the old box and receive your new one.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* CTA */}
-        <section className="bg-neutral-900 text-white py-20">
-          <div className="container mx-auto px-6 text-center">
-            <h2 className="text-3xl font-light mb-6">Ready to Start Your Journey?</h2>
-            <p className="text-neutral-300 mb-8 max-w-2xl mx-auto">
-              Join the circular fashion movement and give your baby the luxury they deserve.
-            </p>
             <Link href="/catalog">
               <span className="inline-block">
-                <Button size="lg" variant="outline" className="rounded-full px-8 border-white text-white hover:bg-white hover:text-neutral-900">
-                  Start Browsing
+                <Button size="lg" className="bg-white text-black hover:bg-neutral-100 text-lg px-12 py-6 rounded-full font-semibold">
+                  SHOP NOW
                 </Button>
               </span>
             </Link>
           </div>
-        </section>
-      </main>
+        </div>
+      </section>
+
+      {/* Benefits Section */}
+      <section className="py-20 bg-white">
+        <div className="container mx-auto px-6">
+          <div className="grid md:grid-cols-5 gap-8">
+            {benefits.map((benefit, idx) => (
+              <div key={idx} className="text-center">
+                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#F5E6D3] text-neutral-800 mb-4">
+                  {benefit.icon}
+                </div>
+                <h3 className="text-lg font-semibold text-neutral-900 mb-2">{benefit.title}</h3>
+                <p className="text-sm text-neutral-600">{benefit.description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Featured Products - 3x2 Grid */}
+      <section className="py-20 bg-[#FDFBF7]">
+        <div className="container mx-auto px-6">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl font-bold text-neutral-900 mb-4">Featured Collection</h2>
+            <p className="text-neutral-600">Discover our curated selection of luxury baby clothing</p>
+          </div>
+          <div className="grid md:grid-cols-3 gap-8 mb-8">
+            {products?.slice(0, 6).map((product) => (
+              <Link key={product.id} href={`/product/${product.id}`}>
+                <Card className="group overflow-hidden cursor-pointer hover:shadow-xl transition-all duration-300">
+                  <div className="aspect-square overflow-hidden bg-neutral-100">
+                    <img 
+                      src={product.imageUrl || "https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?w=800&h=800&fit=crop"}
+                      alt={product.name}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                  </div>
+                  <div className="p-6">
+                    <p className="text-xs text-neutral-500 uppercase tracking-wide mb-1">{product.brand}</p>
+                    <h3 className="text-lg font-semibold text-neutral-900 mb-2">{product.name}</h3>
+                    <p className="text-sm text-neutral-600 mb-3">{product.category}</p>
+                    <div className="flex items-center gap-2 text-sm text-neutral-500">
+                      <Clock className="w-4 h-4" />
+                      <span>Available for rental</span>
+                    </div>
+                  </div>
+                </Card>
+              </Link>
+            ))}
+          </div>
+          <div className="text-center">
+            <Link href="/catalog">
+              <span className="inline-block">
+                <Button size="lg" variant="outline" className="rounded-full px-12">
+                  View All Products
+                </Button>
+              </span>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Newsletter CTA */}
+      <section className="py-20 bg-[#F5E6D3]">
+        <div className="container mx-auto px-6 max-w-2xl text-center">
+          <Mail className="w-12 h-12 mx-auto mb-6 text-neutral-800" />
+          <h2 className="text-3xl font-bold text-neutral-900 mb-4">Join Our Community</h2>
+          <p className="text-neutral-700 mb-8">
+            Get styling tips, sustainability insights, and exclusive early access to new collections
+          </p>
+          <form onSubmit={handleNewsletterSubmit} className="flex gap-3 max-w-md mx-auto">
+            <Input 
+              type="email"
+              placeholder="Enter your email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="flex-1 bg-white"
+              required
+            />
+            <Button type="submit" className="bg-neutral-900 text-white hover:bg-neutral-800">
+              Subscribe
+            </Button>
+          </form>
+        </div>
+      </section>
+
+      {/* Brand Showcase - 3x1 Grid */}
+      <section className="py-20 bg-white">
+        <div className="container mx-auto px-6">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl font-bold text-neutral-900 mb-4">Shop by Brand</h2>
+            <p className="text-neutral-600">Explore our luxury brand partners</p>
+          </div>
+          <div className="grid md:grid-cols-3 gap-6">
+            {brands.map((brand, idx) => (
+              <Link key={idx} href={`/catalog?brand=${encodeURIComponent(brand.filter)}`}>
+                <div className="relative h-80 overflow-hidden rounded-lg group cursor-pointer">
+                  <img 
+                    src={brand.image}
+                    alt={brand.name}
+                    className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                  <div className="absolute bottom-0 left-0 right-0 p-8">
+                    <h3 className="text-3xl font-bold text-white mb-2">{brand.name}</h3>
+                    <p className="text-white/90 text-sm">Explore Collection →</p>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Blog Preview - 4 Articles */}
+      <section className="py-20 bg-[#FDFBF7]">
+        <div className="container mx-auto px-6">
+          <div className="flex items-center justify-between mb-12">
+            <div>
+              <h2 className="text-4xl font-bold text-neutral-900 mb-2">From Our Blog</h2>
+              <p className="text-neutral-600">Stories, tips, and insights on sustainable parenting</p>
+            </div>
+            <Link href="/blog">
+              <span className="inline-block">
+                <Button variant="outline" className="rounded-full">
+                  View All Posts
+                </Button>
+              </span>
+            </Link>
+          </div>
+          <div className="grid md:grid-cols-4 gap-6">
+            {blogPosts.map((post, idx) => (
+              <Link key={idx} href={`/blog/${post.slug}`}>
+                <Card className="group overflow-hidden cursor-pointer hover:shadow-lg transition-all">
+                  <div className="aspect-[4/3] overflow-hidden bg-neutral-100">
+                    <img 
+                      src={post.image}
+                      alt={post.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                  </div>
+                  <div className="p-6">
+                    <p className="text-xs text-neutral-500 mb-2">{post.date}</p>
+                    <h3 className="text-lg font-semibold text-neutral-900 mb-2 group-hover:text-neutral-700 transition-colors">
+                      {post.title}
+                    </h3>
+                    <p className="text-sm text-neutral-600">{post.excerpt}</p>
+                  </div>
+                </Card>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ Section */}
+      <section className="py-20 bg-white">
+        <div className="container mx-auto px-6 max-w-3xl">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl font-bold text-neutral-900 mb-4">Frequently Asked Questions</h2>
+            <p className="text-neutral-600">Everything you need to know about Seasons</p>
+          </div>
+          <div className="space-y-4">
+            {faqs.map((faq, idx) => (
+              <Card 
+                key={idx} 
+                className="p-6 cursor-pointer hover:shadow-md transition-shadow"
+                onClick={() => setExpandedFaq(expandedFaq === idx ? null : idx)}
+              >
+                <div className="flex items-center justify-between">
+                  <h3 className="text-lg font-semibold text-neutral-900">{faq.question}</h3>
+                  <ChevronDown 
+                    className={`w-5 h-5 text-neutral-500 transition-transform ${
+                      expandedFaq === idx ? 'rotate-180' : ''
+                    }`}
+                  />
+                </div>
+                {expandedFaq === idx && (
+                  <p className="mt-4 text-neutral-600 leading-relaxed">{faq.answer}</p>
+                )}
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Footer CTA */}
+      <section className="py-20 bg-neutral-900 text-white">
+        <div className="container mx-auto px-6 text-center">
+          <Sparkles className="w-12 h-12 mx-auto mb-6" />
+          <h2 className="text-4xl font-bold mb-4">Ready to Start Your Journey?</h2>
+          <p className="text-neutral-300 mb-8 max-w-2xl mx-auto">
+            Join hundreds of parents choosing sustainable luxury for their little ones
+          </p>
+          <Link href="/catalog">
+            <span className="inline-block">
+              <Button size="lg" className="bg-white text-black hover:bg-neutral-100 text-lg px-12 py-6 rounded-full font-semibold">
+                Browse Collection
+              </Button>
+            </span>
+          </Link>
+        </div>
+      </section>
 
       {/* Footer */}
-      <footer className="border-t border-neutral-200 bg-white py-8">
-        <div className="container mx-auto px-6 text-center text-sm text-neutral-600">
-          <p>© 2026 Seasons. Luxury baby clothing rental with care.</p>
+      <footer className="bg-neutral-900 text-white border-t border-neutral-800 py-12">
+        <div className="container mx-auto px-6">
+          <div className="grid md:grid-cols-4 gap-8">
+            <div>
+              <h3 className="text-xl font-bold mb-4">SEASONS</h3>
+              <p className="text-neutral-400 text-sm">
+                Luxury baby clothing, sustainably yours.
+              </p>
+            </div>
+            <div>
+              <h4 className="font-semibold mb-4">Shop</h4>
+              <ul className="space-y-2 text-sm text-neutral-400">
+                <li><Link href="/catalog" className="hover:text-white transition-colors">All Products</Link></li>
+                <li><Link href="/catalog?category=Tops" className="hover:text-white transition-colors">Tops</Link></li>
+                <li><Link href="/catalog?category=Bottoms" className="hover:text-white transition-colors">Bottoms</Link></li>
+                <li><Link href="/catalog?category=Outerwear" className="hover:text-white transition-colors">Outerwear</Link></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-semibold mb-4">About</h4>
+              <ul className="space-y-2 text-sm text-neutral-400">
+                <li><Link href="/blog" className="hover:text-white transition-colors">Blog</Link></li>
+                <li><a href="#" className="hover:text-white transition-colors">Our Story</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">Sustainability</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">Contact</a></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-semibold mb-4">Support</h4>
+              <ul className="space-y-2 text-sm text-neutral-400">
+                <li><Link href="/dashboard" className="hover:text-white transition-colors">My Account</Link></li>
+                <li><a href="#" className="hover:text-white transition-colors">Shipping</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">Returns</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">FAQ</a></li>
+              </ul>
+            </div>
+          </div>
+          <div className="border-t border-neutral-800 mt-12 pt-8 text-center text-sm text-neutral-400">
+            <p>&copy; 2026 Seasons. All rights reserved.</p>
+          </div>
         </div>
       </footer>
     </div>
