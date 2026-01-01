@@ -1,14 +1,20 @@
-import { trpc } from "@/lib/trpc";
+import { useQuery } from "@tanstack/react-query";
+import { fetchPostBySlug, urlFor, type SanityPost } from "@/lib/sanity";
+import PortableText from "@/components/PortableText";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link, useParams } from "wouter";
 import { Helmet } from "react-helmet-async";
 import { format } from "date-fns";
-import { Calendar, ArrowLeft, Tag } from "lucide-react";
+import { Calendar, ArrowLeft } from "lucide-react";
 
 export default function BlogPost() {
   const params = useParams<{ slug: string }>();
-  const { data: post, isLoading, error } = trpc.blog.postBySlug.useQuery({ slug: params.slug || "" });
+  const { data: post, isLoading, error } = useQuery<SanityPost>({
+    queryKey: ["sanity", "post", params.slug],
+    queryFn: () => fetchPostBySlug(params.slug || ""),
+    enabled: !!params.slug,
+  });
 
   if (isLoading) {
     return (
@@ -41,25 +47,31 @@ export default function BlogPost() {
     );
   }
 
+  const metaTitle = post.seo?.metaTitle || post.title;
+  const metaDescription = post.seo?.metaDescription || post.excerpt || "";
+  const ogImageUrl = post.seo?.ogImage
+    ? urlFor(post.seo.ogImage).width(1200).height(630).url()
+    : post.mainImage
+      ? urlFor(post.mainImage).width(1200).height(630).url()
+      : undefined;
+
   return (
     <>
       <Helmet>
-        <title>{post.metaTitle || post.title} | Seasons Blog</title>
-        <meta name="description" content={post.metaDescription || post.excerpt || post.content.substring(0, 160)} />
-        <meta property="og:title" content={post.metaTitle || post.title} />
-        <meta
-          property="og:description"
-          content={post.metaDescription || post.excerpt || post.content.substring(0, 160)}
-        />
+        <title>{metaTitle} | Seasons Blog</title>
+        <meta name="description" content={metaDescription} />
+        <meta property="og:title" content={metaTitle} />
+        <meta property="og:description" content={metaDescription} />
         <meta property="og:type" content="article" />
-        {post.ogImage && <meta property="og:image" content={post.ogImage} />}
-        {post.featuredImage && !post.ogImage && <meta property="og:image" content={post.featuredImage} />}
-        {post.canonicalUrl ? (
-          <link rel="canonical" href={post.canonicalUrl} />
+        {ogImageUrl && <meta property="og:image" content={ogImageUrl} />}
+        {post.seo?.canonicalUrl ? (
+          <link rel="canonical" href={post.seo.canonicalUrl} />
         ) : (
           <link rel="canonical" href={`${window.location.origin}/blog/${post.slug}`} />
         )}
-        <meta property="article:published_time" content={post.publishedAt?.toString()} />
+        {post.publishedAt && (
+          <meta property="article:published_time" content={post.publishedAt} />
+        )}
       </Helmet>
 
       <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-100">
@@ -83,39 +95,42 @@ export default function BlogPost() {
                 {format(new Date(post.publishedAt), "MMMM d, yyyy")}
               </span>
             )}
+            {post.author && (
+              <div className="flex items-center gap-2">
+                {post.author.image && (
+                  <img
+                    src={urlFor(post.author.image).width(32).height(32).url()}
+                    alt={post.author.name}
+                    className="w-8 h-8 rounded-full"
+                  />
+                )}
+                <span>by {post.author.name}</span>
+              </div>
+            )}
           </div>
 
-          {/* Categories & Tags */}
-          {(post.categories?.length > 0 || post.tags?.length > 0) && (
+          {/* Categories */}
+          {post.categories && post.categories.length > 0 && (
             <div className="flex flex-wrap gap-2 mb-8">
-              {post.categories?.map((category) => (
-                <Badge key={category.id} variant="secondary">
-                  {category.name}
-                </Badge>
-              ))}
-              {post.tags?.map((tag) => (
-                <Badge key={tag.id} variant="outline" className="flex items-center gap-1">
-                  <Tag className="h-3 w-3" />
-                  {tag.name}
+              {post.categories.map((category) => (
+                <Badge key={category._id} variant="secondary">
+                  {category.title}
                 </Badge>
               ))}
             </div>
           )}
 
           {/* Featured Image */}
-          {post.featuredImage && (
+          {post.mainImage && (
             <img
-              src={post.featuredImage}
+              src={urlFor(post.mainImage).width(800).auto("format").url()}
               alt={post.title}
               className="w-full h-auto rounded-lg shadow-lg mb-8 object-cover max-h-96"
             />
           )}
 
           {/* Content */}
-          <div
-            className="prose prose-lg prose-amber max-w-none"
-            dangerouslySetInnerHTML={{ __html: post.content }}
-          />
+          {post.body && <PortableText value={post.body} />}
 
           {/* Share */}
           <div className="mt-12 pt-8 border-t">

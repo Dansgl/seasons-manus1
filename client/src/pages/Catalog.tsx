@@ -1,10 +1,12 @@
 import { useState, useMemo } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { trpc } from "@/lib/trpc";
+import { fetchProducts, fetchBrands, urlFor, type SanityProduct, type SanityBrand } from "@/lib/sanity";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "wouter";
-import { Plus, Heart, Loader2, ShoppingBag } from "lucide-react";
+import { Plus, Loader2, ShoppingBag } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { getLoginUrl } from "@/const";
@@ -16,14 +18,31 @@ export default function Catalog() {
   const [selectedAgeRange, setSelectedAgeRange] = useState<string>("");
   const [selectedSeason, setSelectedSeason] = useState<string>("");
 
-  const { data: products, isLoading } = trpc.products.list.useQuery({
-    brand: selectedBrand || undefined,
-    category: selectedCategory || undefined,
-    ageRange: selectedAgeRange || undefined,
-    season: selectedSeason || undefined,
+  // Fetch products from Sanity
+  const { data: allProducts, isLoading } = useQuery<SanityProduct[]>({
+    queryKey: ["sanity", "products"],
+    queryFn: fetchProducts,
   });
 
-  const { data: brands } = trpc.products.getBrands.useQuery();
+  // Fetch brands from Sanity
+  const { data: brands } = useQuery<SanityBrand[]>({
+    queryKey: ["sanity", "brands"],
+    queryFn: fetchBrands,
+  });
+
+  // Filter products client-side based on selected filters
+  const products = useMemo(() => {
+    if (!allProducts) return [];
+    return allProducts.filter((product) => {
+      if (selectedBrand && product.brand?.name !== selectedBrand) return false;
+      if (selectedCategory && product.category !== selectedCategory) return false;
+      if (selectedAgeRange && product.ageRange !== selectedAgeRange) return false;
+      if (selectedSeason && product.season !== selectedSeason) return false;
+      return true;
+    });
+  }, [allProducts, selectedBrand, selectedCategory, selectedAgeRange, selectedSeason]);
+
+  // Cart functionality still uses tRPC/Supabase
   const { data: cartItems } = trpc.cart.get.useQuery(undefined, {
     enabled: isAuthenticated,
   });
@@ -53,30 +72,43 @@ export default function Catalog() {
   const utils = trpc.useUtils();
 
   const cartProductIds = useMemo(() => {
-    return new Set(cartItems?.map(item => item.product?.id).filter(Boolean));
+    return new Set(cartItems?.map((item) => item.product?.id).filter(Boolean));
   }, [cartItems]);
 
   const categories = [
-    "bodysuit", "sleepsuit", "joggers", "jacket", "cardigan", 
-    "top", "bottom", "dress", "outerwear", "overall"
+    "bodysuit",
+    "sleepsuit",
+    "joggers",
+    "jacket",
+    "cardigan",
+    "top",
+    "bottom",
+    "dress",
+    "outerwear",
+    "overall",
   ];
 
   const ageRanges = ["0-3m", "3-6m", "6-12m", "12-18m", "18-24m"];
   const seasons = ["summer", "winter", "all-season"];
 
-  const handleAddToCart = (productId: number) => {
+  const handleAddToCart = (productSlug: string) => {
     if (!isAuthenticated) {
       window.location.href = getLoginUrl();
       return;
     }
-    addToCart.mutate({ productId });
+    // For Sanity integration, we need to sync product IDs between Sanity and Supabase
+    // For now, use the slug as identifier - you may need to adjust this based on your cart implementation
+    addToCart.mutate({ productSlug });
   };
 
-  const handleRemoveFromCart = (productId: number) => {
-    removeFromCart.mutate({ productId });
+  const handleRemoveFromCart = (productSlug: string) => {
+    removeFromCart.mutate({ productSlug });
   };
 
-  const isInCart = (productId: number) => cartProductIds.has(productId);
+  const isInCart = (productSlug: string) => {
+    // Check if product is in cart by slug
+    return cartItems?.some((item) => item.product?.slug === productSlug);
+  };
   const canAddMore = (cartCount ?? 0) < 5;
 
   return (
@@ -105,9 +137,7 @@ export default function Catalog() {
         <div className="bg-white border-b border-neutral-200 py-4">
           <div className="container mx-auto px-6">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-medium text-neutral-900">
-                {cartCount} of 5 items selected
-              </span>
+              <span className="text-sm font-medium text-neutral-900">{cartCount} of 5 items selected</span>
               {cartCount === 5 && (
                 <Link href="/checkout">
                   <span className="inline-block">
@@ -119,7 +149,7 @@ export default function Catalog() {
               )}
             </div>
             <div className="w-full h-2 bg-neutral-100 rounded-full overflow-hidden">
-              <div 
+              <div
                 className="h-full bg-neutral-900 transition-all duration-300"
                 style={{ width: `${((cartCount ?? 0) / 5) * 100}%` }}
               />
@@ -144,15 +174,17 @@ export default function Catalog() {
                   >
                     All Brands
                   </button>
-                  {brands?.map(brand => (
+                  {brands?.map((brand) => (
                     <button
-                      key={brand}
-                      onClick={() => setSelectedBrand(brand)}
+                      key={brand._id}
+                      onClick={() => setSelectedBrand(brand.name)}
                       className={`block w-full text-left text-sm px-3 py-2 rounded-md transition-colors ${
-                        selectedBrand === brand ? "bg-neutral-900 text-white" : "text-neutral-600 hover:bg-neutral-100"
+                        selectedBrand === brand.name
+                          ? "bg-neutral-900 text-white"
+                          : "text-neutral-600 hover:bg-neutral-100"
                       }`}
                     >
-                      {brand}
+                      {brand.name}
                     </button>
                   ))}
                 </div>
@@ -169,12 +201,14 @@ export default function Catalog() {
                   >
                     All Categories
                   </button>
-                  {categories.map(cat => (
+                  {categories.map((cat) => (
                     <button
                       key={cat}
                       onClick={() => setSelectedCategory(cat)}
                       className={`block w-full text-left text-sm px-3 py-2 rounded-md transition-colors capitalize ${
-                        selectedCategory === cat ? "bg-neutral-900 text-white" : "text-neutral-600 hover:bg-neutral-100"
+                        selectedCategory === cat
+                          ? "bg-neutral-900 text-white"
+                          : "text-neutral-600 hover:bg-neutral-100"
                       }`}
                     >
                       {cat}
@@ -194,12 +228,14 @@ export default function Catalog() {
                   >
                     All Ages
                   </button>
-                  {ageRanges.map(age => (
+                  {ageRanges.map((age) => (
                     <button
                       key={age}
                       onClick={() => setSelectedAgeRange(age)}
                       className={`block w-full text-left text-sm px-3 py-2 rounded-md transition-colors ${
-                        selectedAgeRange === age ? "bg-neutral-900 text-white" : "text-neutral-600 hover:bg-neutral-100"
+                        selectedAgeRange === age
+                          ? "bg-neutral-900 text-white"
+                          : "text-neutral-600 hover:bg-neutral-100"
                       }`}
                     >
                       {age}
@@ -219,12 +255,14 @@ export default function Catalog() {
                   >
                     All Seasons
                   </button>
-                  {seasons.map(season => (
+                  {seasons.map((season) => (
                     <button
                       key={season}
                       onClick={() => setSelectedSeason(season)}
                       className={`block w-full text-left text-sm px-3 py-2 rounded-md transition-colors capitalize ${
-                        selectedSeason === season ? "bg-neutral-900 text-white" : "text-neutral-600 hover:bg-neutral-100"
+                        selectedSeason === season
+                          ? "bg-neutral-900 text-white"
+                          : "text-neutral-600 hover:bg-neutral-100"
                       }`}
                     >
                       {season}
@@ -239,9 +277,7 @@ export default function Catalog() {
           <main className="flex-1">
             <div className="mb-6">
               <h1 className="text-3xl font-light text-neutral-900">Browse Collection</h1>
-              <p className="text-neutral-600 mt-2">
-                {products?.length || 0} luxury pieces available
-              </p>
+              <p className="text-neutral-600 mt-2">{products?.length || 0} luxury pieces available</p>
             </div>
 
             {isLoading ? (
@@ -250,50 +286,48 @@ export default function Catalog() {
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {products?.map(product => (
-                  <Card key={product.id} className="group overflow-hidden border-neutral-200 hover:shadow-lg transition-shadow">
-                    <Link href={`/product/${product.id}`} className="block">
-                        <div className="aspect-square bg-neutral-100 relative overflow-hidden">
-                          {product.imageUrl ? (
-                            <img 
-                              src={product.imageUrl} 
-                              alt={product.name}
-                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                            />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center">
-                              <ShoppingBag className="w-16 h-16 text-neutral-300" />
-                            </div>
-                          )}
-                          {product.lowStock && (
-                            <Badge className="absolute top-3 left-3 bg-amber-500 text-white">
-                              Only a few left
-                            </Badge>
-                          )}
-                          {product.availableCount === 0 && (
-                            <Badge className="absolute top-3 left-3 bg-neutral-900 text-white">
-                              Out of Stock
-                            </Badge>
-                          )}
-                        </div>
+                {products?.map((product) => (
+                  <Card
+                    key={product._id}
+                    className="group overflow-hidden border-neutral-200 hover:shadow-lg transition-shadow"
+                  >
+                    <Link href={`/product/${product.slug}`} className="block">
+                      <div className="aspect-square bg-neutral-100 relative overflow-hidden">
+                        {product.mainImage ? (
+                          <img
+                            src={urlFor(product.mainImage).width(400).height(400).auto("format").url()}
+                            alt={product.name}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center">
+                            <ShoppingBag className="w-16 h-16 text-neutral-300" />
+                          </div>
+                        )}
+                        {product.stockQuantity <= 3 && product.stockQuantity > 0 && (
+                          <Badge className="absolute top-3 left-3 bg-amber-500 text-white">Only a few left</Badge>
+                        )}
+                        {product.stockQuantity === 0 && (
+                          <Badge className="absolute top-3 left-3 bg-neutral-900 text-white">Out of Stock</Badge>
+                        )}
+                      </div>
                     </Link>
                     <div className="p-4">
-                      <div className="text-xs text-neutral-500 uppercase tracking-wide mb-1">
-                        {product.brand}
-                      </div>
-                      <Link href={`/product/${product.id}`} className="text-sm font-medium text-neutral-900 hover:underline line-clamp-2">
+                      <div className="text-xs text-neutral-500 uppercase tracking-wide mb-1">{product.brand?.name}</div>
+                      <Link
+                        href={`/product/${product.slug}`}
+                        className="text-sm font-medium text-neutral-900 hover:underline line-clamp-2"
+                      >
                         {product.name}
                       </Link>
-                      <div className="text-xs text-neutral-500 mt-1">
-                        RRP €{product.rrpPrice}
-                      </div>
+                      <div className="text-xs text-neutral-500 mt-1">RRP €{product.rrpPrice}</div>
                       <div className="mt-3 flex items-center gap-2">
-                        {isInCart(product.id) ? (
+                        {isInCart(product.slug) ? (
                           <Button
                             size="sm"
                             variant="outline"
                             className="flex-1 rounded-full"
-                            onClick={() => handleRemoveFromCart(product.id)}
+                            onClick={() => handleRemoveFromCart(product.slug)}
                           >
                             Remove
                           </Button>
@@ -301,8 +335,8 @@ export default function Catalog() {
                           <Button
                             size="sm"
                             className="flex-1 rounded-full"
-                            disabled={!canAddMore || product.availableCount === 0}
-                            onClick={() => handleAddToCart(product.id)}
+                            disabled={!canAddMore || product.stockQuantity === 0}
+                            onClick={() => handleAddToCart(product.slug)}
                           >
                             <Plus className="w-4 h-4 mr-1" />
                             Add

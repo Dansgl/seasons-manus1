@@ -1,14 +1,18 @@
-import { trpc } from "@/lib/trpc";
+import { useQuery } from "@tanstack/react-query";
+import { fetchPosts, urlFor, type SanityPost } from "@/lib/sanity";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "wouter";
 import { Helmet } from "react-helmet-async";
 import { format } from "date-fns";
-import { Calendar, User } from "lucide-react";
+import { Calendar } from "lucide-react";
 
 export default function Blog() {
-  const { data: posts, isLoading } = trpc.blog.posts.useQuery();
+  const { data: posts, isLoading } = useQuery<SanityPost[]>({
+    queryKey: ["sanity", "posts"],
+    queryFn: fetchPosts,
+  });
 
   return (
     <>
@@ -66,16 +70,23 @@ export default function Blog() {
           ) : (
             <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
               {posts?.map((post) => (
-                <Link key={post.id} href={`/blog/${post.slug}`}>
+                <Link key={post._id} href={`/blog/${post.slug}`}>
                   <Card className="cursor-pointer hover:shadow-lg transition-shadow h-full flex flex-col">
-                    {post.featuredImage && (
+                    {post.mainImage && (
                       <img
-                        src={post.featuredImage}
+                        src={urlFor(post.mainImage).width(600).height(300).auto("format").url()}
                         alt={post.title}
                         className="h-48 w-full object-cover rounded-t-lg"
                       />
                     )}
                     <CardHeader>
+                      <div className="flex flex-wrap gap-1 mb-2">
+                        {post.categories?.map((category) => (
+                          <Badge key={category._id} variant="secondary" className="text-xs">
+                            {category.title}
+                          </Badge>
+                        ))}
+                      </div>
                       <CardTitle className="text-xl hover:text-amber-700 transition-colors">{post.title}</CardTitle>
                       <CardDescription className="flex items-center gap-4 text-sm">
                         {post.publishedAt && (
@@ -84,10 +95,13 @@ export default function Blog() {
                             {format(new Date(post.publishedAt), "MMM d, yyyy")}
                           </span>
                         )}
+                        {post.author && (
+                          <span className="text-gray-500">by {post.author.name}</span>
+                        )}
                       </CardDescription>
                     </CardHeader>
                     <CardContent className="flex-grow">
-                      <p className="text-gray-600 line-clamp-3">{post.excerpt || post.content.substring(0, 150)}...</p>
+                      <p className="text-gray-600 line-clamp-3">{post.excerpt || "Read more..."}</p>
                     </CardContent>
                   </Card>
                 </Link>

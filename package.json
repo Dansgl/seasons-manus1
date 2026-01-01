@@ -11,9 +11,17 @@
     "format": "prettier --write .",
     "test": "vitest run",
     "db:push": "drizzle-kit generate && drizzle-kit migrate",
-    "db:studio": "drizzle-kit studio"
+    "db:studio": "drizzle-kit studio",
+    "sanity": "sanity",
+    "sanity:dev": "sanity dev",
+    "sanity:build": "sanity build",
+    "sanity:deploy": "sanity deploy"
   },
   "dependencies": {
+    "@sanity/client": "^6.24.0",
+    "@sanity/image-url": "^1.1.0",
+    "@portabletext/react": "^3.2.0",
+    "sanity": "^3.68.0",
     "@supabase/supabase-js": "^2.47.0",
     "@hookform/resolvers": "^5.2.2",
     "@radix-ui/react-accordion": "^1.2.12",
