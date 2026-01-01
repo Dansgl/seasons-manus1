@@ -82,3 +82,6 @@
 
 ## New Features
 - [x] Add "Mess No Stress" benefit section with product image background
+
+## Hero Section Updates
+- [x] Add Studio Koter product image background to main hero section

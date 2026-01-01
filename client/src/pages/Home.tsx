@@ -41,8 +41,18 @@ export default function Home() {
 
       {/* Hero Section */}
       <main className="flex-1">
-        <section className="container mx-auto px-6 py-24 md:py-32">
-          <div className="max-w-3xl mx-auto text-center">
+        <section className="relative container mx-auto px-6 py-24 md:py-32 overflow-hidden">
+          {/* Background image */}
+          <div 
+            className="absolute inset-0 bg-cover bg-center opacity-30"
+            style={{
+              backgroundImage: 'url(https://medias.eventsunited.net/uploads/product/801180_large_dwXU7ZuoIY2tJz1Gg8eT.jpg)',
+              backgroundPosition: 'center',
+            }}
+          />
+          {/* Gradient overlay for text readability */}
+          <div className="absolute inset-0 bg-gradient-to-b from-[#FDFBF7]/90 via-[#FDFBF7]/85 to-[#FDFBF7]/95" />
+          <div className="max-w-3xl mx-auto text-center relative z-10">
             <h1 className="text-5xl md:text-6xl font-light tracking-tight text-neutral-900 mb-6">
               Luxury Baby Clothing,
               <br />
@@ -124,14 +134,14 @@ export default function Home() {
         <section className="relative py-20 overflow-hidden">
           {/* Background image with overlay */}
           <div 
-            className="absolute inset-0 bg-cover bg-center opacity-20"
+            className="absolute inset-0 bg-cover bg-center opacity-40"
             style={{
               backgroundImage: 'url(https://medias.eventsunited.net/uploads/product/801180_large_dwXU7ZuoIY2tJz1Gg8eT.jpg)',
               backgroundPosition: 'center right',
             }}
           />
-          {/* Dark overlay for text readability */}
-          <div className="absolute inset-0 bg-gradient-to-r from-white via-white/95 to-white/70" />
+          {/* Gradient overlay for text readability */}
+          <div className="absolute inset-0 bg-gradient-to-r from-white/90 via-white/85 to-white/50" />
           
           {/* Content */}
           <div className="container mx-auto px-6 relative z-10">
