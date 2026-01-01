@@ -84,16 +84,16 @@ export default function Catalog() {
       {/* Navigation */}
       <nav className="border-b border-neutral-200 bg-white/80 backdrop-blur-sm sticky top-0 z-50">
         <div className="container mx-auto px-6 py-4 flex items-center justify-between">
-          <Link href="/">
-            <a className="text-2xl font-light tracking-wide text-neutral-900">Seasons</a>
+          <Link href="/" className="text-2xl font-light tracking-wide text-neutral-900">
+            Seasons
           </Link>
           <div className="flex items-center gap-6">
-            <Link href="/catalog">
-              <a className="text-sm text-neutral-900 font-medium">Browse</a>
+            <Link href="/catalog" className="text-sm text-neutral-900 font-medium">
+              Browse
             </Link>
             {isAuthenticated && (
-              <Link href="/dashboard">
-                <a className="text-sm text-neutral-600 hover:text-neutral-900 transition-colors">Dashboard</a>
+              <Link href="/dashboard" className="text-sm text-neutral-600 hover:text-neutral-900 transition-colors">
+                Dashboard
               </Link>
             )}
           </div>
@@ -110,9 +110,11 @@ export default function Catalog() {
               </span>
               {cartCount === 5 && (
                 <Link href="/checkout">
-                  <Button size="sm" className="rounded-full">
-                    Proceed to Checkout
-                  </Button>
+                  <span className="inline-block">
+                    <Button size="sm" className="rounded-full">
+                      Proceed to Checkout
+                    </Button>
+                  </span>
                 </Link>
               )}
             </div>
@@ -250,8 +252,7 @@ export default function Catalog() {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {products?.map(product => (
                   <Card key={product.id} className="group overflow-hidden border-neutral-200 hover:shadow-lg transition-shadow">
-                    <Link href={`/product/${product.id}`}>
-                      <a className="block">
+                    <Link href={`/product/${product.id}`} className="block">
                         <div className="aspect-square bg-neutral-100 relative overflow-hidden">
                           {product.imageUrl ? (
                             <img 
@@ -275,16 +276,13 @@ export default function Catalog() {
                             </Badge>
                           )}
                         </div>
-                      </a>
                     </Link>
                     <div className="p-4">
                       <div className="text-xs text-neutral-500 uppercase tracking-wide mb-1">
                         {product.brand}
                       </div>
-                      <Link href={`/product/${product.id}`}>
-                        <a className="text-sm font-medium text-neutral-900 hover:underline line-clamp-2">
-                          {product.name}
-                        </a>
+                      <Link href={`/product/${product.id}`} className="text-sm font-medium text-neutral-900 hover:underline line-clamp-2">
+                        {product.name}
                       </Link>
                       <div className="text-xs text-neutral-500 mt-1">
                         RRP €{product.rrpPrice}

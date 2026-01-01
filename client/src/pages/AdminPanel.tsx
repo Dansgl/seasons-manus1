@@ -80,7 +80,9 @@ export default function AdminPanel() {
         <Card className="p-8">
           <p className="text-neutral-600 mb-4">Admin access required</p>
           <Link href="/">
-            <Button>Go Home</Button>
+            <span className="inline-block">
+              <Button>Go Home</Button>
+            </span>
           </Link>
         </Card>
       </div>
@@ -115,18 +117,18 @@ export default function AdminPanel() {
       {/* Navigation */}
       <nav className="border-b border-neutral-200 bg-white/80 backdrop-blur-sm sticky top-0 z-50">
         <div className="container mx-auto px-6 py-4 flex items-center justify-between">
-          <Link href="/">
-            <a className="text-2xl font-light tracking-wide text-neutral-900">Seasons</a>
+          <Link href="/" className="text-2xl font-light tracking-wide text-neutral-900">
+            Seasons
           </Link>
           <div className="flex items-center gap-6">
-            <Link href="/catalog">
-              <a className="text-sm text-neutral-600 hover:text-neutral-900 transition-colors">Browse</a>
+            <Link href="/catalog" className="text-sm text-neutral-600 hover:text-neutral-900 transition-colors">
+              Browse
             </Link>
-            <Link href="/dashboard">
-              <a className="text-sm text-neutral-600 hover:text-neutral-900 transition-colors">Dashboard</a>
+            <Link href="/dashboard" className="text-sm text-neutral-600 hover:text-neutral-900 transition-colors">
+              Dashboard
             </Link>
-            <Link href="/admin">
-              <a className="text-sm text-neutral-900 font-medium">Admin</a>
+            <Link href="/admin" className="text-sm text-neutral-900 font-medium">
+              Admin
             </Link>
           </div>
         </div>

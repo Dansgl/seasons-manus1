@@ -66,8 +66,8 @@ export default function Dashboard() {
       <div className="min-h-screen bg-[#FDFBF7]">
         <nav className="border-b border-neutral-200 bg-white/80 backdrop-blur-sm">
           <div className="container mx-auto px-6 py-4 flex items-center justify-between">
-            <Link href="/">
-              <a className="text-2xl font-light tracking-wide text-neutral-900">Seasons</a>
+            <Link href="/" className="text-2xl font-light tracking-wide text-neutral-900">
+              Seasons
             </Link>
           </div>
         </nav>
@@ -77,7 +77,9 @@ export default function Dashboard() {
             Start your journey with Seasons by selecting your first 5 items.
           </p>
           <Link href="/catalog">
-            <Button size="lg" className="rounded-full">Browse Collection</Button>
+            <span className="inline-block">
+              <Button size="lg" className="rounded-full">Browse Collection</Button>
+            </span>
           </Link>
         </div>
       </div>
@@ -95,19 +97,19 @@ export default function Dashboard() {
       {/* Navigation */}
       <nav className="border-b border-neutral-200 bg-white/80 backdrop-blur-sm sticky top-0 z-50">
         <div className="container mx-auto px-6 py-4 flex items-center justify-between">
-          <Link href="/">
-            <a className="text-2xl font-light tracking-wide text-neutral-900">Seasons</a>
+          <Link href="/" className="text-2xl font-light tracking-wide text-neutral-900">
+            Seasons
           </Link>
           <div className="flex items-center gap-6">
-            <Link href="/catalog">
-              <a className="text-sm text-neutral-600 hover:text-neutral-900 transition-colors">Browse</a>
+            <Link href="/catalog" className="text-sm text-neutral-600 hover:text-neutral-900 transition-colors">
+              Browse
             </Link>
-            <Link href="/dashboard">
-              <a className="text-sm text-neutral-900 font-medium">Dashboard</a>
+            <Link href="/dashboard" className="text-sm text-neutral-900 font-medium">
+              Dashboard
             </Link>
             {user?.role === 'admin' && (
-              <Link href="/admin">
-                <a className="text-sm text-neutral-600 hover:text-neutral-900 transition-colors">Admin</a>
+              <Link href="/admin" className="text-sm text-neutral-600 hover:text-neutral-900 transition-colors">
+                Admin
               </Link>
             )}
           </div>
@@ -177,7 +179,9 @@ export default function Dashboard() {
               Your swap window is now open. Select your next 5 items before your current cycle ends.
             </p>
             <Link href="/catalog">
-              <Button className="rounded-full">Select Next Box</Button>
+              <span className="inline-block">
+                <Button className="rounded-full">Select Next Box</Button>
+              </span>
             </Link>
           </Card>
         )}

@@ -74,7 +74,9 @@ export default function ProductDetail() {
         <div className="text-center">
           <p className="text-neutral-600 mb-4">Product not found</p>
           <Link href="/catalog">
-            <Button variant="outline">Back to Catalog</Button>
+            <span className="inline-block">
+              <Button variant="outline">Back to Catalog</Button>
+            </span>
           </Link>
         </div>
       </div>
@@ -86,16 +88,16 @@ export default function ProductDetail() {
       {/* Navigation */}
       <nav className="border-b border-neutral-200 bg-white/80 backdrop-blur-sm sticky top-0 z-50">
         <div className="container mx-auto px-6 py-4 flex items-center justify-between">
-          <Link href="/">
-            <a className="text-2xl font-light tracking-wide text-neutral-900">Seasons</a>
+          <Link href="/" className="text-2xl font-light tracking-wide text-neutral-900">
+            Seasons
           </Link>
           <div className="flex items-center gap-6">
-            <Link href="/catalog">
-              <a className="text-sm text-neutral-600 hover:text-neutral-900 transition-colors">Browse</a>
+            <Link href="/catalog" className="text-sm text-neutral-600 hover:text-neutral-900 transition-colors">
+              Browse
             </Link>
             {isAuthenticated && (
-              <Link href="/dashboard">
-                <a className="text-sm text-neutral-600 hover:text-neutral-900 transition-colors">Dashboard</a>
+              <Link href="/dashboard" className="text-sm text-neutral-600 hover:text-neutral-900 transition-colors">
+                Dashboard
               </Link>
             )}
           </div>
@@ -103,11 +105,9 @@ export default function ProductDetail() {
       </nav>
 
       <div className="container mx-auto px-6 py-8">
-        <Link href="/catalog">
-          <a className="inline-flex items-center text-sm text-neutral-600 hover:text-neutral-900 mb-6">
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Catalog
-          </a>
+        <Link href="/catalog" className="inline-flex items-center text-sm text-neutral-600 hover:text-neutral-900 mb-6">
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          Back to Catalog
         </Link>
 
         <div className="grid md:grid-cols-2 gap-12">

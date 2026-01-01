@@ -12,21 +12,21 @@ export default function Home() {
       {/* Navigation */}
       <nav className="border-b border-neutral-200 bg-white/80 backdrop-blur-sm sticky top-0 z-50">
         <div className="container mx-auto px-6 py-4 flex items-center justify-between">
-          <Link href="/">
-            <a className="text-2xl font-light tracking-wide text-neutral-900">Seasons</a>
+          <Link href="/" className="text-2xl font-light tracking-wide text-neutral-900">
+            Seasons
           </Link>
           <div className="flex items-center gap-6">
-            <Link href="/catalog">
-              <a className="text-sm text-neutral-600 hover:text-neutral-900 transition-colors">Browse</a>
+            <Link href="/catalog" className="text-sm text-neutral-600 hover:text-neutral-900 transition-colors">
+              Browse
             </Link>
             {isAuthenticated ? (
               <>
-                <Link href="/dashboard">
-                  <a className="text-sm text-neutral-600 hover:text-neutral-900 transition-colors">Dashboard</a>
+                <Link href="/dashboard" className="text-sm text-neutral-600 hover:text-neutral-900 transition-colors">
+                  Dashboard
                 </Link>
                 {user?.role === 'admin' && (
-                  <Link href="/admin">
-                    <a className="text-sm text-neutral-600 hover:text-neutral-900 transition-colors">Admin</a>
+                  <Link href="/admin" className="text-sm text-neutral-600 hover:text-neutral-900 transition-colors">
+                    Admin
                   </Link>
                 )}
               </>
@@ -54,9 +54,11 @@ export default function Home() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/catalog">
-                <Button size="lg" className="rounded-full px-8 bg-neutral-900 hover:bg-neutral-800">
-                  Browse Collection
-                </Button>
+                <span className="inline-block">
+                  <Button size="lg" className="rounded-full px-8 bg-neutral-900 hover:bg-neutral-800">
+                    Browse Collection
+                  </Button>
+                </span>
               </Link>
               <Button size="lg" variant="outline" className="rounded-full px-8 border-neutral-300">
                 How It Works
@@ -170,9 +172,11 @@ export default function Home() {
               Join the circular fashion movement and give your baby the luxury they deserve.
             </p>
             <Link href="/catalog">
-              <Button size="lg" variant="outline" className="rounded-full px-8 border-white text-white hover:bg-white hover:text-neutral-900">
-                Start Browsing
-              </Button>
+              <span className="inline-block">
+                <Button size="lg" variant="outline" className="rounded-full px-8 border-white text-white hover:bg-white hover:text-neutral-900">
+                  Start Browsing
+                </Button>
+              </span>
             </Link>
           </div>
         </section>

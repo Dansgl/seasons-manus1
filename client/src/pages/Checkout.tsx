@@ -56,7 +56,9 @@ export default function Checkout() {
         <Card className="p-8 max-w-md">
           <p className="text-center text-neutral-600 mb-4">Please sign in to checkout</p>
           <Link href="/">
-            <Button className="w-full">Go Home</Button>
+            <span className="inline-block w-full">
+              <Button className="w-full">Go Home</Button>
+            </span>
           </Link>
         </Card>
       </div>
@@ -79,7 +81,9 @@ export default function Checkout() {
             You must select exactly 5 items to checkout. Currently selected: {cartCount}
           </p>
           <Link href="/catalog">
-            <Button className="w-full">Continue Shopping</Button>
+            <span className="inline-block w-full">
+              <Button className="w-full">Continue Shopping</Button>
+            </span>
           </Link>
         </Card>
       </div>
@@ -91,8 +95,8 @@ export default function Checkout() {
       {/* Navigation */}
       <nav className="border-b border-neutral-200 bg-white/80 backdrop-blur-sm">
         <div className="container mx-auto px-6 py-4 flex items-center justify-between">
-          <Link href="/">
-            <a className="text-2xl font-light tracking-wide text-neutral-900">Seasons</a>
+          <Link href="/" className="text-2xl font-light tracking-wide text-neutral-900">
+            Seasons
           </Link>
         </div>
       </nav>
