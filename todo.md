@@ -85,3 +85,6 @@
 
 ## Hero Section Updates
 - [x] Add Studio Koter product image background to main hero section
+
+## Hero Image Visibility
+- [x] Increase hero background image opacity for better visual impact
