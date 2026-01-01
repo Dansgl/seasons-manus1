@@ -72,3 +72,10 @@
 - [x] Fix nested anchor tags in Home page
 - [x] Fix nested anchor tags in Catalog page
 - [x] Verify no other nested anchor issues
+
+## OAuth Issues
+- [x] Fix Google OAuth 403 redirect URI configuration (redirect URI should be https://luxbabyshop-wzsezpdh.manus.space/api/oauth/callback)
+
+## Stock Import
+- [x] Import new product stock CSV with real images
+- [x] Successfully imported 5 products with 38 inventory items
