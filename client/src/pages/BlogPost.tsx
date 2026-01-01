@@ -252,14 +252,14 @@ export default function BlogPost() {
           <Link href="/">
             <img src="/seasons-logo-bold.png" alt="SEASONS" className="h-8" />
           </Link>
-          <div className="flex items-center gap-6">
-            <Link href="/catalog" className="text-sm text-neutral-600 hover:text-neutral-900 transition-colors font-medium">
+          <div className="flex items-center gap-8">
+            <Link href="/catalog" className="text-sm text-neutral-600 hover:text-neutral-900 transition-colors font-bold tracking-wide uppercase">
               Browse
             </Link>
-            <Link href="/blog" className="text-sm text-neutral-900 font-semibold">
+            <Link href="/blog" className="text-sm text-neutral-900 font-bold tracking-wide uppercase">
               Blog
             </Link>
-            <Link href="/dashboard" className="text-sm text-neutral-600 hover:text-neutral-900 transition-colors font-medium">
+            <Link href="/dashboard" className="text-sm text-neutral-600 hover:text-neutral-900 transition-colors font-bold tracking-wide uppercase">
               Dashboard
             </Link>
           </div>

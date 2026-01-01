@@ -135,21 +135,22 @@ export default function Home() {
           <Link href="/">
             <img src="/seasons-logo-bold.png" alt="SEASONS" className="h-8" />
           </Link>
-          <div className="flex items-center gap-6">
-            <Link href="/catalog" className="text-sm text-white hover:text-white/80 transition-colors font-medium">
+                  <div className="flex items-center gap-8">
+            <Link href="/catalog" className="text-sm text-white hover:text-white/80 transition-colors font-bold tracking-wide uppercase">
               Browse
             </Link>
+            <Link href="/blog" className="text-sm text-white hover:text-white/80 transition-colors font-bold tracking-wide uppercase">
+              Blog
+            </Link>
             {user ? (
-              <Link href="/dashboard" className="text-sm text-white hover:text-white/80 transition-colors font-medium">
+              <Link href="/dashboard" className="text-sm text-white hover:text-white/80 transition-colors font-bold tracking-wide uppercase">
                 Dashboard
               </Link>
             ) : (
               <Link href="/catalog">
-                <span className="inline-block">
-                  <Button variant="outline" size="sm" className="bg-white/10 text-white border-white/30 hover:bg-white/20">
-                    Sign In
-                  </Button>
-                </span>
+                <Button variant="ghost" className="text-white hover:bg-white/10 rounded-full font-bold">
+                  Sign In
+                </Button>
               </Link>
             )}
           </div>

@@ -106,3 +106,9 @@
 - [x] Create blog system with routes and sample articles
 - [x] Add FAQ section with expandable questions
 - [x] Generate minimal bold peach SEASONS wordmark logo
+
+## Navigation & Typography Updates
+- [x] Add Blog link to navigation menu
+- [x] Add all missing sections to navigation
+- [x] Update typography to match SEASONS logo (bold, geometric style)
+- [x] Apply consistent font across all pages
