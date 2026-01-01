@@ -1,10 +1,19 @@
 export const ENV = {
-  appId: process.env.VITE_APP_ID ?? "",
-  cookieSecret: process.env.JWT_SECRET ?? "",
+  // Supabase configuration
+  supabaseUrl: process.env.SUPABASE_URL ?? "",
+  supabaseAnonKey: process.env.SUPABASE_ANON_KEY ?? "",
+  supabaseServiceKey: process.env.SUPABASE_SERVICE_ROLE_KEY ?? "",
+
+  // Database
   databaseUrl: process.env.DATABASE_URL ?? "",
-  oAuthServerUrl: process.env.OAUTH_SERVER_URL ?? "",
-  ownerOpenId: process.env.OWNER_OPEN_ID ?? "",
+
+  // App configuration
+  appUrl: process.env.APP_URL ?? "http://localhost:3000",
   isProduction: process.env.NODE_ENV === "production",
-  forgeApiUrl: process.env.BUILT_IN_FORGE_API_URL ?? "",
-  forgeApiKey: process.env.BUILT_IN_FORGE_API_KEY ?? "",
+
+  // Admin configuration (comma-separated list of admin emails)
+  adminEmails: (process.env.ADMIN_EMAILS ?? "").split(",").filter(Boolean),
+
+  // Optional: OpenAI for AI features
+  openaiApiKey: process.env.OPENAI_API_KEY ?? "",
 };

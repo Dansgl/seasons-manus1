@@ -1,193 +1,122 @@
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import { useQuery } from "@tanstack/react-query";
+import { fetchPosts, urlFor, type SanityPost } from "@/lib/sanity";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "wouter";
-import { Calendar, Clock } from "lucide-react";
+import { Helmet } from "react-helmet-async";
+import { format } from "date-fns";
+import { Calendar } from "lucide-react";
 
 export default function Blog() {
-  const posts = [
-    {
-      title: "The Rise of Circular Baby Fashion",
-      excerpt: "Why rental is the future of sustainable parenting. Discover how the circular economy is transforming the way we think about baby clothing.",
-      image: "https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?w=1200&h=800&fit=crop",
-      date: "Dec 15, 2025",
-      readTime: "5 min read",
-      slug: "circular-baby-fashion",
-      category: "Sustainability"
-    },
-    {
-      title: "How Ozone Cleaning Works",
-      excerpt: "The science behind our medical-grade sanitation process. Learn why ozone treatment is the safest way to clean baby clothing.",
-      image: "https://images.unsplash.com/photo-1519689373023-dd07c7988603?w=1200&h=800&fit=crop",
-      date: "Dec 10, 2025",
-      readTime: "4 min read",
-      slug: "ozone-cleaning-explained",
-      category: "Safety"
-    },
-    {
-      title: "Building a Capsule Wardrobe for Baby",
-      excerpt: "5 essential pieces for every season. Simplify your baby's wardrobe with these timeless, versatile items.",
-      image: "https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?w=1200&h=800&fit=crop",
-      date: "Dec 5, 2025",
-      readTime: "6 min read",
-      slug: "capsule-wardrobe-baby",
-      category: "Style"
-    },
-    {
-      title: "Luxury Brands We Love",
-      excerpt: "Meet the designers in our collection. From Studio Koter to MORI, discover the craftsmanship behind each piece.",
-      image: "https://images.unsplash.com/photo-1503944583220-79d8926ad5e2?w=1200&h=800&fit=crop",
-      date: "Nov 28, 2025",
-      readTime: "7 min read",
-      slug: "luxury-brands-we-love",
-      category: "Brands"
-    },
-    {
-      title: "The True Cost of Fast Fashion",
-      excerpt: "Understanding the environmental impact of disposable baby clothing and why rental makes sense.",
-      image: "https://images.unsplash.com/photo-1532453288672-3a27e9be9efd?w=1200&h=800&fit=crop",
-      date: "Nov 20, 2025",
-      readTime: "8 min read",
-      slug: "true-cost-fast-fashion",
-      category: "Sustainability"
-    },
-    {
-      title: "Seasonal Styling Tips",
-      excerpt: "How to dress your baby for comfort and style in every season. Expert tips from our styling team.",
-      image: "https://images.unsplash.com/photo-1519238263530-99bdd11df2ea?w=1200&h=800&fit=crop",
-      date: "Nov 15, 2025",
-      readTime: "5 min read",
-      slug: "seasonal-styling-tips",
-      category: "Style"
-    },
-  ];
+  const { data: posts, isLoading } = useQuery<SanityPost[]>({
+    queryKey: ["sanity", "posts"],
+    queryFn: fetchPosts,
+  });
 
   return (
-    <div className="min-h-screen bg-[#FDFBF7]">
-      {/* Navigation */}
-      <nav className="border-b border-neutral-200 bg-white/80 backdrop-blur-sm sticky top-0 z-50">
-        <div className="container mx-auto px-6 py-4 flex items-center justify-between">
-          <Link href="/">
-            <img src="/seasons-logo-bold.png" alt="SEASONS" className="h-8" />
-          </Link>
-          <div className="flex items-center gap-8">
-            <Link href="/catalog" className="text-sm text-neutral-600 hover:text-neutral-900 transition-colors font-bold tracking-wide uppercase">
-              Browse
-            </Link>
-            <Link href="/blog" className="text-sm text-neutral-900 font-bold tracking-wide uppercase">
-              Blog
-            </Link>
-            <Link href="/dashboard" className="text-sm text-neutral-600 hover:text-neutral-900 transition-colors font-bold tracking-wide uppercase">
-              Dashboard
-            </Link>
+    <>
+      <Helmet>
+        <title>Blog | Seasons - Luxury Baby Clothing</title>
+        <meta
+          name="description"
+          content="Discover tips on sustainable baby fashion, parenting advice, and the latest from Seasons luxury baby clothing subscription."
+        />
+        <meta property="og:title" content="Blog | Seasons" />
+        <meta
+          property="og:description"
+          content="Discover tips on sustainable baby fashion, parenting advice, and the latest from Seasons."
+        />
+        <meta property="og:type" content="website" />
+        <link rel="canonical" href={`${window.location.origin}/blog`} />
+      </Helmet>
+
+      <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-100">
+        {/* Header */}
+        <div className="bg-amber-900 text-white py-16">
+          <div className="container mx-auto px-4 text-center">
+            <h1 className="text-4xl font-bold mb-4">Seasons Blog</h1>
+            <p className="text-amber-100 text-lg max-w-2xl mx-auto">
+              Tips on sustainable baby fashion, parenting advice, and the latest from our luxury baby clothing
+              subscription.
+            </p>
           </div>
         </div>
-      </nav>
 
-      {/* Hero */}
-      <section className="py-20 bg-white">
-        <div className="container mx-auto px-6 text-center max-w-3xl">
-          <h1 className="text-5xl font-bold text-neutral-900 mb-6">The Seasons Journal</h1>
-          <p className="text-xl text-neutral-600">
-            Stories, tips, and insights on sustainable parenting and luxury baby fashion
-          </p>
-        </div>
-      </section>
-
-      {/* Featured Post */}
-      {posts[0] && (
-        <section className="pb-12">
-          <div className="container mx-auto px-6">
-            <Link href={`/blog/${posts[0].slug}`}>
-              <Card className="overflow-hidden cursor-pointer hover:shadow-2xl transition-all duration-300">
-                <div className="grid md:grid-cols-2 gap-0">
-                  <div className="aspect-[4/3] md:aspect-auto overflow-hidden bg-neutral-100">
-                    <img 
-                      src={posts[0].image}
-                      alt={posts[0].title}
-                      className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
-                    />
-                  </div>
-                  <div className="p-12 flex flex-col justify-center">
-                    <span className="inline-block px-3 py-1 bg-[#F5E6D3] text-neutral-800 text-xs font-semibold rounded-full mb-4 w-fit">
-                      {posts[0].category}
-                    </span>
-                    <h2 className="text-3xl font-bold text-neutral-900 mb-4">{posts[0].title}</h2>
-                    <p className="text-neutral-600 mb-6 leading-relaxed">{posts[0].excerpt}</p>
-                    <div className="flex items-center gap-4 text-sm text-neutral-500">
-                      <div className="flex items-center gap-2">
-                        <Calendar className="w-4 h-4" />
-                        <span>{posts[0].date}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Clock className="w-4 h-4" />
-                        <span>{posts[0].readTime}</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </Card>
-            </Link>
-          </div>
-        </section>
-      )}
-
-      {/* All Posts Grid */}
-      <section className="py-12">
-        <div className="container mx-auto px-6">
-          <h2 className="text-3xl font-bold text-neutral-900 mb-8">Latest Articles</h2>
-          <div className="grid md:grid-cols-3 gap-8">
-            {posts.slice(1).map((post, idx) => (
-              <Link key={idx} href={`/blog/${post.slug}`}>
-                <Card className="group overflow-hidden cursor-pointer hover:shadow-lg transition-all h-full">
-                  <div className="aspect-[4/3] overflow-hidden bg-neutral-100">
-                    <img 
-                      src={post.image}
-                      alt={post.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
-                  </div>
-                  <div className="p-6">
-                    <span className="inline-block px-3 py-1 bg-[#F5E6D3] text-neutral-800 text-xs font-semibold rounded-full mb-3">
-                      {post.category}
-                    </span>
-                    <h3 className="text-xl font-semibold text-neutral-900 mb-3 group-hover:text-neutral-700 transition-colors">
-                      {post.title}
-                    </h3>
-                    <p className="text-sm text-neutral-600 mb-4 line-clamp-2">{post.excerpt}</p>
-                    <div className="flex items-center gap-4 text-xs text-neutral-500">
-                      <div className="flex items-center gap-1">
-                        <Calendar className="w-3 h-3" />
-                        <span>{post.date}</span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <Clock className="w-3 h-3" />
-                        <span>{post.readTime}</span>
-                      </div>
-                    </div>
-                  </div>
+        {/* Blog Posts */}
+        <div className="container mx-auto px-4 py-12">
+          {isLoading ? (
+            <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+              {[...Array(6)].map((_, i) => (
+                <Card key={i}>
+                  <Skeleton className="h-48 w-full rounded-t-lg" />
+                  <CardHeader>
+                    <Skeleton className="h-6 w-3/4" />
+                    <Skeleton className="h-4 w-1/2 mt-2" />
+                  </CardHeader>
+                  <CardContent>
+                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-4 w-full mt-2" />
+                    <Skeleton className="h-4 w-2/3 mt-2" />
+                  </CardContent>
                 </Card>
-              </Link>
-            ))}
-          </div>
+              ))}
+            </div>
+          ) : posts?.length === 0 ? (
+            <div className="text-center py-16">
+              <h2 className="text-2xl font-semibold text-gray-600">No blog posts yet</h2>
+              <p className="text-gray-500 mt-2">Check back soon for articles!</p>
+            </div>
+          ) : (
+            <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+              {posts?.map((post) => (
+                <Link key={post._id} href={`/blog/${post.slug}`}>
+                  <Card className="cursor-pointer hover:shadow-lg transition-shadow h-full flex flex-col">
+                    {post.mainImage && (
+                      <img
+                        src={urlFor(post.mainImage).width(600).height(300).auto("format").url()}
+                        alt={post.title}
+                        className="h-48 w-full object-cover rounded-t-lg"
+                      />
+                    )}
+                    <CardHeader>
+                      <div className="flex flex-wrap gap-1 mb-2">
+                        {post.categories?.map((category) => (
+                          <Badge key={category._id} variant="secondary" className="text-xs">
+                            {category.title}
+                          </Badge>
+                        ))}
+                      </div>
+                      <CardTitle className="text-xl hover:text-amber-700 transition-colors">{post.title}</CardTitle>
+                      <CardDescription className="flex items-center gap-4 text-sm">
+                        {post.publishedAt && (
+                          <span className="flex items-center gap-1">
+                            <Calendar className="h-4 w-4" />
+                            {format(new Date(post.publishedAt), "MMM d, yyyy")}
+                          </span>
+                        )}
+                        {post.author && (
+                          <span className="text-gray-500">by {post.author.name}</span>
+                        )}
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="flex-grow">
+                      <p className="text-gray-600 line-clamp-3">{post.excerpt || "Read more..."}</p>
+                    </CardContent>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          )}
         </div>
-      </section>
 
-      {/* CTA Section */}
-      <section className="py-20 bg-neutral-900 text-white">
-        <div className="container mx-auto px-6 text-center">
-          <h2 className="text-4xl font-bold mb-4">Ready to Start Your Journey?</h2>
-          <p className="text-neutral-300 mb-8 max-w-2xl mx-auto">
-            Join hundreds of parents choosing sustainable luxury for their little ones
-          </p>
-          <Link href="/catalog">
-            <span className="inline-block">
-              <Button size="lg" className="bg-white text-black hover:bg-neutral-100 text-lg px-12 py-6 rounded-full font-semibold">
-                Browse Collection
-              </Button>
-            </span>
+        {/* Back to Home */}
+        <div className="container mx-auto px-4 pb-12 text-center">
+          <Link href="/">
+            <span className="text-amber-700 hover:text-amber-900 font-medium">← Back to Home</span>
           </Link>
         </div>
-      </section>
-    </div>
+      </div>
+    </>
   );
 }
