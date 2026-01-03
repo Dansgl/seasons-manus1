@@ -1,4 +1,7 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
+import "dotenv/config";
+import { fetchRequestHandler } from "@trpc/server/adapters/fetch";
+import { appRouter } from "../server/routers";
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // Health check
@@ -7,13 +10,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return;
   }
 
+  // CORS preflight
+  if (req.method === "OPTIONS") {
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+    res.setHeader("Access-Control-Allow-Headers", "Authorization, Content-Type");
+    res.status(200).end();
+    return;
+  }
+
   // tRPC
   if (req.url?.includes("/api/trpc")) {
     try {
-      // Dynamic import to catch any errors
-      const { fetchRequestHandler } = await import("@trpc/server/adapters/fetch");
-      const { appRouter } = await import("../server/routers.js");
-
       const protocol = req.headers["x-forwarded-proto"] || "https";
       const host = req.headers.host || "localhost";
       const url = `${protocol}://${host}${req.url}`;
@@ -47,21 +55,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       const responseBody = await response.text();
       res.status(response.status).send(responseBody);
     } catch (error: any) {
-      console.error("Import/tRPC error:", error);
-      res.status(500).json({
-        error: error.message || "Internal server error",
-        stack: error.stack?.split("\n").slice(0, 5)
-      });
+      console.error("tRPC error:", error);
+      res.status(500).json({ error: error.message || "Internal server error" });
     }
-    return;
-  }
-
-  // CORS preflight
-  if (req.method === "OPTIONS") {
-    res.setHeader("Access-Control-Allow-Origin", "*");
-    res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-    res.setHeader("Access-Control-Allow-Headers", "Authorization, Content-Type");
-    res.status(200).end();
     return;
   }
 
