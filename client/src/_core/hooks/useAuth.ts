@@ -1,5 +1,6 @@
 import { supabase } from "@/lib/supabase";
-import { trpc } from "@/lib/trpc";
+import { getCurrentUser, ensureUser, type User } from "@/lib/supabase-db";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useEffect, useState } from "react";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
 
@@ -10,16 +11,26 @@ type UseAuthOptions = {
 
 export function useAuth(options?: UseAuthOptions) {
   const { redirectOnUnauthenticated = false, redirectPath = "/login" } = options ?? {};
-  const utils = trpc.useUtils();
+  const queryClient = useQueryClient();
 
   const [supabaseUser, setSupabaseUser] = useState<SupabaseUser | null>(null);
   const [loading, setLoading] = useState(true);
 
   // Get the user from our database (synced with Supabase auth)
-  const meQuery = trpc.auth.me.useQuery(undefined, {
+  const { data: dbUser, isLoading: userLoading, refetch } = useQuery({
+    queryKey: ["auth", "me"],
+    queryFn: async () => {
+      // First try to get existing user
+      let user = await getCurrentUser();
+      // If not found but we have a Supabase user, create one
+      if (!user && supabaseUser) {
+        user = await ensureUser();
+      }
+      return user;
+    },
+    enabled: !!supabaseUser,
     retry: false,
     refetchOnWindowFocus: false,
-    enabled: !!supabaseUser,
   });
 
   useEffect(() => {
@@ -36,11 +47,11 @@ export function useAuth(options?: UseAuthOptions) {
       setSupabaseUser(session?.user ?? null);
       setLoading(false);
       // Invalidate the me query when auth state changes
-      utils.auth.me.invalidate();
+      queryClient.invalidateQueries({ queryKey: ["auth", "me"] });
     });
 
     return () => subscription.unsubscribe();
-  }, [utils]);
+  }, [queryClient]);
 
   const signInWithEmail = useCallback(async (email: string, password: string) => {
     const { error } = await supabase.auth.signInWithPassword({ email, password });
@@ -71,9 +82,9 @@ export function useAuth(options?: UseAuthOptions) {
   const signOut = useCallback(async () => {
     const { error } = await supabase.auth.signOut();
     if (error) throw error;
-    utils.auth.me.setData(undefined, null);
-    await utils.auth.me.invalidate();
-  }, [utils]);
+    queryClient.setQueryData(["auth", "me"], null);
+    queryClient.invalidateQueries({ queryKey: ["auth", "me"] });
+  }, [queryClient]);
 
   const resetPassword = useCallback(async (email: string) => {
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
@@ -96,13 +107,13 @@ export function useAuth(options?: UseAuthOptions) {
 
   return {
     // Database user (has role, shipping info, etc)
-    user: meQuery.data ?? null,
+    user: dbUser ?? null,
     // Supabase auth user
     authUser: supabaseUser,
-    loading: loading || meQuery.isLoading,
-    error: meQuery.error ?? null,
+    loading: loading || userLoading,
+    error: null,
     isAuthenticated: !!supabaseUser,
-    refresh: () => meQuery.refetch(),
+    refresh: () => refetch(),
     signInWithEmail,
     signUpWithEmail,
     signInWithGoogle,
