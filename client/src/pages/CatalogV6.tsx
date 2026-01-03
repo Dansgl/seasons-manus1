@@ -3,9 +3,9 @@
  */
 
 import { useState, useMemo, useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { trpc } from "@/lib/trpc";
+import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { fetchProducts, fetchBrands, getProductImageUrl, type SanityProduct, type SanityBrand } from "@/lib/sanity";
+import { getAvailability, getCart, getCartCount, addToCart, removeFromCart } from "@/lib/supabase-db";
 import { Link, useSearch } from "wouter";
 import { Plus, Minus, Loader2, ShoppingBag, X, Filter, Check } from "lucide-react";
 import { toast } from "sonner";
@@ -57,37 +57,48 @@ export default function CatalogV6() {
   );
 
   // Fetch real-time availability from PostgreSQL
-  const { data: availability } = trpc.catalog.availability.useQuery(
-    { slugs: productSlugs },
-    { enabled: productSlugs.length > 0 }
-  );
+  const { data: availability } = useQuery({
+    queryKey: ["availability", productSlugs],
+    queryFn: () => getAvailability(productSlugs),
+    enabled: productSlugs.length > 0,
+  });
 
   // Cart state
-  const { data: cartSlugs } = trpc.cart.get.useQuery(undefined, {
+  const { data: cartSlugs } = useQuery({
+    queryKey: ["cart"],
+    queryFn: getCart,
     enabled: isAuthenticated,
   });
-  const { data: cartCount } = trpc.cart.count.useQuery(undefined, {
+  const { data: cartCount } = useQuery({
+    queryKey: ["cartCount"],
+    queryFn: getCartCount,
     enabled: isAuthenticated,
   });
 
-  const utils = trpc.useUtils();
+  const queryClient = useQueryClient();
 
-  const addToCart = trpc.cart.add.useMutation({
-    onSuccess: () => {
-      toast.success("Added to your box!");
-      utils.cart.get.invalidate();
-      utils.cart.count.invalidate();
+  const addToCartMutation = useMutation({
+    mutationFn: (slug: string) => addToCart(slug),
+    onSuccess: (result) => {
+      if (result.success) {
+        toast.success("Added to your box!");
+        queryClient.invalidateQueries({ queryKey: ["cart"] });
+        queryClient.invalidateQueries({ queryKey: ["cartCount"] });
+      } else {
+        toast.error(result.error || "Failed to add item");
+      }
     },
-    onError: (error) => {
-      toast.error(error.message);
+    onError: () => {
+      toast.error("Failed to add item");
     },
   });
 
-  const removeFromCart = trpc.cart.remove.useMutation({
+  const removeFromCartMutation = useMutation({
+    mutationFn: (slug: string) => removeFromCart(slug),
     onSuccess: () => {
       toast.success("Removed from your box");
-      utils.cart.get.invalidate();
-      utils.cart.count.invalidate();
+      queryClient.invalidateQueries({ queryKey: ["cart"] });
+      queryClient.invalidateQueries({ queryKey: ["cartCount"] });
     },
   });
 
@@ -127,7 +138,7 @@ export default function CatalogV6() {
     });
   }, [allProducts, selectedBrand, selectedCategory, selectedAgeRange, selectedSeason]);
 
-  const getAvailability = (slug: string) => availability?.[slug] ?? 0;
+  const getAvailabilityCount = (slug: string) => availability?.[slug] ?? 0;
   const isInCart = (slug: string) => cartSlugs?.includes(slug) ?? false;
   const canAddMore = (cartCount ?? 0) < 5;
 
@@ -136,11 +147,11 @@ export default function CatalogV6() {
       window.location.href = getLoginUrl();
       return;
     }
-    addToCart.mutate({ slug });
+    addToCartMutation.mutate(slug);
   };
 
   const handleRemoveFromCart = (slug: string) => {
-    removeFromCart.mutate({ slug });
+    removeFromCartMutation.mutate(slug);
   };
 
   const clearFilters = () => {
@@ -339,7 +350,7 @@ export default function CatalogV6() {
             ) : (
               <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
                 {products?.map((product) => {
-                  const availableCount = getAvailability(product.slug);
+                  const availableCount = getAvailabilityCount(product.slug);
                   const inCart = isInCart(product.slug);
                   const outOfStock = availableCount === 0;
                   const imageUrl = getProductImageUrl(product, { width: 400, height: 400 });
@@ -418,11 +429,11 @@ export default function CatalogV6() {
                         ) : (
                           <button
                             onClick={() => handleAddToCart(product.slug)}
-                            disabled={!canAddMore || outOfStock || addToCart.isPending}
+                            disabled={!canAddMore || outOfStock || addToCartMutation.isPending}
                             className="w-full flex items-center justify-center gap-1 px-4 py-2  text-sm font-medium text-white transition-colors hover:opacity-90 disabled:opacity-50"
                             style={{ backgroundColor: C.darkBrown }}
                           >
-                            {addToCart.isPending ? (
+                            {addToCartMutation.isPending ? (
                               <Loader2 className="w-4 h-4 animate-spin" />
                             ) : (
                               <>

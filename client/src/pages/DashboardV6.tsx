@@ -3,9 +3,9 @@
  */
 
 import { useMemo } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/_core/hooks/useAuth";
-import { trpc } from "@/lib/trpc";
+import { getSubscription, getCurrentBox, pauseSubscription, cancelSubscription } from "@/lib/supabase-db";
 import { fetchProducts, getProductImageUrl, type SanityProduct } from "@/lib/sanity";
 import { generateReturnLabel } from "@/lib/returnLabel";
 import { Link, useLocation } from "wouter";
@@ -18,11 +18,17 @@ export default function DashboardV6() {
   const { user, isAuthenticated, loading: authLoading } = useAuth();
   const [, setLocation] = useLocation();
 
-  const { data: subscription, isLoading: subLoading } = trpc.subscription.get.useQuery(undefined, {
+  const queryClient = useQueryClient();
+
+  const { data: subscription, isLoading: subLoading } = useQuery({
+    queryKey: ["subscription"],
+    queryFn: getSubscription,
     enabled: isAuthenticated,
   });
 
-  const { data: currentBox, isLoading: boxLoading } = trpc.box.current.useQuery(undefined, {
+  const { data: currentBox, isLoading: boxLoading } = useQuery({
+    queryKey: ["currentBox"],
+    queryFn: getCurrentBox,
     enabled: isAuthenticated,
   });
 
@@ -34,34 +40,41 @@ export default function DashboardV6() {
   const boxItemsWithProducts = useMemo(() => {
     if (!currentBox?.items || !allProducts) return [];
     return currentBox.items.map((item) => {
-      const sanityProduct = allProducts.find(p => p.slug === item.inventoryItem?.sanityProductSlug);
+      const sanityProduct = allProducts.find(p => p.slug === item.sanity_product_slug);
       return {
-        boxItem: item.boxItem,
-        inventoryItem: item.inventoryItem,
+        inventoryItem: item,
         sanityProduct,
       };
     });
   }, [currentBox, allProducts]);
 
-  const utils = trpc.useUtils();
-
-  const pauseSubscription = trpc.subscription.pause.useMutation({
-    onSuccess: () => {
-      toast.success("Subscription paused");
-      utils.subscription.get.invalidate();
+  const pauseSubscriptionMutation = useMutation({
+    mutationFn: pauseSubscription,
+    onSuccess: (result) => {
+      if (result.success) {
+        toast.success("Subscription paused");
+        queryClient.invalidateQueries({ queryKey: ["subscription"] });
+      } else {
+        toast.error(result.error || "Failed to pause subscription");
+      }
     },
-    onError: (error) => {
-      toast.error(error.message);
+    onError: () => {
+      toast.error("Failed to pause subscription");
     },
   });
 
-  const cancelSubscription = trpc.subscription.cancel.useMutation({
-    onSuccess: () => {
-      toast.success("Subscription cancelled");
-      utils.subscription.get.invalidate();
+  const cancelSubscriptionMutation = useMutation({
+    mutationFn: cancelSubscription,
+    onSuccess: (result) => {
+      if (result.success) {
+        toast.success("Subscription cancelled");
+        queryClient.invalidateQueries({ queryKey: ["subscription"] });
+      } else {
+        toast.error(result.error || "Failed to cancel subscription");
+      }
     },
-    onError: (error) => {
-      toast.error(error.message);
+    onError: () => {
+      toast.error("Failed to cancel subscription");
     },
   });
 
@@ -112,7 +125,7 @@ export default function DashboardV6() {
   }
 
   const today = new Date();
-  const cycleEnd = new Date(subscription.cycleEndDate);
+  const cycleEnd = new Date(subscription.cycle_end_date);
   const daysRemaining = Math.ceil((cycleEnd.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
   const swapWindowOpen = daysRemaining <= 10;
 
@@ -140,7 +153,7 @@ export default function DashboardV6() {
               </div>
               <p className="text-4xl font-light" style={{ color: C.darkBrown }}>{daysRemaining}</p>
               <p className="text-sm mt-1" style={{ color: C.textBrown }}>
-                Until {new Date(subscription.cycleEndDate).toLocaleDateString()}
+                Until {new Date(subscription.cycle_end_date).toLocaleDateString()}
               </p>
             </div>
 
@@ -152,7 +165,7 @@ export default function DashboardV6() {
               </div>
               <p className="text-4xl font-light" style={{ color: C.darkBrown }}>€70</p>
               <p className="text-sm mt-1" style={{ color: C.textBrown }}>
-                On {new Date(subscription.nextBillingDate).toLocaleDateString()}
+                On {new Date(subscription.next_billing_date).toLocaleDateString()}
               </p>
             </div>
 
@@ -214,13 +227,13 @@ export default function DashboardV6() {
             <h2 className="text-2xl mb-6" style={{ color: C.darkBrown }}>Current Wardrobe</h2>
             {boxItemsWithProducts.length > 0 ? (
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-                {boxItemsWithProducts.map((item) => {
+                {boxItemsWithProducts.map((item, index) => {
                   const imageUrl = item.sanityProduct
                     ? getProductImageUrl(item.sanityProduct, { width: 300, height: 300 })
                     : null;
                   return (
                     <Link
-                      key={item.boxItem.id}
+                      key={item.inventoryItem.id || index}
                       href={item.sanityProduct ? `/product/${item.sanityProduct.slug}` : "#"}
                     >
                       <div className="group">
@@ -260,7 +273,7 @@ export default function DashboardV6() {
             <div className=" p-6 mb-8" style={{ backgroundColor: C.white }}>
               <h3 className="font-semibold mb-4" style={{ color: C.darkBrown }}>Return Your Box</h3>
               <p className="text-sm mb-4" style={{ color: C.textBrown }}>
-                Return by: {new Date(currentBox.returnByDate).toLocaleDateString()}
+                Return by: {new Date(currentBox.return_by_date).toLocaleDateString()}
               </p>
               <button
                 onClick={() => {
@@ -269,7 +282,7 @@ export default function DashboardV6() {
                     customerAddress: user?.shippingAddress || "Address not provided",
                     boxId: currentBox.id,
                     subscriptionId: subscription.id,
-                    returnByDate: new Date(currentBox.returnByDate).toLocaleDateString(),
+                    returnByDate: new Date(currentBox.return_by_date).toLocaleDateString(),
                   });
                   toast.success("Return label downloaded!");
                 }}
@@ -291,27 +304,27 @@ export default function DashboardV6() {
             <div className="flex flex-wrap gap-3">
               {subscription.status === 'active' && (
                 <button
-                  onClick={() => pauseSubscription.mutate()}
-                  disabled={pauseSubscription.isPending}
+                  onClick={() => pauseSubscriptionMutation.mutate()}
+                  disabled={pauseSubscriptionMutation.isPending}
                   className="flex items-center gap-2 px-6 py-2  text-sm font-medium border-2 hover:opacity-70 transition-opacity disabled:opacity-50"
                   style={{ borderColor: C.darkBrown, color: C.darkBrown }}
                 >
-                  {pauseSubscription.isPending && <Loader2 className="w-4 h-4 animate-spin" />}
-                  {pauseSubscription.isPending ? "Pausing..." : "Pause Subscription"}
+                  {pauseSubscriptionMutation.isPending && <Loader2 className="w-4 h-4 animate-spin" />}
+                  {pauseSubscriptionMutation.isPending ? "Pausing..." : "Pause Subscription"}
                 </button>
               )}
               <button
                 onClick={() => {
                   if (confirm("Are you sure you want to cancel your subscription?")) {
-                    cancelSubscription.mutate();
+                    cancelSubscriptionMutation.mutate();
                   }
                 }}
-                disabled={cancelSubscription.isPending}
+                disabled={cancelSubscriptionMutation.isPending}
                 className="flex items-center gap-2 px-6 py-2  text-sm font-medium text-white hover:opacity-90 transition-opacity disabled:opacity-50"
                 style={{ backgroundColor: C.red }}
               >
-                {cancelSubscription.isPending && <Loader2 className="w-4 h-4 animate-spin" />}
-                {cancelSubscription.isPending ? "Cancelling..." : "Cancel Subscription"}
+                {cancelSubscriptionMutation.isPending && <Loader2 className="w-4 h-4 animate-spin" />}
+                {cancelSubscriptionMutation.isPending ? "Cancelling..." : "Cancel Subscription"}
               </button>
             </div>
           </div>

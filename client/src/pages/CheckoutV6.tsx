@@ -3,9 +3,9 @@
  */
 
 import { useState, useMemo } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/_core/hooks/useAuth";
-import { trpc } from "@/lib/trpc";
+import { getCart, getCartCount, createSubscription } from "@/lib/supabase-db";
 import { fetchProducts, urlFor, type SanityProduct } from "@/lib/sanity";
 import { Link, useLocation } from "wouter";
 import { Loader2, ShoppingBag, Check, Shield, Sparkles, Package } from "lucide-react";
@@ -19,9 +19,19 @@ export default function CheckoutV6() {
   const [phone, setPhone] = useState("");
   const [agreedToTerms, setAgreedToTerms] = useState(false);
 
-  // Get cart slugs from API
-  const { data: cartSlugs, isLoading: cartLoading } = trpc.cart.get.useQuery();
-  const { data: cartCount } = trpc.cart.count.useQuery();
+  const queryClient = useQueryClient();
+
+  // Get cart slugs from Supabase
+  const { data: cartSlugs, isLoading: cartLoading } = useQuery({
+    queryKey: ["cart"],
+    queryFn: getCart,
+    enabled: isAuthenticated,
+  });
+  const { data: cartCount } = useQuery({
+    queryKey: ["cartCount"],
+    queryFn: getCartCount,
+    enabled: isAuthenticated,
+  });
 
   // Fetch all products from Sanity to display cart items
   const { data: allProducts } = useQuery<SanityProduct[]>({
@@ -37,13 +47,21 @@ export default function CheckoutV6() {
       .filter((p): p is SanityProduct => p !== undefined);
   }, [cartSlugs, allProducts]);
 
-  const createSubscription = trpc.subscription.create.useMutation({
-    onSuccess: () => {
-      toast.success("Subscription created successfully!");
-      setLocation("/dashboard");
+  const createSubscriptionMutation = useMutation({
+    mutationFn: (data: { shippingAddress: string; phone?: string }) =>
+      createSubscription(data.shippingAddress, data.phone),
+    onSuccess: (result) => {
+      if (result.success) {
+        toast.success("Subscription created successfully!");
+        queryClient.invalidateQueries({ queryKey: ["cart"] });
+        queryClient.invalidateQueries({ queryKey: ["cartCount"] });
+        setLocation("/dashboard");
+      } else {
+        toast.error(result.error || "Failed to create subscription");
+      }
     },
-    onError: (error) => {
-      toast.error(error.message);
+    onError: () => {
+      toast.error("Failed to create subscription");
     },
   });
 
@@ -60,7 +78,7 @@ export default function CheckoutV6() {
       return;
     }
 
-    createSubscription.mutate({
+    createSubscriptionMutation.mutate({
       shippingAddress,
       phone: phone || undefined,
     });
@@ -257,11 +275,11 @@ export default function CheckoutV6() {
               {/* Submit Button */}
               <button
                 onClick={handleSubmit}
-                disabled={createSubscription.isPending || !agreedToTerms}
+                disabled={createSubscriptionMutation.isPending || !agreedToTerms}
                 className="w-full flex items-center justify-center gap-2 py-4  text-base font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-50"
                 style={{ backgroundColor: C.red }}
               >
-                {createSubscription.isPending ? (
+                {createSubscriptionMutation.isPending ? (
                   <>
                     <Loader2 className="w-5 h-5 animate-spin" />
                     Processing...

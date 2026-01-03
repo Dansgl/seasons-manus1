@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
+import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/_core/hooks/useAuth";
-import { trpc } from "@/lib/trpc";
+import { getCartCount } from "@/lib/supabase-db";
+import { supabase } from "@/lib/supabase";
 import { Badge } from "@/components/ui/badge";
 import {
   Sheet,
@@ -21,15 +23,16 @@ export default function Navigation({ showCartCount = false }: NavigationProps) {
   const { user, isAuthenticated } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const { data: cartCount } = trpc.cart.count.useQuery(undefined, {
+  const { data: cartCount } = useQuery({
+    queryKey: ["cartCount"],
+    queryFn: getCartCount,
     enabled: isAuthenticated && showCartCount,
   });
 
-  const logout = trpc.auth.logout.useMutation({
-    onSuccess: () => {
-      window.location.href = "/";
-    },
-  });
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    window.location.href = "/";
+  };
 
   const isActive = (path: string) => location === path;
 
@@ -137,7 +140,7 @@ export default function Navigation({ showCartCount = false }: NavigationProps) {
                       <button
                         onClick={() => {
                           setMobileMenuOpen(false);
-                          logout.mutate();
+                          handleLogout();
                         }}
                         className="flex items-center gap-2 py-3 px-4 text-sm text-[#4A2C2C] hover:text-[#E94E1B] w-full"
                       >
@@ -193,7 +196,7 @@ export default function Navigation({ showCartCount = false }: NavigationProps) {
             {/* Account Icon */}
             {isAuthenticated ? (
               <button
-                onClick={() => logout.mutate()}
+                onClick={handleLogout}
                 className="hidden md:flex p-2 text-[#4A2C2C] hover:text-[#E94E1B] transition-colors"
                 title="Sign Out"
               >

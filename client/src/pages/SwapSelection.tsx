@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { trpc } from "@/lib/trpc";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { getSubscription, getSwapItems, getSwapCount, addToSwap, removeFromSwap, confirmSwap, getAvailability } from "@/lib/supabase-db";
 import { fetchProducts, getProductImageUrl, urlFor, type SanityProduct } from "@/lib/sanity";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -15,17 +15,24 @@ import Navigation from "@/components/Navigation";
 export default function SwapSelection() {
   const { isAuthenticated, loading: authLoading } = useAuth();
   const [, setLocation] = useLocation();
+  const queryClient = useQueryClient();
 
   // Get subscription to check swap window
-  const { data: subscription, isLoading: subLoading } = trpc.subscription.get.useQuery(undefined, {
+  const { data: subscription, isLoading: subLoading } = useQuery({
+    queryKey: ["subscription"],
+    queryFn: getSubscription,
     enabled: isAuthenticated,
   });
 
   // Get current swap selections
-  const { data: swapSlugs } = trpc.swap.get.useQuery(undefined, {
+  const { data: swapSlugs } = useQuery({
+    queryKey: ["swapItems"],
+    queryFn: getSwapItems,
     enabled: isAuthenticated && !!subscription,
   });
-  const { data: swapCount } = trpc.swap.count.useQuery(undefined, {
+  const { data: swapCount } = useQuery({
+    queryKey: ["swapCount"],
+    queryFn: getSwapCount,
     enabled: isAuthenticated && !!subscription,
   });
 
@@ -42,39 +49,49 @@ export default function SwapSelection() {
   );
 
   // Fetch real-time availability from PostgreSQL
-  const { data: availability } = trpc.catalog.availability.useQuery(
-    { slugs: productSlugs },
-    { enabled: productSlugs.length > 0 }
-  );
+  const { data: availability } = useQuery({
+    queryKey: ["availability", productSlugs],
+    queryFn: () => getAvailability(productSlugs),
+    enabled: productSlugs.length > 0,
+  });
 
-  const utils = trpc.useUtils();
-
-  const addToSwap = trpc.swap.add.useMutation({
-    onSuccess: () => {
-      toast.success("Added to next box!");
-      utils.swap.get.invalidate();
-      utils.swap.count.invalidate();
+  const addToSwapMutation = useMutation({
+    mutationFn: (slug: string) => addToSwap(slug),
+    onSuccess: (result) => {
+      if (result.success) {
+        toast.success("Added to next box!");
+        queryClient.invalidateQueries({ queryKey: ["swapItems"] });
+        queryClient.invalidateQueries({ queryKey: ["swapCount"] });
+      } else {
+        toast.error(result.error || "Failed to add item");
+      }
     },
-    onError: (error) => {
-      toast.error(error.message);
+    onError: () => {
+      toast.error("Failed to add item");
     },
   });
 
-  const removeFromSwap = trpc.swap.remove.useMutation({
+  const removeFromSwapMutation = useMutation({
+    mutationFn: (slug: string) => removeFromSwap(slug),
     onSuccess: () => {
       toast.success("Removed from next box");
-      utils.swap.get.invalidate();
-      utils.swap.count.invalidate();
+      queryClient.invalidateQueries({ queryKey: ["swapItems"] });
+      queryClient.invalidateQueries({ queryKey: ["swapCount"] });
     },
   });
 
-  const confirmSwap = trpc.swap.confirm.useMutation({
-    onSuccess: () => {
-      toast.success("Next box confirmed! Your items will be shipped soon.");
-      setLocation("/dashboard");
+  const confirmSwapMutation = useMutation({
+    mutationFn: confirmSwap,
+    onSuccess: (result) => {
+      if (result.success) {
+        toast.success("Next box confirmed! Your items will be shipped soon.");
+        setLocation("/dashboard");
+      } else {
+        toast.error(result.error || "Failed to confirm swap");
+      }
     },
-    onError: (error) => {
-      toast.error(error.message);
+    onError: () => {
+      toast.error("Failed to confirm swap");
     },
   });
 
@@ -82,21 +99,21 @@ export default function SwapSelection() {
   const isSwapWindowOpen = useMemo(() => {
     if (!subscription) return false;
     const today = new Date();
-    const cycleEnd = new Date(subscription.cycleEndDate);
+    const cycleEnd = new Date(subscription.cycle_end_date);
     const daysRemaining = Math.ceil((cycleEnd.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
     return daysRemaining <= 10;
   }, [subscription]);
 
-  const getAvailability = (slug: string) => availability?.[slug] ?? 0;
+  const getAvailabilityCount = (slug: string) => availability?.[slug] ?? 0;
   const isInSwap = (slug: string) => swapSlugs?.includes(slug) ?? false;
   const canAddMore = (swapCount ?? 0) < 5;
 
   const handleAddToSwap = (slug: string) => {
-    addToSwap.mutate({ slug });
+    addToSwapMutation.mutate(slug);
   };
 
   const handleRemoveFromSwap = (slug: string) => {
-    removeFromSwap.mutate({ slug });
+    removeFromSwapMutation.mutate(slug);
   };
 
   const handleConfirmSwap = () => {
@@ -104,7 +121,7 @@ export default function SwapSelection() {
       toast.error("Please select exactly 5 items for your next box");
       return;
     }
-    confirmSwap.mutate();
+    confirmSwapMutation.mutate();
   };
 
   // Get selected products for summary
@@ -156,7 +173,7 @@ export default function SwapSelection() {
 
   // Swap window not open
   if (!isSwapWindowOpen) {
-    const cycleEnd = new Date(subscription.cycleEndDate);
+    const cycleEnd = new Date(subscription.cycle_end_date);
     const today = new Date();
     const daysRemaining = Math.ceil((cycleEnd.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
 
@@ -196,9 +213,9 @@ export default function SwapSelection() {
                 size="sm"
                 className="rounded-full"
                 onClick={handleConfirmSwap}
-                disabled={confirmSwap.isPending}
+                disabled={confirmSwapMutation.isPending}
               >
-                {confirmSwap.isPending ? (
+                {confirmSwapMutation.isPending ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                     Confirming...
@@ -273,7 +290,7 @@ export default function SwapSelection() {
         {/* Product Grid */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-6">
           {allProducts?.map((product) => {
-            const availableCount = getAvailability(product.slug);
+            const availableCount = getAvailabilityCount(product.slug);
             const inSwap = isInSwap(product.slug);
             const outOfStock = availableCount === 0;
 
@@ -343,10 +360,10 @@ export default function SwapSelection() {
                       <Button
                         size="sm"
                         className="w-full rounded-full"
-                        disabled={!canAddMore || outOfStock || addToSwap.isPending}
+                        disabled={!canAddMore || outOfStock || addToSwapMutation.isPending}
                         onClick={() => handleAddToSwap(product.slug)}
                       >
-                        {addToSwap.isPending ? (
+                        {addToSwapMutation.isPending ? (
                           <Loader2 className="w-4 h-4 animate-spin" />
                         ) : (
                           <>
@@ -371,9 +388,9 @@ export default function SwapSelection() {
             size="lg"
             className="w-full rounded-full"
             onClick={handleConfirmSwap}
-            disabled={confirmSwap.isPending}
+            disabled={confirmSwapMutation.isPending}
           >
-            {confirmSwap.isPending ? (
+            {confirmSwapMutation.isPending ? (
               <>
                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                 Confirming...

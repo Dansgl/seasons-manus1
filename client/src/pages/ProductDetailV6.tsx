@@ -4,9 +4,9 @@
 
 import { useState, useMemo, useCallback } from "react";
 import { useParams, Link } from "wouter";
-import { useQuery } from "@tanstack/react-query";
-import { trpc } from "@/lib/trpc";
+import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { fetchProductBySlug, urlFor, type SanityProduct } from "@/lib/sanity";
+import { getAvailability, getCart, getCartCount, addToCart, removeFromCart } from "@/lib/supabase-db";
 import {
   Carousel,
   CarouselContent,
@@ -96,38 +96,49 @@ export default function ProductDetailV6() {
   };
 
   // Fetch availability
-  const { data: availability } = trpc.catalog.availability.useQuery(
-    { slugs: [slug] },
-    { enabled: !!slug }
-  );
+  const { data: availability } = useQuery({
+    queryKey: ["availability", slug],
+    queryFn: () => getAvailability([slug]),
+    enabled: !!slug,
+  });
   const availableCount = availability?.[slug] ?? 0;
 
   // Cart state
-  const { data: cartCount } = trpc.cart.count.useQuery(undefined, {
+  const { data: cartCount } = useQuery({
+    queryKey: ["cartCount"],
+    queryFn: getCartCount,
     enabled: isAuthenticated,
   });
-  const { data: cartSlugs } = trpc.cart.get.useQuery(undefined, {
+  const { data: cartSlugs } = useQuery({
+    queryKey: ["cart"],
+    queryFn: getCart,
     enabled: isAuthenticated,
   });
 
-  const utils = trpc.useUtils();
+  const queryClient = useQueryClient();
 
-  const addToCart = trpc.cart.add.useMutation({
-    onSuccess: () => {
-      toast.success("Added to your box!");
-      utils.cart.get.invalidate();
-      utils.cart.count.invalidate();
+  const addToCartMutation = useMutation({
+    mutationFn: (productSlug: string) => addToCart(productSlug),
+    onSuccess: (result) => {
+      if (result.success) {
+        toast.success("Added to your box!");
+        queryClient.invalidateQueries({ queryKey: ["cart"] });
+        queryClient.invalidateQueries({ queryKey: ["cartCount"] });
+      } else {
+        toast.error(result.error || "Failed to add item");
+      }
     },
-    onError: (error) => {
-      toast.error(error.message);
+    onError: () => {
+      toast.error("Failed to add item");
     },
   });
 
-  const removeFromCart = trpc.cart.remove.useMutation({
+  const removeFromCartMutation = useMutation({
+    mutationFn: (productSlug: string) => removeFromCart(productSlug),
     onSuccess: () => {
       toast.success("Removed from your box");
-      utils.cart.get.invalidate();
-      utils.cart.count.invalidate();
+      queryClient.invalidateQueries({ queryKey: ["cart"] });
+      queryClient.invalidateQueries({ queryKey: ["cartCount"] });
     },
   });
 
@@ -137,13 +148,13 @@ export default function ProductDetailV6() {
       return;
     }
     if (product) {
-      addToCart.mutate({ slug: product.slug });
+      addToCartMutation.mutate(product.slug);
     }
   };
 
   const handleRemoveFromCart = () => {
     if (product) {
-      removeFromCart.mutate({ slug: product.slug });
+      removeFromCartMutation.mutate(product.slug);
     }
   };
 
@@ -378,23 +389,23 @@ export default function ProductDetailV6() {
               {isInCart ? (
                 <button
                   onClick={handleRemoveFromCart}
-                  disabled={removeFromCart.isPending}
+                  disabled={removeFromCartMutation.isPending}
                   className="w-full flex items-center justify-center gap-2 px-6 py-4  text-base font-medium border-2 transition-colors hover:opacity-70 disabled:opacity-50"
                   style={{ borderColor: C.darkBrown, color: C.darkBrown }}
                 >
-                  {removeFromCart.isPending && <Loader2 className="w-4 h-4 animate-spin" />}
+                  {removeFromCartMutation.isPending && <Loader2 className="w-4 h-4 animate-spin" />}
                   <Minus className="w-4 h-4" />
                   Remove from Box
                 </button>
               ) : (
                 <button
                   onClick={handleAddToCart}
-                  disabled={!canAddMore || outOfStock || addToCart.isPending}
+                  disabled={!canAddMore || outOfStock || addToCartMutation.isPending}
                   className="w-full flex items-center justify-center gap-2 px-6 py-4  text-base font-medium text-white transition-colors hover:opacity-90 disabled:opacity-50"
                   style={{ backgroundColor: outOfStock ? C.textBrown : C.red }}
                 >
-                  {addToCart.isPending && <Loader2 className="w-4 h-4 animate-spin" />}
-                  {!addToCart.isPending && <Plus className="w-4 h-4" />}
+                  {addToCartMutation.isPending && <Loader2 className="w-4 h-4 animate-spin" />}
+                  {!addToCartMutation.isPending && <Plus className="w-4 h-4" />}
                   {outOfStock
                     ? "Out of Stock"
                     : !canAddMore
