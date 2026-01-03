@@ -108,3 +108,4 @@ temp/
 PRE-LAUNCH-CHECKLIST.md
 .vercel
 api/handler.ts
+.env.production
