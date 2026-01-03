@@ -306,7 +306,13 @@ var _client = null;
 async function getDb() {
   if (!_db && process.env.DATABASE_URL) {
     try {
-      _client = postgres(process.env.DATABASE_URL);
+      _client = postgres(process.env.DATABASE_URL, {
+        ssl: "require",
+        max: 1,
+        // Serverless: limit connections
+        idle_timeout: 20,
+        connect_timeout: 10
+      });
       _db = drizzle(_client);
     } catch (error) {
       console.warn("[Database] Failed to connect:", error);
