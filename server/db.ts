@@ -37,6 +37,7 @@ export async function getDb() {
         max: 1, // Serverless: limit connections
         idle_timeout: 20,
         connect_timeout: 10,
+        prepare: false, // Disable prepared statements for pooler compatibility
       });
       _db = drizzle(_client);
     } catch (error) {
