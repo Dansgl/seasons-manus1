@@ -3,9 +3,10 @@
   "buildCommand": "pnpm run build:frontend",
   "outputDirectory": "dist/public",
   "functions": {
-    "api/index.ts": {
+    "api/index.js": {
       "memory": 1024,
-      "maxDuration": 30
+      "maxDuration": 30,
+      "runtime": "nodejs20.x"
     }
   },
   "rewrites": [
