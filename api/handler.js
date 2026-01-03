@@ -738,7 +738,13 @@ var appRouter = router({
         season: z2.string().optional()
       }).optional()
     ).query(async ({ input }) => {
-      const allProducts = await getAllProducts();
+      let allProducts;
+      try {
+        allProducts = await getAllProducts();
+      } catch (e) {
+        console.error("getAllProducts error:", e);
+        throw new Error(`DB Error: ${e.message || e}`);
+      }
       const productsWithAvailability = await Promise.all(
         allProducts.map(async (product) => {
           const availableCount = product.slug ? await getAvailableInventoryCount(product.slug) : 0;

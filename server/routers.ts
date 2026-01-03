@@ -42,7 +42,13 @@ export const appRouter = router({
           .optional()
       )
       .query(async ({ input }) => {
-        const allProducts = await db.getAllProducts();
+        let allProducts;
+        try {
+          allProducts = await db.getAllProducts();
+        } catch (e: any) {
+          console.error("getAllProducts error:", e);
+          throw new Error(`DB Error: ${e.message || e}`);
+        }
 
         // Get availability counts for each product by slug
         const productsWithAvailability = await Promise.all(
