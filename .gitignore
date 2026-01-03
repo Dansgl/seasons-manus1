@@ -107,3 +107,4 @@ temp/
 *.sqlite3
 PRE-LAUNCH-CHECKLIST.md
 .vercel
+api/handler.ts
