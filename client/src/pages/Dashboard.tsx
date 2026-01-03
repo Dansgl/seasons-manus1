@@ -44,16 +44,6 @@ export default function Dashboard() {
     });
   }, [currentBox, allProducts]);
 
-  const pauseSubscription = trpc.subscription.pause.useMutation({
-    onSuccess: () => {
-      toast.success("Subscription paused");
-      utils.subscription.get.invalidate();
-    },
-    onError: (error) => {
-      toast.error(error.message);
-    },
-  });
-
   const cancelSubscription = trpc.subscription.cancel.useMutation({
     onSuccess: () => {
       toast.success("Subscription cancelled");
@@ -279,22 +269,6 @@ export default function Dashboard() {
         <Card className="p-6">
           <h3 className="font-medium text-neutral-900 mb-4">Manage Subscription</h3>
           <div className="flex gap-3">
-            {subscription.status === 'active' && (
-              <Button
-                variant="outline"
-                onClick={() => pauseSubscription.mutate()}
-                disabled={pauseSubscription.isPending}
-              >
-                {pauseSubscription.isPending ? (
-                  <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Pausing...
-                  </>
-                ) : (
-                  "Pause Subscription"
-                )}
-              </Button>
-            )}
             <Button
               variant="destructive"
               onClick={() => {

@@ -32,7 +32,8 @@ import {
   type SanityPost,
   type SanitySettings,
 } from "@/lib/sanity";
-import { Search, User, ShoppingBag, Plus, Facebook, Instagram, ArrowRight, Sparkles, Shield, Truck, Leaf, Clock } from "lucide-react";
+import { User, ShoppingBag, Plus, Facebook, Instagram, ArrowRight, Sparkles, Shield, Truck, Leaf, Clock } from "lucide-react";
+import { FAQSection, Header as V6Header } from "@/components/v6";
 import { format } from "date-fns";
 
 // Fallback images
@@ -174,19 +175,48 @@ function BenefitsBar() {
     "Flexible Swaps",
   ];
 
+  // Create items with sparkle separators
+  const items = benefits.flatMap((label, i) => [
+    { type: 'sparkle', key: `sparkle-${i}` },
+    { type: 'text', label, key: `text-${i}` }
+  ]);
+
   return (
     <section className="py-4 overflow-hidden" style={{ backgroundColor: C.darkBrown }}>
-      <div className="flex animate-marquee whitespace-nowrap">
-        {/* Duplicate for seamless loop */}
-        {[...benefits, ...benefits, ...benefits].map((label, i) => (
-          <div key={i} className="flex items-center">
-            <Sparkles className="w-3 h-3 mx-4" style={{ color: C.lavender }} />
-            <span className="text-xs font-medium uppercase tracking-wider text-white">
-              {label}
-            </span>
+      <div
+        className="flex whitespace-nowrap"
+        style={{
+          animation: 'marquee 25s linear infinite',
+        }}
+      >
+        {/* Triple duplicate for seamless loop */}
+        {[0, 1, 2].map(setIndex => (
+          <div key={setIndex} className="flex items-center flex-shrink-0">
+            {items.map((item) => (
+              item.type === 'sparkle' ? (
+                <Sparkles
+                  key={`${setIndex}-${item.key}`}
+                  className="w-4 h-4 mx-6 flex-shrink-0"
+                  style={{ color: C.lavender }}
+                />
+              ) : (
+                <span
+                  key={`${setIndex}-${item.key}`}
+                  className="text-sm font-medium uppercase tracking-wider text-white flex-shrink-0"
+                >
+                  {item.label}
+                </span>
+              )
+            ))}
           </div>
         ))}
       </div>
+      <style>{`
+        @keyframes marquee {
+          0% { transform: translateX(0); }
+          100% { transform: translateX(-33.333%); }
+        }
+      `}</style>
     </section>
   );
 }
@@ -377,9 +407,9 @@ function Collections() {
   // Get first 3 brands
   const displayBrands = brands?.slice(0, 3) || [];
 
-  // Alternating background colors - green, navy, red (red on right to separate from navy newsletter)
-  const bgColors = [C.green, C.navy, C.red];
-  const textColors = [C.white, C.white, C.white];
+  // Alternating background colors - green, lavender (for Studio Koter), red
+  const bgColors = [C.green, C.lavender, C.red];
+  const textColors = [C.white, C.darkBrown, C.white];
 
   return (
     <section>
@@ -715,7 +745,7 @@ export default function HomeV6() {
 
   return (
     <div className="min-h-screen bg-white">
-      <Header />
+      <V6Header />
       <main>
         <HeroSection heroImage={heroImage || undefined} />
         <BenefitsBar />
@@ -725,6 +755,7 @@ export default function HomeV6() {
         <Collections />
         <Newsletter />
         <BlogPreview />
+        <FAQSection />
       </main>
       <Footer />
     </div>

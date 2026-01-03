@@ -1,6 +1,7 @@
 import { useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/_core/hooks/useAuth";
-import { trpc } from "@/lib/trpc";
+import { getAllInventory, getInventoryStats, getAllSubscriptions, updateInventoryState } from "@/lib/supabase-db";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -20,51 +21,48 @@ import { toast } from "sonner";
 
 export default function AdminPanel() {
   const { user, isAuthenticated, loading: authLoading } = useAuth();
+  const queryClient = useQueryClient();
   const [selectedItem, setSelectedItem] = useState<number | null>(null);
   const [newState, setNewState] = useState<string>("");
   const [notes, setNotes] = useState("");
-  const [retirementReason, setRetirementReason] = useState("");
 
-  const { data: inventory, isLoading: invLoading } = trpc.admin.inventory.list.useQuery(undefined, {
+  const { data: inventory, isLoading: invLoading } = useQuery({
+    queryKey: ["admin", "inventory"],
+    queryFn: getAllInventory,
     enabled: isAuthenticated && user?.role === 'admin',
   });
 
-  const { data: stats, isLoading: statsLoading } = trpc.admin.inventory.stats.useQuery(undefined, {
+  const { data: stats, isLoading: statsLoading } = useQuery({
+    queryKey: ["admin", "stats"],
+    queryFn: getInventoryStats,
     enabled: isAuthenticated && user?.role === 'admin',
   });
 
-  const { data: subscriptions, isLoading: subsLoading } = trpc.admin.subscriptions.list.useQuery(undefined, {
+  const { data: subscriptions, isLoading: subsLoading } = useQuery({
+    queryKey: ["admin", "subscriptions"],
+    queryFn: getAllSubscriptions,
     enabled: isAuthenticated && user?.role === 'admin',
   });
 
-  const updateState = trpc.admin.inventory.updateState.useMutation({
-    onSuccess: () => {
-      toast.success("Inventory item updated");
-      utils.admin.inventory.list.invalidate();
-      utils.admin.inventory.stats.invalidate();
-      setSelectedItem(null);
-      setNewState("");
-      setNotes("");
+  const updateStateMutation = useMutation({
+    mutationFn: ({ itemId, state, notes }: { itemId: number; state: any; notes?: string }) =>
+      updateInventoryState(itemId, state, notes),
+    onSuccess: (result) => {
+      if (result.success) {
+        toast.success("Inventory item updated");
+        queryClient.invalidateQueries({ queryKey: ["admin", "inventory"] });
+        queryClient.invalidateQueries({ queryKey: ["admin", "stats"] });
+        setSelectedItem(null);
+        setNewState("");
+        setNotes("");
+      } else {
+        toast.error(result.error || "Failed to update");
+      }
     },
-    onError: (error) => {
-      toast.error(error.message);
-    },
-  });
-
-  const retireItem = trpc.admin.inventory.retire.useMutation({
-    onSuccess: () => {
-      toast.success("Item retired");
-      utils.admin.inventory.list.invalidate();
-      utils.admin.inventory.stats.invalidate();
-      setSelectedItem(null);
-      setRetirementReason("");
-    },
-    onError: (error) => {
-      toast.error(error.message);
+    onError: () => {
+      toast.error("Failed to update item");
     },
   });
-
-  const utils = trpc.useUtils();
 
   if (authLoading || !isAuthenticated) {
     return (
@@ -94,21 +92,10 @@ export default function AdminPanel() {
       toast.error("Please select an item and state");
       return;
     }
-    updateState.mutate({
+    updateStateMutation.mutate({
       itemId: selectedItem,
       state: newState as any,
       notes: notes || undefined,
-    });
-  };
-
-  const handleRetire = () => {
-    if (!selectedItem || !retirementReason) {
-      toast.error("Please select an item and provide a reason");
-      return;
-    }
-    retireItem.mutate({
-      itemId: selectedItem,
-      reason: retirementReason,
     });
   };
 
@@ -189,35 +176,6 @@ export default function AdminPanel() {
           </div>
         )}
 
-        {/* Add New Item Form */}
-        <Card className="p-6 mb-8">
-          <h2 className="text-xl font-medium text-neutral-900 mb-4">Add New Inventory Item</h2>
-          <div className="grid md:grid-cols-2 gap-6">
-            <div>
-              <Label htmlFor="product-select">Select Product</Label>
-              <Select>
-                <SelectTrigger id="product-select">
-                  <SelectValue placeholder="Choose a product" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="new">+ Create New Product</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <Label htmlFor="sku">SKU</Label>
-              <Input id="sku" placeholder="e.g., SK-001-0-3M" />
-            </div>
-            <div className="md:col-span-2">
-              <Label htmlFor="condition">Condition Notes</Label>
-              <Textarea id="condition" placeholder="Item condition details..." />
-            </div>
-            <div className="md:col-span-2">
-              <Button className="w-full">Add to Inventory</Button>
-            </div>
-          </div>
-        </Card>
-
         <div className="grid md:grid-cols-3 gap-8">
           {/* Inventory Table */}
           <div className="md:col-span-2">
@@ -234,7 +192,6 @@ export default function AdminPanel() {
                       <tr className="border-b border-neutral-200">
                         <th className="text-left py-3 px-2 font-medium text-neutral-900">SKU</th>
                         <th className="text-left py-3 px-2 font-medium text-neutral-900">Product</th>
-                        <th className="text-left py-3 px-2 font-medium text-neutral-900">Brand</th>
                         <th className="text-left py-3 px-2 font-medium text-neutral-900">State</th>
                         <th className="text-left py-3 px-2 font-medium text-neutral-900">Action</th>
                       </tr>
@@ -243,8 +200,7 @@ export default function AdminPanel() {
                       {inventory?.map((item) => (
                         <tr key={item.id} className="border-b border-neutral-100 hover:bg-neutral-50">
                           <td className="py-3 px-2 text-neutral-700">{item.sku}</td>
-                          <td className="py-3 px-2 text-neutral-900">{item.sanityProductSlug}</td>
-                          <td className="py-3 px-2 text-neutral-700">-</td>
+                          <td className="py-3 px-2 text-neutral-900">{item.sanity_product_slug}</td>
                           <td className="py-3 px-2">
                             <Badge
                               className={
@@ -289,21 +245,21 @@ export default function AdminPanel() {
               ) : (
                 <div className="space-y-3">
                   {subscriptions?.map((sub) => (
-                    <div key={sub.subscription.id} className="flex items-center justify-between p-3 bg-neutral-50 rounded-lg">
+                    <div key={sub.id} className="flex items-center justify-between p-3 bg-neutral-50 rounded-lg">
                       <div>
-                        <div className="font-medium text-neutral-900">{sub.user?.name}</div>
-                        <div className="text-sm text-neutral-600">{sub.user?.email}</div>
+                        <div className="font-medium text-neutral-900">{sub.user?.name || 'Unknown'}</div>
+                        <div className="text-sm text-neutral-600">{sub.user?.email || 'No email'}</div>
                       </div>
                       <Badge
                         className={
-                          sub.subscription.status === 'active'
+                          sub.status === 'active'
                             ? 'bg-green-100 text-green-800'
-                            : sub.subscription.status === 'paused'
+                            : sub.status === 'paused'
                             ? 'bg-amber-100 text-amber-800'
                             : 'bg-neutral-100 text-neutral-800'
                         }
                       >
-                        {sub.subscription.status}
+                        {sub.status}
                       </Badge>
                     </div>
                   ))}
@@ -359,9 +315,9 @@ export default function AdminPanel() {
                   <Button
                     className="w-full"
                     onClick={handleUpdateState}
-                    disabled={updateState.isPending}
+                    disabled={updateStateMutation.isPending}
                   >
-                    {updateState.isPending ? (
+                    {updateStateMutation.isPending ? (
                       <>
                         <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                         Updating...
@@ -371,34 +327,6 @@ export default function AdminPanel() {
                     )}
                   </Button>
 
-                  <div className="border-t border-neutral-200 pt-4 mt-4">
-                    <h3 className="font-medium text-neutral-900 mb-3">Retire Item</h3>
-                    <div>
-                      <Label>Retirement Reason</Label>
-                      <Textarea
-                        value={retirementReason}
-                        onChange={(e) => setRetirementReason(e.target.value)}
-                        placeholder="Describe damage or reason for retirement"
-                        rows={3}
-                      />
-                    </div>
-                    <Button
-                      variant="destructive"
-                      className="w-full mt-3"
-                      onClick={handleRetire}
-                      disabled={retireItem.isPending}
-                    >
-                      {retireItem.isPending ? (
-                        <>
-                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                          Retiring...
-                        </>
-                      ) : (
-                        "Retire Item"
-                      )}
-                    </Button>
-                  </div>
-
                   <Button
                     variant="outline"
                     className="w-full"
@@ -406,7 +334,6 @@ export default function AdminPanel() {
                       setSelectedItem(null);
                       setNewState("");
                       setNotes("");
-                      setRetirementReason("");
                     }}
                   >
                     Cancel

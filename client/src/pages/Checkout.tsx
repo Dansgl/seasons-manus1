@@ -196,7 +196,7 @@ export default function Checkout() {
                   </li>
                   <li className="flex items-start">
                     <span className="mr-2">•</span>
-                    <span>You can pause or cancel your subscription at any time</span>
+                    <span>You can cancel your subscription at any time</span>
                   </li>
                 </ul>
 

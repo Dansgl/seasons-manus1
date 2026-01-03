@@ -1,7 +1,9 @@
 import { Link } from "wouter";
-import { Search, User, ShoppingBag, Menu, X } from "lucide-react";
+import { User, ShoppingBag, Menu, X } from "lucide-react";
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { V6_COLORS as C } from "./colors";
+import { getCartCount } from "@/lib/supabase-db";
 
 interface HeaderProps {
   announcement?: string;
@@ -9,6 +11,12 @@ interface HeaderProps {
 
 export function Header({ announcement }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  // Get cart count
+  const { data: cartCount } = useQuery({
+    queryKey: ["cartCount"],
+    queryFn: getCartCount,
+  });
 
   return (
     <header className="sticky top-0 bg-white z-50">
@@ -42,7 +50,7 @@ export function Header({ announcement }: HeaderProps) {
                 className="hover:opacity-70 transition-colors text-sm"
                 style={{ color: C.textBrown }}
               >
-                Rent
+                All Products
               </Link>
               <Link
                 href="/brands"
@@ -74,14 +82,19 @@ export function Header({ announcement }: HeaderProps) {
 
             {/* Right Icons */}
             <div className="flex items-center gap-4 flex-shrink-0">
-              <button className="hidden md:block hover:opacity-70 transition-colors" style={{ color: C.textBrown }}>
-                <Search className="w-5 h-5" />
-              </button>
               <Link href="/dashboard" className="hover:opacity-70 transition-colors" style={{ color: C.textBrown }}>
                 <User className="w-5 h-5" />
               </Link>
-              <Link href="/catalog" className="hover:opacity-70 transition-colors" style={{ color: C.textBrown }}>
+              <Link href="/catalog" className="relative hover:opacity-70 transition-colors" style={{ color: C.textBrown }}>
                 <ShoppingBag className="w-5 h-5" />
+                {cartCount !== undefined && cartCount > 0 && (
+                  <span
+                    className="absolute -top-2 -right-2 w-5 h-5 flex items-center justify-center text-xs font-bold text-white"
+                    style={{ backgroundColor: C.red }}
+                  >
+                    {cartCount}
+                  </span>
+                )}
               </Link>
             </div>
           </div>
@@ -97,7 +110,7 @@ export function Header({ announcement }: HeaderProps) {
                 style={{ color: C.textBrown }}
                 onClick={() => setMobileMenuOpen(false)}
               >
-                Rent
+                All Products
               </Link>
               <Link
                 href="/brands"

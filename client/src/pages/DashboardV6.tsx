@@ -5,17 +5,17 @@
 import { useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/_core/hooks/useAuth";
-import { getSubscription, getCurrentBox, pauseSubscription, cancelSubscription } from "@/lib/supabase-db";
+import { getSubscription, getCurrentBox, cancelSubscription } from "@/lib/supabase-db";
 import { fetchProducts, getProductImageUrl, type SanityProduct } from "@/lib/sanity";
 import { generateReturnLabel } from "@/lib/returnLabel";
 import { Link, useLocation } from "wouter";
-import { Loader2, ShoppingBag, Calendar, Package, Download, ArrowRight } from "lucide-react";
+import { Loader2, ShoppingBag, Calendar, Package, Download, ArrowRight, LogOut } from "lucide-react";
 import { toast } from "sonner";
 import { getLoginUrl } from "@/const";
 import { Header, Footer, V6_COLORS as C } from "@/components/v6";
 
 export default function DashboardV6() {
-  const { user, isAuthenticated, loading: authLoading } = useAuth();
+  const { user, isAuthenticated, loading: authLoading, signOut } = useAuth();
   const [, setLocation] = useLocation();
 
   const queryClient = useQueryClient();
@@ -47,21 +47,6 @@ export default function DashboardV6() {
       };
     });
   }, [currentBox, allProducts]);
-
-  const pauseSubscriptionMutation = useMutation({
-    mutationFn: pauseSubscription,
-    onSuccess: (result) => {
-      if (result.success) {
-        toast.success("Subscription paused");
-        queryClient.invalidateQueries({ queryKey: ["subscription"] });
-      } else {
-        toast.error(result.error || "Failed to pause subscription");
-      }
-    },
-    onError: () => {
-      toast.error("Failed to pause subscription");
-    },
-  });
 
   const cancelSubscriptionMutation = useMutation({
     mutationFn: cancelSubscription,
@@ -136,11 +121,24 @@ export default function DashboardV6() {
       <main className="flex-1">
         <div className="max-w-7xl mx-auto px-6 py-8 md:py-12">
           {/* Welcome */}
-          <div className="mb-8">
-            <h1 className="text-3xl md:text-4xl mb-2" style={{ color: C.darkBrown }}>
-              Welcome back, {user?.name}
-            </h1>
-            <p style={{ color: C.textBrown }}>Manage your subscription and wardrobe</p>
+          <div className="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div>
+              <h1 className="text-3xl md:text-4xl mb-2" style={{ color: C.darkBrown }}>
+                Welcome back, {user?.name}
+              </h1>
+              <p style={{ color: C.textBrown }}>Manage your subscription and wardrobe</p>
+            </div>
+            <button
+              onClick={async () => {
+                await signOut();
+                setLocation("/");
+              }}
+              className="flex items-center gap-2 px-4 py-2 text-sm font-medium border-2 hover:opacity-70 transition-opacity self-start md:self-auto"
+              style={{ borderColor: C.textBrown, color: C.textBrown }}
+            >
+              <LogOut className="w-4 h-4" />
+              Sign Out
+            </button>
           </div>
 
           {/* Stats Grid */}
@@ -237,7 +235,7 @@ export default function DashboardV6() {
                       href={item.sanityProduct ? `/product/${item.sanityProduct.slug}` : "#"}
                     >
                       <div className="group">
-                        <div className="aspect-square  overflow-hidden mb-3 bg-white">
+                        <div className="aspect-square overflow-hidden mb-3" style={{ backgroundColor: '#f5f5f0' }}>
                           {imageUrl ? (
                             <img
                               src={imageUrl}
@@ -302,26 +300,15 @@ export default function DashboardV6() {
           <div className=" p-6" style={{ backgroundColor: C.white }}>
             <h3 className="font-semibold mb-4" style={{ color: C.darkBrown }}>Manage Subscription</h3>
             <div className="flex flex-wrap gap-3">
-              {subscription.status === 'active' && (
-                <button
-                  onClick={() => pauseSubscriptionMutation.mutate()}
-                  disabled={pauseSubscriptionMutation.isPending}
-                  className="flex items-center gap-2 px-6 py-2  text-sm font-medium border-2 hover:opacity-70 transition-opacity disabled:opacity-50"
-                  style={{ borderColor: C.darkBrown, color: C.darkBrown }}
-                >
-                  {pauseSubscriptionMutation.isPending && <Loader2 className="w-4 h-4 animate-spin" />}
-                  {pauseSubscriptionMutation.isPending ? "Pausing..." : "Pause Subscription"}
-                </button>
-              )}
               <button
                 onClick={() => {
-                  if (confirm("Are you sure you want to cancel your subscription?")) {
+                  if (confirm("Are you sure you want to cancel your subscription? You'll need to return your current items.")) {
                     cancelSubscriptionMutation.mutate();
                   }
                 }}
                 disabled={cancelSubscriptionMutation.isPending}
-                className="flex items-center gap-2 px-6 py-2  text-sm font-medium text-white hover:opacity-90 transition-opacity disabled:opacity-50"
-                style={{ backgroundColor: C.red }}
+                className="flex items-center gap-2 px-6 py-2 text-sm font-medium border-2 hover:opacity-70 transition-opacity disabled:opacity-50"
+                style={{ borderColor: C.darkBrown, color: C.darkBrown }}
               >
                 {cancelSubscriptionMutation.isPending && <Loader2 className="w-4 h-4 animate-spin" />}
                 {cancelSubscriptionMutation.isPending ? "Cancelling..." : "Cancel Subscription"}

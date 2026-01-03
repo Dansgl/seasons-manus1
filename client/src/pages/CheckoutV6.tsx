@@ -245,7 +245,7 @@ export default function CheckoutV6() {
                     </li>
                     <li className="flex items-start">
                       <span className="mr-3" style={{ color: C.red }}>•</span>
-                      <span>You can pause or cancel your subscription at any time</span>
+                      <span>You can cancel your subscription at any time</span>
                     </li>
                   </ul>
 

@@ -58,7 +58,7 @@ export function getProductImageUrl(
 
   // Prefer Sanity uploaded image
   if (product.mainImage) {
-    return urlFor(product.mainImage).width(width).height(height).auto("format").url();
+    return urlFor(product.mainImage).width(width).height(height).fit("crop").auto("format").url();
   }
 
   // Fall back to external URL (Unsplash)

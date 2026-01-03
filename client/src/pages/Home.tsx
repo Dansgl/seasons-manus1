@@ -130,8 +130,8 @@ export default function Home() {
       answer: "Every returned item goes through a 5-day Ozone treatment process, providing medical-grade sanitation without harsh chemicals."
     },
     {
-      question: "Can I pause my subscription?",
-      answer: "Yes! Pause anytime from your dashboard. Resume when you're ready."
+      question: "Can I cancel my subscription?",
+      answer: "Yes! Cancel anytime from your dashboard. Just return your current items and you're all set."
     },
     {
       question: "What brands do you carry?",

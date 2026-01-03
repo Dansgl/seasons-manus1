@@ -23,6 +23,10 @@ import BlogPostV6 from "./pages/BlogPostV6";
 // Other pages
 import SwapSelection from "./pages/SwapSelection";
 import AdminPanel from "./pages/AdminPanel";
+import About from "./pages/About";
+import Contact from "./pages/Contact";
+import HowItWorks from "./pages/HowItWorks";
+import FAQ from "./pages/FAQ";
 
 function Router() {
   return (
@@ -40,6 +44,10 @@ function Router() {
       {/* Other pages */}
       <Route path={"/swap-selection"} component={SwapSelection} />
       <Route path={"/admin"} component={AdminPanel} />
+      <Route path={"/about"} component={About} />
+      <Route path={"/contact"} component={Contact} />
+      <Route path={"/how-it-works"} component={HowItWorks} />
+      <Route path={"/faq"} component={FAQ} />
       {/* Home version history */}
       <Route path={"/v1"} component={HomeV1} />
       <Route path={"/v2"} component={HomeV2} />

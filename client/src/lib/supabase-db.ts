@@ -412,21 +412,17 @@ export async function createSubscription(
   return { success: true, subscriptionId: subscription.id, boxId: box.id };
 }
 
-/**
- * Pause subscription
- */
-export async function pauseSubscription(): Promise<{ success: boolean; error?: string }> {
-  const subscription = await getSubscription();
-  if (!subscription) return { success: false, error: 'No subscription found.' };
-
-  const { error } = await supabase
-    .from('subscriptions')
-    .update({ status: 'paused', updated_at: new Date().toISOString() })
-    .eq('id', subscription.id);
-
-  if (error) return { success: false, error: 'Failed to pause subscription' };
-  return { success: true };
-}
+// DEPRECATED: Pause subscription removed - doesn't work with physical products
+// export async function pauseSubscription(): Promise<{ success: boolean; error?: string }> {
+//   const subscription = await getSubscription();
+//   if (!subscription) return { success: false, error: 'No subscription found.' };
+//   const { error } = await supabase
+//     .from('subscriptions')
+//     .update({ status: 'paused', updated_at: new Date().toISOString() })
+//     .eq('id', subscription.id);
+//   if (error) return { success: false, error: 'Failed to pause subscription' };
+//   return { success: true };
+// }
 
 /**
  * Cancel subscription
