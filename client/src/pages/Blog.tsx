@@ -1,12 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
-import { fetchPosts, urlFor, type SanityPost } from "@/lib/sanity";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { fetchPosts, getPostImageUrl, type SanityPost } from "@/lib/sanity";
+import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "wouter";
-import { Helmet } from "react-helmet-async";
 import { format } from "date-fns";
-import { Calendar } from "lucide-react";
+import { Loader2, FileText } from "lucide-react";
+import Navigation from "@/components/Navigation";
 
 export default function Blog() {
   const { data: posts, isLoading } = useQuery<SanityPost[]>({
@@ -15,108 +14,85 @@ export default function Blog() {
   });
 
   return (
-    <>
-      <Helmet>
-        <title>Blog | Seasons - Luxury Baby Clothing</title>
-        <meta
-          name="description"
-          content="Discover tips on sustainable baby fashion, parenting advice, and the latest from Seasons luxury baby clothing subscription."
-        />
-        <meta property="og:title" content="Blog | Seasons" />
-        <meta
-          property="og:description"
-          content="Discover tips on sustainable baby fashion, parenting advice, and the latest from Seasons."
-        />
-        <meta property="og:type" content="website" />
-        <link rel="canonical" href={`${window.location.origin}/blog`} />
-      </Helmet>
+    <div className="min-h-screen bg-[#FDFBF7]">
+      <Navigation />
 
-      <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-100">
+      <div className="container mx-auto px-4 md:px-6 py-8 md:py-12">
         {/* Header */}
-        <div className="bg-amber-900 text-white py-16">
-          <div className="container mx-auto px-4 text-center">
-            <h1 className="text-4xl font-bold mb-4">Seasons Blog</h1>
-            <p className="text-amber-100 text-lg max-w-2xl mx-auto">
-              Tips on sustainable baby fashion, parenting advice, and the latest from our luxury baby clothing
-              subscription.
-            </p>
-          </div>
+        <div className="mb-8 md:mb-12">
+          <h1 className="text-3xl md:text-4xl font-light text-neutral-900 mb-2">From Our Blog</h1>
+          <p className="text-neutral-600">Stories, tips, and insights on sustainable parenting</p>
         </div>
 
-        {/* Blog Posts */}
-        <div className="container mx-auto px-4 py-12">
-          {isLoading ? (
-            <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-              {[...Array(6)].map((_, i) => (
-                <Card key={i}>
-                  <Skeleton className="h-48 w-full rounded-t-lg" />
-                  <CardHeader>
-                    <Skeleton className="h-6 w-3/4" />
-                    <Skeleton className="h-4 w-1/2 mt-2" />
-                  </CardHeader>
-                  <CardContent>
-                    <Skeleton className="h-4 w-full" />
-                    <Skeleton className="h-4 w-full mt-2" />
-                    <Skeleton className="h-4 w-2/3 mt-2" />
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          ) : posts?.length === 0 ? (
-            <div className="text-center py-16">
-              <h2 className="text-2xl font-semibold text-gray-600">No blog posts yet</h2>
-              <p className="text-gray-500 mt-2">Check back soon for articles!</p>
-            </div>
-          ) : (
-            <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-              {posts?.map((post) => (
+        {/* Blog Posts Grid */}
+        {isLoading ? (
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+            {[...Array(4)].map((_, i) => (
+              <Card key={i} className="overflow-hidden">
+                <Skeleton className="h-48 w-full" />
+                <div className="p-4">
+                  <Skeleton className="h-4 w-24 mb-2" />
+                  <Skeleton className="h-6 w-full mb-2" />
+                  <Skeleton className="h-4 w-3/4" />
+                </div>
+              </Card>
+            ))}
+          </div>
+        ) : posts?.length === 0 ? (
+          <div className="text-center py-20">
+            <FileText className="w-16 h-16 text-neutral-300 mx-auto mb-4" />
+            <h2 className="text-xl font-medium text-neutral-900 mb-2">No blog posts yet</h2>
+            <p className="text-neutral-600">Check back soon for articles!</p>
+          </div>
+        ) : (
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+            {posts?.map((post) => {
+              const imageUrl = getPostImageUrl(post, { width: 400, height: 300 });
+
+              return (
                 <Link key={post._id} href={`/blog/${post.slug}`}>
-                  <Card className="cursor-pointer hover:shadow-lg transition-shadow h-full flex flex-col">
-                    {post.mainImage && (
-                      <img
-                        src={urlFor(post.mainImage).width(600).height(300).auto("format").url()}
-                        alt={post.title}
-                        className="h-48 w-full object-cover rounded-t-lg"
-                      />
-                    )}
-                    <CardHeader>
-                      <div className="flex flex-wrap gap-1 mb-2">
-                        {post.categories?.map((category) => (
-                          <Badge key={category._id} variant="secondary" className="text-xs">
-                            {category.title}
-                          </Badge>
-                        ))}
-                      </div>
-                      <CardTitle className="text-xl hover:text-amber-700 transition-colors">{post.title}</CardTitle>
-                      <CardDescription className="flex items-center gap-4 text-sm">
-                        {post.publishedAt && (
-                          <span className="flex items-center gap-1">
-                            <Calendar className="h-4 w-4" />
-                            {format(new Date(post.publishedAt), "MMM d, yyyy")}
-                          </span>
-                        )}
-                        {post.author && (
-                          <span className="text-gray-500">by {post.author.name}</span>
-                        )}
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent className="flex-grow">
-                      <p className="text-gray-600 line-clamp-3">{post.excerpt || "Read more..."}</p>
-                    </CardContent>
+                  <Card className="group overflow-hidden border-neutral-200 hover:shadow-lg transition-all h-full flex flex-col cursor-pointer">
+                    {/* Image */}
+                    <div className="aspect-[4/3] bg-neutral-100 relative overflow-hidden">
+                      {imageUrl ? (
+                        <img
+                          src={imageUrl}
+                          alt={post.title}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <FileText className="w-12 h-12 text-neutral-300" />
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Content */}
+                    <div className="p-4 flex flex-col flex-grow">
+                      {/* Date */}
+                      {post.publishedAt && (
+                        <p className="text-xs text-neutral-500 mb-2">
+                          {format(new Date(post.publishedAt), "MMM d, yyyy")}
+                        </p>
+                      )}
+
+                      {/* Title */}
+                      <h2 className="text-lg font-medium text-neutral-900 mb-2 group-hover:text-neutral-700 transition-colors line-clamp-2">
+                        {post.title}
+                      </h2>
+
+                      {/* Excerpt */}
+                      <p className="text-sm text-neutral-600 line-clamp-2 flex-grow">
+                        {post.excerpt || "Read more..."}
+                      </p>
+                    </div>
                   </Card>
                 </Link>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Back to Home */}
-        <div className="container mx-auto px-4 pb-12 text-center">
-          <Link href="/">
-            <span className="text-amber-700 hover:text-amber-900 font-medium">← Back to Home</span>
-          </Link>
-        </div>
+              );
+            })}
+          </div>
+        )}
       </div>
-    </>
+    </div>
   );
 }

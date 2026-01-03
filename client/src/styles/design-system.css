@@ -1,0 +1,238 @@
+/*
+ * Seasons Design System - Pitch Theme Style
+ * Based on Shopify Pitch Theme
+ * Bold colors, editorial layout, serif headings
+ */
+
+:root {
+  /* ================================
+     PITCH COLOR PALETTE
+     ================================ */
+
+  /* Primary Colors */
+  --pitch-orange: #E94E1B;
+  --pitch-burgundy: #6B2D2D;
+  --pitch-burgundy-light: #7B3535;
+  --pitch-lavender: #E8D7E8;
+  --pitch-cream: #F9F5F0;
+  --pitch-cream-dark: #F5F0EB;
+
+  /* Text Colors */
+  --pitch-brown: #4A2C2C;
+  --pitch-brown-light: #4A3030;
+  --pitch-white: #FFFFFF;
+
+  /* Accent */
+  --pitch-teal: #2ED3C2;
+
+  /* ================================
+     TYPOGRAPHY
+     ================================ */
+
+  /* Font Families */
+  --font-serif: 'Playfair Display', Georgia, 'Times New Roman', serif;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  /* Font Sizes - Desktop */
+  --text-hero: clamp(3rem, 8vw, 6rem);
+  --text-display: clamp(2.5rem, 5vw, 4rem);
+  --text-heading-xl: clamp(2rem, 4vw, 3rem);
+  --text-heading-lg: clamp(1.5rem, 3vw, 2rem);
+  --text-heading-md: 1.25rem;
+  --text-body-lg: 1.125rem;
+  --text-body: 1rem;
+  --text-body-sm: 0.875rem;
+  --text-caption: 0.75rem;
+
+  /* Font Weights */
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+
+  /* Line Heights */
+  --leading-tight: 1.1;
+  --leading-snug: 1.25;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.625;
+
+  /* ================================
+     SPACING
+     ================================ */
+
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+  --space-2xl: 3rem;
+  --space-3xl: 4rem;
+  --space-4xl: 5rem;
+  --space-5xl: 6rem;
+  --space-section: clamp(5rem, 10vw, 7.5rem);
+
+  /* ================================
+     BORDERS & RADIUS
+     ================================ */
+
+  /* Pitch uses sharp corners */
+  --radius-none: 0;
+  --radius-sm: 2px;
+  --radius-md: 4px;
+
+  /* ================================
+     TRANSITIONS
+     ================================ */
+
+  --transition-fast: 0.2s ease-out;
+  --transition-base: 0.3s ease-out;
+}
+
+/* ================================
+   BASE STYLES
+   ================================ */
+
+body {
+  font-family: var(--font-sans);
+  color: var(--pitch-brown);
+  background-color: var(--pitch-cream);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-size: var(--text-body);
+  line-height: var(--leading-normal);
+}
+
+/* Serif Headings */
+.heading-serif {
+  font-family: var(--font-serif);
+  font-weight: var(--weight-regular);
+  line-height: var(--leading-tight);
+}
+
+/* ================================
+   PITCH BUTTON STYLES
+   ================================ */
+
+.btn-pitch {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  padding: 1rem 2rem;
+  font-family: var(--font-sans);
+  font-size: var(--text-body-sm);
+  font-weight: var(--weight-medium);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-radius: var(--radius-none);
+  transition: all var(--transition-fast);
+  cursor: pointer;
+}
+
+.btn-pitch-primary {
+  background-color: var(--pitch-orange);
+  color: var(--pitch-white);
+  border: 2px solid var(--pitch-orange);
+}
+
+.btn-pitch-primary:hover {
+  background-color: #D14516;
+  border-color: #D14516;
+}
+
+.btn-pitch-secondary {
+  background-color: transparent;
+  color: var(--pitch-brown);
+  border: 2px solid var(--pitch-brown);
+}
+
+.btn-pitch-secondary:hover {
+  background-color: var(--pitch-brown);
+  color: var(--pitch-white);
+}
+
+.btn-pitch-white {
+  background-color: var(--pitch-white);
+  color: var(--pitch-burgundy);
+  border: 2px solid var(--pitch-white);
+}
+
+.btn-pitch-white:hover {
+  background-color: var(--pitch-cream);
+  border-color: var(--pitch-cream);
+}
+
+/* ================================
+   PITCH SECTION STYLES
+   ================================ */
+
+/* Full-width section with no margins */
+.section-pitch {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+/* Bento grid - 2 column 50/50 */
+.bento-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0;
+}
+
+@media (min-width: 768px) {
+  .bento-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* Color block backgrounds */
+.bg-pitch-cream { background-color: var(--pitch-cream); }
+.bg-pitch-lavender { background-color: var(--pitch-lavender); }
+.bg-pitch-burgundy { background-color: var(--pitch-burgundy); }
+.bg-pitch-orange { background-color: var(--pitch-orange); }
+.bg-pitch-white { background-color: var(--pitch-white); }
+
+/* Text colors */
+.text-pitch-brown { color: var(--pitch-brown); }
+.text-pitch-burgundy { color: var(--pitch-burgundy); }
+.text-pitch-orange { color: var(--pitch-orange); }
+.text-pitch-white { color: var(--pitch-white); }
+.text-pitch-cream { color: var(--pitch-cream); }
+
+/* ================================
+   MARQUEE ANIMATION
+   ================================ */
+
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  animation: marquee 20s linear infinite;
+}
+
+/* ================================
+   PRODUCT CARD - PITCH STYLE
+   ================================ */
+
+.card-pitch {
+  background-color: var(--pitch-white);
+  border: none;
+  border-radius: var(--radius-none);
+  overflow: hidden;
+  transition: transform var(--transition-base);
+}
+
+.card-pitch:hover {
+  transform: translateY(-4px);
+}
+
+.card-pitch:hover img {
+  transform: scale(1.05);
+}
+
+.card-pitch img {
+  transition: transform var(--transition-base);
+}

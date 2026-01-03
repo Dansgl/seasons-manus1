@@ -100,6 +100,7 @@ export type InsertUser = typeof users.$inferInsert;
 
 export const products = pgTable("products", {
   id: serial("id").primaryKey(),
+  slug: varchar("slug", { length: 255 }),
   brand: varchar("brand", { length: 100 }).notNull(),
   name: varchar("name", { length: 255 }).notNull(),
   description: text("description"),
@@ -120,10 +121,12 @@ export type Product = typeof products.$inferSelect;
 export type InsertProduct = typeof products.$inferInsert;
 
 // ============ INVENTORY ITEMS ============
+// Physical inventory items - link to Sanity products via slug
 
 export const inventoryItems = pgTable("inventory_items", {
   id: serial("id").primaryKey(),
-  productId: integer("product_id").notNull().references(() => products.id),
+  // Link to Sanity product by slug (primary way to identify product)
+  sanityProductSlug: varchar("sanity_product_slug", { length: 255 }).notNull(),
   sku: varchar("sku", { length: 100 }).notNull().unique(),
   state: inventoryStateEnum("state").default("available").notNull(),
   conditionNotes: text("condition_notes"),
@@ -184,16 +187,30 @@ export type BoxItem = typeof boxItems.$inferSelect;
 export type InsertBoxItem = typeof boxItems.$inferInsert;
 
 // ============ CART ITEMS ============
+// Cart now references Sanity products by slug (not PostgreSQL products)
 
 export const cartItems = pgTable("cart_items", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").notNull().references(() => users.id),
-  productId: integer("product_id").notNull().references(() => products.id),
+  // Reference to Sanity product by slug
+  sanityProductSlug: varchar("sanity_product_slug", { length: 255 }).notNull(),
   addedAt: timestamp("added_at", { withTimezone: true }).defaultNow().notNull(),
 });
 
 export type CartItem = typeof cartItems.$inferSelect;
 export type InsertCartItem = typeof cartItems.$inferInsert;
+
+// ============ SWAP ITEMS (for next box selection) ============
+
+export const swapItems = pgTable("swap_items", {
+  id: serial("id").primaryKey(),
+  subscriptionId: integer("subscription_id").notNull().references(() => subscriptions.id),
+  sanityProductSlug: varchar("sanity_product_slug", { length: 255 }).notNull(),
+  addedAt: timestamp("added_at", { withTimezone: true }).defaultNow().notNull(),
+});
+
+export type SwapItem = typeof swapItems.$inferSelect;
+export type InsertSwapItem = typeof swapItems.$inferInsert;
 
 // ============ BLOG POSTS ============
 

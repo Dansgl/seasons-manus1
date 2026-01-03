@@ -36,6 +36,12 @@ export default defineType({
       },
     }),
     defineField({
+      name: "externalImageUrl",
+      title: "External Image URL",
+      type: "url",
+      description: "Fallback image URL (e.g., from Unsplash) when no uploaded image",
+    }),
+    defineField({
       name: "categories",
       title: "Categories",
       type: "array",

@@ -1,6 +1,8 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { trpc } from "@/lib/trpc";
+import { fetchProducts, urlFor, type SanityProduct } from "@/lib/sanity";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -10,6 +12,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Link, useLocation } from "wouter";
 import { Loader2, ShoppingBag, Check } from "lucide-react";
 import { toast } from "sonner";
+import Navigation from "@/components/Navigation";
 
 export default function Checkout() {
   const { user, isAuthenticated } = useAuth();
@@ -18,8 +21,23 @@ export default function Checkout() {
   const [phone, setPhone] = useState("");
   const [agreedToTerms, setAgreedToTerms] = useState(false);
 
-  const { data: cartItems, isLoading: cartLoading } = trpc.cart.get.useQuery();
+  // Get cart slugs from API
+  const { data: cartSlugs, isLoading: cartLoading } = trpc.cart.get.useQuery();
   const { data: cartCount } = trpc.cart.count.useQuery();
+
+  // Fetch all products from Sanity to display cart items
+  const { data: allProducts } = useQuery<SanityProduct[]>({
+    queryKey: ["sanity", "products"],
+    queryFn: fetchProducts,
+  });
+
+  // Get cart product details from Sanity data
+  const cartProducts = useMemo(() => {
+    if (!cartSlugs || !allProducts) return [];
+    return cartSlugs
+      .map(slug => allProducts.find(p => p.slug === slug))
+      .filter((p): p is SanityProduct => p !== undefined);
+  }, [cartSlugs, allProducts]);
 
   const createSubscription = trpc.subscription.create.useMutation({
     onSuccess: () => {
@@ -92,16 +110,9 @@ export default function Checkout() {
 
   return (
     <div className="min-h-screen bg-[#FDFBF7]">
-      {/* Navigation */}
-      <nav className="border-b border-neutral-200 bg-white/80 backdrop-blur-sm">
-        <div className="container mx-auto px-6 py-4 flex items-center justify-between">
-          <Link href="/" className="text-2xl font-light tracking-wide text-neutral-900">
-            Seasons
-          </Link>
-        </div>
-      </nav>
+      <Navigation />
 
-      <div className="container mx-auto px-6 py-12 max-w-5xl">
+      <div className="container mx-auto px-4 md:px-6 py-8 md:py-12 max-w-5xl">
         <h1 className="text-3xl font-light text-neutral-900 mb-8">Complete Your Subscription</h1>
 
         <div className="grid md:grid-cols-3 gap-8">
@@ -227,13 +238,13 @@ export default function Checkout() {
             <Card className="p-6 sticky top-24">
               <h2 className="text-xl font-medium text-neutral-900 mb-4">Your Box</h2>
               <div className="space-y-3 mb-6">
-                {cartItems?.map((item) => (
-                  <div key={item.cartItem.id} className="flex gap-3">
+                {cartProducts.map((product) => (
+                  <div key={product._id} className="flex gap-3">
                     <div className="w-16 h-16 bg-neutral-100 rounded flex-shrink-0 overflow-hidden">
-                      {item.product?.imageUrl ? (
-                        <img 
-                          src={item.product.imageUrl} 
-                          alt={item.product.name}
+                      {product.mainImage ? (
+                        <img
+                          src={urlFor(product.mainImage).width(64).height(64).auto("format").url()}
+                          alt={product.name}
                           className="w-full h-full object-cover"
                         />
                       ) : (
@@ -243,9 +254,9 @@ export default function Checkout() {
                       )}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <div className="text-xs text-neutral-500">{item.product?.brand}</div>
+                      <div className="text-xs text-neutral-500">{product.brand?.name}</div>
                       <div className="text-sm text-neutral-900 line-clamp-2">
-                        {item.product?.name}
+                        {product.name}
                       </div>
                     </div>
                   </div>

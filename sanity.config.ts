@@ -1,6 +1,5 @@
 import { defineConfig } from "sanity";
 import { structureTool } from "sanity/structure";
-import { visionTool } from "@sanity/vision";
 import { schemaTypes } from "./sanity/schemas";
 
 const projectId = process.env.SANITY_STUDIO_PROJECT_ID || process.env.VITE_SANITY_PROJECT_ID || "";
@@ -70,13 +69,15 @@ export default defineConfig({
                   .title("Settings")
                   .items([
                     S.listItem()
+                      .title("Homepage & Images")
+                      .child(S.document().schemaType("siteSettings").documentId("siteSettings")),
+                    S.listItem()
                       .title("Site Settings")
                       .child(S.document().schemaType("siteSettings").documentId("siteSettings")),
                   ])
               ),
           ]),
     }),
-    visionTool(),
   ],
   schema: {
     types: schemaTypes,

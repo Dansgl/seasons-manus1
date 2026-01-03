@@ -10,6 +10,7 @@ import {
   boxes,
   boxItems,
   cartItems,
+  swapItems,
   blogPosts,
   blogCategories,
   blogTags,
@@ -147,6 +148,14 @@ export async function getProductById(id: number) {
   return result.length > 0 ? result[0] : undefined;
 }
 
+export async function getProductBySlug(slug: string) {
+  const db = await getDb();
+  if (!db) return undefined;
+
+  const result = await db.select().from(products).where(eq(products.slug, slug)).limit(1);
+  return result.length > 0 ? result[0] : undefined;
+}
+
 export async function createProduct(product: InsertProduct) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
@@ -174,7 +183,7 @@ export async function deleteProduct(id: number) {
 
 // ============ INVENTORY ITEMS ============
 
-export async function getAvailableInventoryCount(productId: number) {
+export async function getAvailableInventoryCount(sanityProductSlug: string) {
   const db = await getDb();
   if (!db) return 0;
 
@@ -183,13 +192,39 @@ export async function getAvailableInventoryCount(productId: number) {
     .from(inventoryItems)
     .where(
       and(
-        eq(inventoryItems.productId, productId),
+        eq(inventoryItems.sanityProductSlug, sanityProductSlug),
         eq(inventoryItems.state, "available"),
         sql`(${inventoryItems.quarantineUntil} IS NULL OR ${inventoryItems.quarantineUntil} < CURRENT_DATE)`
       )
     );
 
   return Number(result[0]?.count) || 0;
+}
+
+export async function getAvailableInventoryCountBatch(slugs: string[]) {
+  const db = await getDb();
+  if (!db || slugs.length === 0) return {};
+
+  const result = await db
+    .select({
+      slug: inventoryItems.sanityProductSlug,
+      count: sql<number>`count(*)`
+    })
+    .from(inventoryItems)
+    .where(
+      and(
+        inArray(inventoryItems.sanityProductSlug, slugs),
+        eq(inventoryItems.state, "available"),
+        sql`(${inventoryItems.quarantineUntil} IS NULL OR ${inventoryItems.quarantineUntil} < CURRENT_DATE)`
+      )
+    )
+    .groupBy(inventoryItems.sanityProductSlug);
+
+  const counts: Record<string, number> = {};
+  result.forEach(row => {
+    counts[row.slug] = Number(row.count) || 0;
+  });
+  return counts;
 }
 
 export async function getAllInventoryItems() {
@@ -199,11 +234,30 @@ export async function getAllInventoryItems() {
   return await db.select().from(inventoryItems).orderBy(desc(inventoryItems.createdAt));
 }
 
-export async function getInventoryItemsByProductId(productId: number) {
+export async function getInventoryItemsBySlug(sanityProductSlug: string) {
   const db = await getDb();
   if (!db) return [];
 
-  return await db.select().from(inventoryItems).where(eq(inventoryItems.productId, productId));
+  return await db.select().from(inventoryItems).where(eq(inventoryItems.sanityProductSlug, sanityProductSlug));
+}
+
+export async function getFirstAvailableInventoryItem(sanityProductSlug: string) {
+  const db = await getDb();
+  if (!db) return undefined;
+
+  const result = await db
+    .select()
+    .from(inventoryItems)
+    .where(
+      and(
+        eq(inventoryItems.sanityProductSlug, sanityProductSlug),
+        eq(inventoryItems.state, "available"),
+        sql`(${inventoryItems.quarantineUntil} IS NULL OR ${inventoryItems.quarantineUntil} < CURRENT_DATE)`
+      )
+    )
+    .limit(1);
+
+  return result.length > 0 ? result[0] : undefined;
 }
 
 export async function updateInventoryItemState(
@@ -261,33 +315,57 @@ export async function bulkCreateInventoryItems(items: InsertInventoryItem[]) {
 }
 
 // ============ CART ============
+// Cart now stores Sanity product slugs, not PostgreSQL product IDs
 
 export async function getCartItems(userId: number) {
   const db = await getDb();
   if (!db) return [];
 
+  // Returns cart items with sanityProductSlug (product details fetched from Sanity separately)
   return await db
-    .select({
-      cartItem: cartItems,
-      product: products,
-    })
+    .select()
     .from(cartItems)
-    .leftJoin(products, eq(cartItems.productId, products.id))
+    .where(eq(cartItems.userId, userId))
+    .orderBy(desc(cartItems.addedAt));
+}
+
+export async function getCartSlugs(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+
+  const items = await db
+    .select({ slug: cartItems.sanityProductSlug })
+    .from(cartItems)
     .where(eq(cartItems.userId, userId));
+
+  return items.map(item => item.slug);
 }
 
-export async function addToCart(userId: number, productId: number) {
+export async function addToCart(userId: number, sanityProductSlug: string) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
 
-  await db.insert(cartItems).values({ userId, productId });
+  // Check if already in cart
+  const existing = await db
+    .select()
+    .from(cartItems)
+    .where(and(eq(cartItems.userId, userId), eq(cartItems.sanityProductSlug, sanityProductSlug)))
+    .limit(1);
+
+  if (existing.length > 0) {
+    throw new Error("Product already in cart");
+  }
+
+  await db.insert(cartItems).values({ userId, sanityProductSlug });
 }
 
-export async function removeFromCart(userId: number, productId: number) {
+export async function removeFromCart(userId: number, sanityProductSlug: string) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
 
-  await db.delete(cartItems).where(and(eq(cartItems.userId, userId), eq(cartItems.productId, productId)));
+  await db.delete(cartItems).where(
+    and(eq(cartItems.userId, userId), eq(cartItems.sanityProductSlug, sanityProductSlug))
+  );
 }
 
 export async function clearCart(userId: number) {
@@ -305,6 +383,91 @@ export async function getCartCount(userId: number) {
     .select({ count: sql<number>`count(*)` })
     .from(cartItems)
     .where(eq(cartItems.userId, userId));
+
+  return Number(result[0]?.count) || 0;
+}
+
+export async function isInCart(userId: number, sanityProductSlug: string) {
+  const db = await getDb();
+  if (!db) return false;
+
+  const result = await db
+    .select()
+    .from(cartItems)
+    .where(and(eq(cartItems.userId, userId), eq(cartItems.sanityProductSlug, sanityProductSlug)))
+    .limit(1);
+
+  return result.length > 0;
+}
+
+// ============ SWAP ITEMS ============
+// For selecting next box items during swap window
+
+export async function getSwapItems(subscriptionId: number) {
+  const db = await getDb();
+  if (!db) return [];
+
+  return await db
+    .select()
+    .from(swapItems)
+    .where(eq(swapItems.subscriptionId, subscriptionId))
+    .orderBy(desc(swapItems.addedAt));
+}
+
+export async function getSwapSlugs(subscriptionId: number) {
+  const db = await getDb();
+  if (!db) return [];
+
+  const items = await db
+    .select({ slug: swapItems.sanityProductSlug })
+    .from(swapItems)
+    .where(eq(swapItems.subscriptionId, subscriptionId));
+
+  return items.map(item => item.slug);
+}
+
+export async function addToSwap(subscriptionId: number, sanityProductSlug: string) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  // Check if already in swap selection
+  const existing = await db
+    .select()
+    .from(swapItems)
+    .where(and(eq(swapItems.subscriptionId, subscriptionId), eq(swapItems.sanityProductSlug, sanityProductSlug)))
+    .limit(1);
+
+  if (existing.length > 0) {
+    throw new Error("Product already in swap selection");
+  }
+
+  await db.insert(swapItems).values({ subscriptionId, sanityProductSlug });
+}
+
+export async function removeFromSwap(subscriptionId: number, sanityProductSlug: string) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  await db.delete(swapItems).where(
+    and(eq(swapItems.subscriptionId, subscriptionId), eq(swapItems.sanityProductSlug, sanityProductSlug))
+  );
+}
+
+export async function clearSwapItems(subscriptionId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  await db.delete(swapItems).where(eq(swapItems.subscriptionId, subscriptionId));
+}
+
+export async function getSwapCount(subscriptionId: number) {
+  const db = await getDb();
+  if (!db) return 0;
+
+  const result = await db
+    .select({ count: sql<number>`count(*)` })
+    .from(swapItems)
+    .where(eq(swapItems.subscriptionId, subscriptionId));
 
   return Number(result[0]?.count) || 0;
 }
@@ -400,15 +563,15 @@ export async function getBoxItems(boxId: number) {
   const db = await getDb();
   if (!db) return [];
 
+  // We no longer join with products table since product data comes from Sanity
+  // Frontend will match inventoryItem.sanityProductSlug with Sanity products
   return await db
     .select({
       boxItem: boxItems,
       inventoryItem: inventoryItems,
-      product: products,
     })
     .from(boxItems)
     .leftJoin(inventoryItems, eq(boxItems.inventoryItemId, inventoryItems.id))
-    .leftJoin(products, eq(inventoryItems.productId, products.id))
     .where(eq(boxItems.boxId, boxId));
 }
 

@@ -4,10 +4,10 @@ import type { SanityImageSource } from "@sanity/image-url/lib/types/types";
 
 // Sanity client configuration
 export const sanityClient = createClient({
-  projectId: import.meta.env.VITE_SANITY_PROJECT_ID || "",
+  projectId: import.meta.env.VITE_SANITY_PROJECT_ID || "h83nldug",
   dataset: import.meta.env.VITE_SANITY_DATASET || "production",
   apiVersion: "2024-01-01",
-  useCdn: true, // Use CDN for faster reads (set to false for real-time data)
+  useCdn: false, // Disabled CDN for real-time updates during development
 });
 
 // Image URL builder
@@ -30,10 +30,11 @@ export interface SanityBrand {
 export interface SanityProduct {
   _id: string;
   name: string;
-  slug: { current: string };
+  slug: string; // Flattened in queries
   brand?: SanityBrand;
   mainImage?: SanityImageSource;
-  gallery?: SanityImageSource[];
+  externalImageUrl?: string; // Fallback URL (e.g., Unsplash) when no uploaded image
+  images?: SanityImageSource[];
   description?: string;
   category: string;
   ageRange?: string;
@@ -42,10 +43,35 @@ export interface SanityProduct {
   colors?: Array<{ name: string; hex: string }>;
   rrpPrice?: number;
   stockQuantity: number;
-  available: boolean;
-  featured: boolean;
+  inStock: boolean;
+  featured?: boolean;
   material?: string;
   careInstructions?: string;
+}
+
+// Helper function to get the best image URL for a product
+export function getProductImageUrl(
+  product: SanityProduct,
+  options?: { width?: number; height?: number }
+): string | null {
+  const { width = 400, height = 400 } = options || {};
+
+  // Prefer Sanity uploaded image
+  if (product.mainImage) {
+    return urlFor(product.mainImage).width(width).height(height).auto("format").url();
+  }
+
+  // Fall back to external URL (Unsplash)
+  if (product.externalImageUrl) {
+    // Unsplash URLs can be resized with query params
+    const url = product.externalImageUrl;
+    if (url.includes('unsplash.com')) {
+      return `${url}&w=${width}&h=${height}&fit=crop&auto=format`;
+    }
+    return url;
+  }
+
+  return null;
 }
 
 export interface SanityAuthor {
@@ -66,20 +92,43 @@ export interface SanityCategory {
 export interface SanityPost {
   _id: string;
   title: string;
-  slug: { current: string };
+  slug: string; // Flattened in queries
   author?: SanityAuthor;
   mainImage?: SanityImageSource;
+  externalImageUrl?: string; // Fallback URL for external images
   categories?: SanityCategory[];
   publishedAt?: string;
   excerpt?: string;
   body?: any[]; // Portable Text
-  featured: boolean;
+  featured?: boolean;
   seo?: {
     metaTitle?: string;
     metaDescription?: string;
     ogImage?: SanityImageSource;
     canonicalUrl?: string;
   };
+}
+
+// Helper function to get the best image URL for a post
+export function getPostImageUrl(
+  post: SanityPost,
+  options?: { width?: number; height?: number }
+): string | null {
+  const { width = 400, height = 400 } = options || {};
+
+  if (post.mainImage) {
+    return urlFor(post.mainImage).width(width).height(height).auto("format").url();
+  }
+
+  if (post.externalImageUrl) {
+    const url = post.externalImageUrl;
+    if (url.includes('unsplash.com')) {
+      return `${url}&w=${width}&h=${height}&fit=crop&auto=format`;
+    }
+    return url;
+  }
+
+  return null;
 }
 
 export interface SanitySettings {
@@ -94,6 +143,8 @@ export interface SanitySettings {
   heroTitle?: string;
   heroSubtitle?: string;
   heroImage?: SanityImageSource;
+  bentoImage1?: SanityImageSource;
+  bentoImage2?: SanityImageSource;
   benefits?: Array<{
     title: string;
     description: string;
@@ -107,29 +158,42 @@ export interface SanitySettings {
   };
 }
 
+// Helper to get settings image URL
+export function getSettingsImageUrl(
+  image: SanityImageSource | undefined,
+  options?: { width?: number; height?: number }
+): string | null {
+  if (!image) return null;
+  const { width = 600, height = 800 } = options || {};
+  return urlFor(image).width(width).height(height).auto("format").url();
+}
+
 // GROQ Queries
 export const queries = {
   // Products
-  allProducts: `*[_type == "product" && available == true] | order(name asc) {
+  allProducts: `*[_type == "product" && inStock == true] | order(name asc) {
     _id,
     name,
     "slug": slug.current,
     mainImage,
+    externalImageUrl,
     category,
     ageRange,
     season,
     sizes,
     rrpPrice,
     stockQuantity,
+    inStock,
     featured,
     "brand": brand->{_id, name, "slug": slug.current, logo}
   }`,
 
-  featuredProducts: `*[_type == "product" && featured == true && available == true] | order(name asc) [0...8] {
+  featuredProducts: `*[_type == "product" && featured == true && inStock == true] | order(name asc) [0...8] {
     _id,
     name,
     "slug": slug.current,
     mainImage,
+    externalImageUrl,
     category,
     ageRange,
     rrpPrice,
@@ -141,7 +205,8 @@ export const queries = {
     name,
     "slug": slug.current,
     mainImage,
-    gallery,
+    externalImageUrl,
+    images,
     description,
     category,
     ageRange,
@@ -150,17 +215,18 @@ export const queries = {
     colors,
     rrpPrice,
     stockQuantity,
-    available,
+    inStock,
     material,
     careInstructions,
     "brand": brand->{_id, name, "slug": slug.current, logo, description, website}
   }`,
 
-  productsByCategory: `*[_type == "product" && category == $category && available == true] | order(name asc) {
+  productsByCategory: `*[_type == "product" && category == $category && inStock == true] | order(name asc) {
     _id,
     name,
     "slug": slug.current,
     mainImage,
+    externalImageUrl,
     category,
     ageRange,
     rrpPrice,
@@ -182,6 +248,7 @@ export const queries = {
     title,
     "slug": slug.current,
     mainImage,
+    externalImageUrl,
     excerpt,
     publishedAt,
     featured,
@@ -189,11 +256,12 @@ export const queries = {
     "categories": categories[]->{_id, title, "slug": slug.current}
   }`,
 
-  featuredPosts: `*[_type == "post" && featured == true] | order(publishedAt desc) [0...3] {
+  featuredPosts: `*[_type == "post" && featured == true] | order(publishedAt desc) [0...4] {
     _id,
     title,
     "slug": slug.current,
     mainImage,
+    externalImageUrl,
     excerpt,
     publishedAt,
     "author": author->{_id, name, image}
@@ -204,6 +272,7 @@ export const queries = {
     title,
     "slug": slug.current,
     mainImage,
+    externalImageUrl,
     body,
     excerpt,
     publishedAt,
@@ -217,6 +286,7 @@ export const queries = {
     title,
     "slug": slug.current,
     mainImage,
+    externalImageUrl,
     excerpt,
     publishedAt,
     "author": author->{_id, name, image}
@@ -243,6 +313,8 @@ export const queries = {
     heroTitle,
     heroSubtitle,
     heroImage,
+    bentoImage1,
+    bentoImage2,
     benefits,
     contactEmail,
     socialLinks

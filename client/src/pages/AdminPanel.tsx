@@ -243,8 +243,8 @@ export default function AdminPanel() {
                       {inventory?.map((item) => (
                         <tr key={item.id} className="border-b border-neutral-100 hover:bg-neutral-50">
                           <td className="py-3 px-2 text-neutral-700">{item.sku}</td>
-                          <td className="py-3 px-2 text-neutral-900">{item.product?.name}</td>
-                          <td className="py-3 px-2 text-neutral-700">{item.product?.brand}</td>
+                          <td className="py-3 px-2 text-neutral-900">{item.sanityProductSlug}</td>
+                          <td className="py-3 px-2 text-neutral-700">-</td>
                           <td className="py-3 px-2">
                             <Badge
                               className={

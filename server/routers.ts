@@ -20,8 +20,15 @@ export const appRouter = router({
 
   auth: router({
     me: publicProcedure.query((opts) => opts.ctx.user),
+    logout: protectedProcedure.mutation(async () => {
+      // Client-side handles the actual Supabase signOut
+      // This endpoint just confirms the logout action
+      return { success: true };
+    }),
   }),
 
+  // Legacy products router - products now come from Sanity
+  // This endpoint is deprecated, use catalog.availability instead
   products: router({
     list: publicProcedure
       .input(
@@ -37,10 +44,13 @@ export const appRouter = router({
       .query(async ({ input }) => {
         const allProducts = await db.getAllProducts();
 
-        // Get availability counts for each product
+        // Get availability counts for each product by slug
         const productsWithAvailability = await Promise.all(
           allProducts.map(async (product) => {
-            const availableCount = await db.getAvailableInventoryCount(product.id);
+            // Use slug instead of id for availability lookup
+            const availableCount = product.slug
+              ? await db.getAvailableInventoryCount(product.slug)
+              : 0;
             return {
               ...product,
               availableCount,
@@ -74,7 +84,26 @@ export const appRouter = router({
         throw new TRPCError({ code: "NOT_FOUND", message: "Product not found" });
       }
 
-      const availableCount = await db.getAvailableInventoryCount(product.id);
+      // Use slug for availability lookup
+      const availableCount = product.slug
+        ? await db.getAvailableInventoryCount(product.slug)
+        : 0;
+
+      return {
+        ...product,
+        availableCount,
+        lowStock: availableCount > 0 && availableCount < 3,
+      };
+    }),
+
+    getBySlug: publicProcedure.input(z.object({ slug: z.string() })).query(async ({ input }) => {
+      const product = await db.getProductBySlug(input.slug);
+      if (!product) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Product not found" });
+      }
+
+      // Use slug for availability lookup
+      const availableCount = await db.getAvailableInventoryCount(input.slug);
 
       return {
         ...product,
@@ -91,39 +120,65 @@ export const appRouter = router({
     }),
   }),
 
+  // Catalog endpoints for Sanity products with PostgreSQL availability
+  catalog: router({
+    // Get availability counts for multiple products by slug
+    availability: publicProcedure
+      .input(z.object({ slugs: z.array(z.string()) }))
+      .query(async ({ input }) => {
+        return await db.getAvailableInventoryCountBatch(input.slugs);
+      }),
+  }),
+
+  // Cart now uses Sanity product slugs
   cart: router({
     get: protectedProcedure.query(async ({ ctx }) => {
-      const items = await db.getCartItems(ctx.user.id);
-      return items;
+      // Returns slugs - frontend fetches product details from Sanity
+      const slugs = await db.getCartSlugs(ctx.user.id);
+      return slugs;
     }),
 
-    add: protectedProcedure.input(z.object({ productId: z.number() })).mutation(async ({ ctx, input }) => {
-      // Check if cart already has 5 items
-      const currentCount = await db.getCartCount(ctx.user.id);
-      if (currentCount >= 5) {
-        throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: "Cart is full. You can only select 5 items.",
-        });
-      }
+    add: protectedProcedure
+      .input(z.object({ slug: z.string() }))
+      .mutation(async ({ ctx, input }) => {
+        // Check if cart already has 5 items
+        const currentCount = await db.getCartCount(ctx.user.id);
+        if (currentCount >= 5) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Cart is full. You can only select 5 items.",
+          });
+        }
 
-      // Check if product is available
-      const availableCount = await db.getAvailableInventoryCount(input.productId);
-      if (availableCount === 0) {
-        throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: "This item is currently out of stock.",
-        });
-      }
+        // Check if product has available inventory
+        const availableCount = await db.getAvailableInventoryCount(input.slug);
+        if (availableCount === 0) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "This item is currently out of stock.",
+          });
+        }
 
-      await db.addToCart(ctx.user.id, input.productId);
-      return { success: true };
-    }),
+        try {
+          await db.addToCart(ctx.user.id, input.slug);
+        } catch (error: any) {
+          if (error.message === "Product already in cart") {
+            throw new TRPCError({
+              code: "BAD_REQUEST",
+              message: "This item is already in your box.",
+            });
+          }
+          throw error;
+        }
+        return { success: true };
+      }),
 
-    remove: protectedProcedure.input(z.object({ productId: z.number() })).mutation(async ({ ctx, input }) => {
-      await db.removeFromCart(ctx.user.id, input.productId);
-      return { success: true };
-    }),
+    remove: protectedProcedure
+      .input(z.object({ slug: z.string() }))
+      .mutation(async ({ ctx, input }) => {
+        await db.removeFromCart(ctx.user.id, input.slug);
+        return { success: true };
+      }),
 
     clear: protectedProcedure.mutation(async ({ ctx }) => {
       await db.clearCart(ctx.user.id);
@@ -131,8 +186,134 @@ export const appRouter = router({
     }),
 
     count: protectedProcedure.query(async ({ ctx }) => {
-      const count = await db.getCartCount(ctx.user.id);
-      return count;
+      return await db.getCartCount(ctx.user.id);
+    }),
+
+    isInCart: protectedProcedure
+      .input(z.object({ slug: z.string() }))
+      .query(async ({ ctx, input }) => {
+        return await db.isInCart(ctx.user.id, input.slug);
+      }),
+  }),
+
+  // Swap items for next box selection
+  swap: router({
+    get: protectedProcedure.query(async ({ ctx }) => {
+      const subscription = await db.getUserSubscription(ctx.user.id);
+      if (!subscription) return [];
+      return await db.getSwapSlugs(subscription.id);
+    }),
+
+    add: protectedProcedure
+      .input(z.object({ slug: z.string() }))
+      .mutation(async ({ ctx, input }) => {
+        const subscription = await db.getUserSubscription(ctx.user.id);
+        if (!subscription) {
+          throw new TRPCError({ code: "NOT_FOUND", message: "No subscription found." });
+        }
+
+        // Check swap window is open
+        const cycleEnd = new Date(subscription.cycleEndDate);
+        const today = new Date();
+        const daysRemaining = Math.ceil((cycleEnd.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+        if (daysRemaining > 10) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Swap window is not open yet.",
+          });
+        }
+
+        // Check if already has 5 items
+        const currentCount = await db.getSwapCount(subscription.id);
+        if (currentCount >= 5) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "You've already selected 5 items for your next box.",
+          });
+        }
+
+        // Check availability
+        const availableCount = await db.getAvailableInventoryCount(input.slug);
+        if (availableCount === 0) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "This item is currently out of stock.",
+          });
+        }
+
+        await db.addToSwap(subscription.id, input.slug);
+        return { success: true };
+      }),
+
+    remove: protectedProcedure
+      .input(z.object({ slug: z.string() }))
+      .mutation(async ({ ctx, input }) => {
+        const subscription = await db.getUserSubscription(ctx.user.id);
+        if (!subscription) {
+          throw new TRPCError({ code: "NOT_FOUND", message: "No subscription found." });
+        }
+        await db.removeFromSwap(subscription.id, input.slug);
+        return { success: true };
+      }),
+
+    count: protectedProcedure.query(async ({ ctx }) => {
+      const subscription = await db.getUserSubscription(ctx.user.id);
+      if (!subscription) return 0;
+      return await db.getSwapCount(subscription.id);
+    }),
+
+    confirm: protectedProcedure.mutation(async ({ ctx }) => {
+      const subscription = await db.getUserSubscription(ctx.user.id);
+      if (!subscription) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "No subscription found." });
+      }
+
+      // Check we have exactly 5 items
+      const swapCount = await db.getSwapCount(subscription.id);
+      if (swapCount !== 5) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "You must select exactly 5 items for your next box.",
+        });
+      }
+
+      // Get swap items
+      const swapSlugs = await db.getSwapSlugs(subscription.id);
+
+      // Calculate new cycle dates
+      const startDate = new Date(subscription.cycleEndDate);
+      const endDate = new Date(startDate);
+      endDate.setMonth(endDate.getMonth() + 3);
+      const returnByDate = new Date(endDate);
+      returnByDate.setDate(returnByDate.getDate() + 7);
+
+      // Get current box count
+      const existingBoxes = await db.getBoxesBySubscription(subscription.id);
+      const cycleNumber = existingBoxes.length + 1;
+
+      // Create new box
+      const box = await db.createBox({
+        subscriptionId: subscription.id,
+        cycleNumber,
+        startDate: startDate.toISOString().split("T")[0],
+        endDate: endDate.toISOString().split("T")[0],
+        returnByDate: returnByDate.toISOString().split("T")[0],
+        status: "confirmed",
+      });
+
+      // Reserve inventory for each swap item
+      for (const slug of swapSlugs) {
+        const inventoryItem = await db.getFirstAvailableInventoryItem(slug);
+        if (inventoryItem) {
+          await db.addItemToBox(box.id, inventoryItem.id);
+          await db.updateInventoryItemState(inventoryItem.id, "active");
+        }
+      }
+
+      // Clear swap items
+      await db.clearSwapItems(subscription.id);
+
+      return { success: true, boxId: box.id };
     }),
   }),
 
@@ -201,21 +382,18 @@ export const appRouter = router({
           status: "confirmed",
         });
 
-        // Get cart items and reserve inventory
-        const cartItems = await db.getCartItems(ctx.user.id);
+        // Get cart items (slugs) and reserve inventory
+        const cartSlugs = await db.getCartSlugs(ctx.user.id);
 
-        for (const item of cartItems) {
-          if (!item.product) continue;
-
+        for (const slug of cartSlugs) {
           // Find available inventory item for this product
-          const inventoryItems = await db.getInventoryItemsByProductId(item.product.id);
-          const availableItem = inventoryItems.find((inv) => inv.state === "available");
+          const inventoryItem = await db.getFirstAvailableInventoryItem(slug);
 
-          if (availableItem) {
+          if (inventoryItem) {
             // Add to box
-            await db.addItemToBox(box.id, availableItem.id);
+            await db.addItemToBox(box.id, inventoryItem.id);
             // Mark as active
-            await db.updateInventoryItemState(availableItem.id, "active");
+            await db.updateInventoryItemState(inventoryItem.id, "active");
           }
         }
 
@@ -324,20 +502,9 @@ export const appRouter = router({
     // ---- Inventory Management ----
     inventory: router({
       list: adminProcedure.query(async () => {
-        const items = await db.getAllInventoryItems();
-
-        // Enrich with product details
-        const enriched = await Promise.all(
-          items.map(async (item) => {
-            const product = await db.getProductById(item.productId);
-            return {
-              ...item,
-              product,
-            };
-          })
-        );
-
-        return enriched;
+        // Returns inventory items with sanityProductSlug
+        // Frontend fetches product details from Sanity separately
+        return await db.getAllInventoryItems();
       }),
 
       updateState: adminProcedure
@@ -372,13 +539,13 @@ export const appRouter = router({
       create: adminProcedure
         .input(
           z.object({
-            productId: z.number(),
+            sanityProductSlug: z.string(),
             sku: z.string(),
           })
         )
         .mutation(async ({ input }) => {
           await db.createInventoryItem({
-            productId: input.productId,
+            sanityProductSlug: input.sanityProductSlug,
             sku: input.sku,
             state: "available",
           });
@@ -390,7 +557,7 @@ export const appRouter = router({
           z.object({
             items: z.array(
               z.object({
-                productId: z.number(),
+                sanityProductSlug: z.string(),
                 sku: z.string(),
               })
             ),
@@ -399,7 +566,7 @@ export const appRouter = router({
         .mutation(async ({ input }) => {
           await db.bulkCreateInventoryItems(
             input.items.map((item) => ({
-              productId: item.productId,
+              sanityProductSlug: item.sanityProductSlug,
               sku: item.sku,
               state: "available" as const,
             }))

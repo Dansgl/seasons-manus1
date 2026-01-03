@@ -35,7 +35,12 @@ export default defineType({
       options: {
         hotspot: true,
       },
-      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: "externalImageUrl",
+      title: "External Image URL",
+      type: "url",
+      description: "Fallback image URL (e.g., from Unsplash) when no uploaded image",
     }),
     defineField({
       name: "images",

@@ -68,8 +68,27 @@ export default defineType({
     }),
     defineField({
       name: "heroImage",
-      title: "Hero Background Image",
+      title: "Hero Image",
       type: "image",
+      description: "Main hero image on homepage (baby/toddler photo)",
+      options: {
+        hotspot: true,
+      },
+    }),
+    defineField({
+      name: "bentoImage1",
+      title: "Bento Grid - Philosophy Image",
+      type: "image",
+      description: "Image for the philosophy/about section (top right of bento grid)",
+      options: {
+        hotspot: true,
+      },
+    }),
+    defineField({
+      name: "bentoImage2",
+      title: "Bento Grid - Cleaning Image",
+      type: "image",
+      description: "Image for the cleaning/quality section (bottom left of bento grid)",
       options: {
         hotspot: true,
       },
