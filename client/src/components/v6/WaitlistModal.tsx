@@ -25,6 +25,7 @@ const AGE_OPTIONS = [
   { value: "12-18 months", label: "12-18 months" },
   { value: "18-24 months", label: "18-24 months" },
   { value: "2-3 years", label: "2-3 years" },
+  { value: "4-5 years", label: "4-5 years" },
 ];
 
 export type WaitlistSource = "header" | "hero" | "add_to_cart" | "exit_intent" | "login";
