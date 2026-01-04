@@ -4,6 +4,8 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { V6_COLORS as C } from "./colors";
 import { getCartCount } from "@/lib/supabase-db";
+import { useWaitlistMode } from "@/hooks/useWaitlistMode";
+import { WaitlistModal, type WaitlistSource } from "./WaitlistModal";
 
 interface HeaderProps {
   announcement?: string;
@@ -11,12 +13,21 @@ interface HeaderProps {
 
 export function Header({ announcement }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [waitlistModalOpen, setWaitlistModalOpen] = useState(false);
+  const [waitlistSource, setWaitlistSource] = useState<WaitlistSource>("header");
+  const { isWaitlistMode } = useWaitlistMode();
 
-  // Get cart count
+  // Get cart count (only when not in waitlist mode)
   const { data: cartCount } = useQuery({
     queryKey: ["cartCount"],
     queryFn: getCartCount,
+    enabled: !isWaitlistMode,
   });
+
+  const openWaitlistModal = (source: WaitlistSource) => {
+    setWaitlistSource(source);
+    setWaitlistModalOpen(true);
+  };
 
   return (
     <header className="sticky top-0 bg-white z-50">
@@ -82,20 +93,34 @@ export function Header({ announcement }: HeaderProps) {
 
             {/* Right Icons */}
             <div className="flex items-center gap-4 flex-shrink-0">
-              <Link href="/dashboard" className="hover:opacity-70 transition-colors" style={{ color: C.textBrown }}>
-                <User className="w-5 h-5" />
-              </Link>
-              <Link href="/catalog" className="relative hover:opacity-70 transition-colors" style={{ color: C.textBrown }}>
-                <ShoppingBag className="w-5 h-5" />
-                {cartCount !== undefined && cartCount > 0 && (
-                  <span
-                    className="absolute -top-2 -right-2 w-5 h-5 flex items-center justify-center text-xs font-bold text-white"
+              {isWaitlistMode ? (
+                <>
+                  <button
+                    onClick={() => openWaitlistModal("header")}
+                    className="px-4 py-2 text-sm font-medium text-white transition-opacity hover:opacity-90"
                     style={{ backgroundColor: C.red }}
                   >
-                    {cartCount}
-                  </span>
-                )}
-              </Link>
+                    Join Waitlist
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Link href="/dashboard" className="hover:opacity-70 transition-colors" style={{ color: C.textBrown }}>
+                    <User className="w-5 h-5" />
+                  </Link>
+                  <Link href="/catalog" className="relative hover:opacity-70 transition-colors" style={{ color: C.textBrown }}>
+                    <ShoppingBag className="w-5 h-5" />
+                    {cartCount !== undefined && cartCount > 0 && (
+                      <span
+                        className="absolute -top-2 -right-2 w-5 h-5 flex items-center justify-center text-xs font-bold text-white"
+                        style={{ backgroundColor: C.red }}
+                      >
+                        {cartCount}
+                      </span>
+                    )}
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -128,18 +153,38 @@ export function Header({ announcement }: HeaderProps) {
               >
                 Blog
               </Link>
-              <Link
-                href="/dashboard"
-                className="block hover:opacity-70 transition-colors"
-                style={{ color: C.textBrown }}
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                My Account
-              </Link>
+              {isWaitlistMode ? (
+                <button
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    openWaitlistModal("header");
+                  }}
+                  className="block w-full text-left hover:opacity-70 transition-colors font-medium"
+                  style={{ color: C.red }}
+                >
+                  Join Waitlist
+                </button>
+              ) : (
+                <Link
+                  href="/dashboard"
+                  className="block hover:opacity-70 transition-colors"
+                  style={{ color: C.textBrown }}
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  My Account
+                </Link>
+              )}
             </div>
           </div>
         )}
       </nav>
+
+      {/* Waitlist Modal */}
+      <WaitlistModal
+        open={waitlistModalOpen}
+        onOpenChange={setWaitlistModalOpen}
+        source={waitlistSource}
+      />
     </header>
   );
 }

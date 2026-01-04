@@ -19,7 +19,8 @@ import { Loader2, ShoppingBag, Shield, Sparkles, ArrowLeft, Plus, Minus } from "
 import { toast } from "sonner";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { getLoginUrl } from "@/const";
-import { Header, Footer, V6_COLORS as C } from "@/components/v6";
+import { Header, Footer, V6_COLORS as C, WaitlistModal } from "@/components/v6";
+import { useWaitlistMode } from "@/hooks/useWaitlistMode";
 import type { SanityImageSource } from "@sanity/image-url/lib/types/types";
 
 interface ImageItem {
@@ -31,8 +32,10 @@ export default function ProductDetailV6() {
   const params = useParams<{ slug: string }>();
   const slug = params.slug || "";
   const { isAuthenticated } = useAuth();
+  const { isWaitlistMode } = useWaitlistMode();
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [carouselApi, setCarouselApi] = useState<CarouselApi>();
+  const [waitlistModalOpen, setWaitlistModalOpen] = useState(false);
 
   // Fetch product from Sanity
   const { data: product, isLoading } = useQuery<SanityProduct>({
@@ -103,16 +106,16 @@ export default function ProductDetailV6() {
   });
   const availableCount = availability?.[slug] ?? 0;
 
-  // Cart state
+  // Cart state (disabled in waitlist mode)
   const { data: cartCount } = useQuery({
     queryKey: ["cartCount"],
     queryFn: getCartCount,
-    enabled: isAuthenticated,
+    enabled: isAuthenticated && !isWaitlistMode,
   });
   const { data: cartSlugs } = useQuery({
     queryKey: ["cart"],
     queryFn: getCart,
-    enabled: isAuthenticated,
+    enabled: isAuthenticated && !isWaitlistMode,
   });
 
   const queryClient = useQueryClient();
@@ -143,6 +146,15 @@ export default function ProductDetailV6() {
   });
 
   const handleAddToCart = () => {
+    // In waitlist mode, show the waitlist modal with toast
+    if (isWaitlistMode) {
+      toast("Join our waitlist to be first to rent this item!", {
+        description: "We're launching soon. Sign up to get early access.",
+      });
+      setWaitlistModalOpen(true);
+      return;
+    }
+
     if (!isAuthenticated) {
       window.location.href = getLoginUrl();
       return;
@@ -386,7 +398,7 @@ export default function ProductDetailV6() {
               </div>
 
               {/* Add/Remove Button */}
-              {isInCart ? (
+              {isInCart && !isWaitlistMode ? (
                 <button
                   onClick={handleRemoveFromCart}
                   disabled={removeFromCartMutation.isPending}
@@ -400,13 +412,15 @@ export default function ProductDetailV6() {
               ) : (
                 <button
                   onClick={handleAddToCart}
-                  disabled={!canAddMore || outOfStock || addToCartMutation.isPending}
+                  disabled={(!isWaitlistMode && (!canAddMore || outOfStock)) || addToCartMutation.isPending}
                   className="w-full flex items-center justify-center gap-2 px-6 py-4  text-base font-medium text-white transition-colors hover:opacity-90 disabled:opacity-50"
-                  style={{ backgroundColor: outOfStock ? C.textBrown : C.red }}
+                  style={{ backgroundColor: isWaitlistMode ? C.red : (outOfStock ? C.textBrown : C.red) }}
                 >
                   {addToCartMutation.isPending && <Loader2 className="w-4 h-4 animate-spin" />}
                   {!addToCartMutation.isPending && <Plus className="w-4 h-4" />}
-                  {outOfStock
+                  {isWaitlistMode
+                    ? "Add to Box"
+                    : outOfStock
                     ? "Out of Stock"
                     : !canAddMore
                     ? "Box is Full (5/5)"
@@ -414,7 +428,7 @@ export default function ProductDetailV6() {
                 </button>
               )}
 
-              {isAuthenticated && cartCount !== undefined && (
+              {isAuthenticated && !isWaitlistMode && cartCount !== undefined && (
                 <p className="text-center text-sm mt-4" style={{ color: C.textBrown }}>
                   {cartCount} of 5 items selected
                 </p>
@@ -425,6 +439,13 @@ export default function ProductDetailV6() {
       </main>
 
       <Footer />
+
+      {/* Waitlist Modal */}
+      <WaitlistModal
+        open={waitlistModalOpen}
+        onOpenChange={setWaitlistModalOpen}
+        source="add_to_cart"
+      />
     </div>
   );
 }

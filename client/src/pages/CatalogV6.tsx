@@ -11,7 +11,8 @@ import { Plus, Minus, Loader2, ShoppingBag, X, Filter, Check } from "lucide-reac
 import { toast } from "sonner";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { getLoginUrl } from "@/const";
-import { Header, Footer, V6_COLORS as C } from "@/components/v6";
+import { Header, Footer, V6_COLORS as C, WaitlistModal } from "@/components/v6";
+import { useWaitlistMode } from "@/hooks/useWaitlistMode";
 import {
   Sheet,
   SheetContent,
@@ -22,6 +23,7 @@ import {
 
 export default function CatalogV6() {
   const { isAuthenticated } = useAuth();
+  const { isWaitlistMode } = useWaitlistMode();
   const searchString = useSearch();
   const searchParams = new URLSearchParams(searchString);
   const brandFromUrl = searchParams.get("brand") || "";
@@ -31,6 +33,7 @@ export default function CatalogV6() {
   const [selectedAgeRange, setSelectedAgeRange] = useState<string>("");
   const [selectedSeason, setSelectedSeason] = useState<string>("");
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const [waitlistModalOpen, setWaitlistModalOpen] = useState(false);
 
   useEffect(() => {
     if (brandFromUrl) {
@@ -63,16 +66,16 @@ export default function CatalogV6() {
     enabled: productSlugs.length > 0,
   });
 
-  // Cart state
+  // Cart state (disabled in waitlist mode)
   const { data: cartSlugs } = useQuery({
     queryKey: ["cart"],
     queryFn: getCart,
-    enabled: isAuthenticated,
+    enabled: isAuthenticated && !isWaitlistMode,
   });
   const { data: cartCount } = useQuery({
     queryKey: ["cartCount"],
     queryFn: getCartCount,
-    enabled: isAuthenticated,
+    enabled: isAuthenticated && !isWaitlistMode,
   });
 
   const queryClient = useQueryClient();
@@ -143,6 +146,15 @@ export default function CatalogV6() {
   const canAddMore = (cartCount ?? 0) < 5;
 
   const handleAddToCart = (slug: string) => {
+    // In waitlist mode, show the waitlist modal with toast
+    if (isWaitlistMode) {
+      toast("Join our waitlist to be first to rent this item!", {
+        description: "We're launching soon. Sign up to get early access.",
+      });
+      setWaitlistModalOpen(true);
+      return;
+    }
+
     if (!isAuthenticated) {
       window.location.href = getLoginUrl();
       return;
@@ -265,8 +277,8 @@ export default function CatalogV6() {
     <div className="min-h-screen flex flex-col" style={{ backgroundColor: C.beige }}>
       <Header />
 
-      {/* Cart Progress Bar */}
-      {isAuthenticated && (
+      {/* Cart Progress Bar (hidden in waitlist mode) */}
+      {isAuthenticated && !isWaitlistMode && (
         <div className="bg-white border-b border-gray-200 py-3 md:py-4 sticky top-[105px] z-40">
           <div className="max-w-7xl mx-auto px-6">
             <div className="flex items-center justify-between mb-2">
@@ -417,7 +429,7 @@ export default function CatalogV6() {
                           RRP €{product.rrpPrice}
                         </p>
 
-                        {inCart ? (
+                        {inCart && !isWaitlistMode ? (
                           <button
                             onClick={() => handleRemoveFromCart(product.slug)}
                             className="w-full flex items-center justify-center gap-1 px-4 py-2  text-sm font-medium border-2 transition-colors hover:opacity-70"
@@ -429,12 +441,17 @@ export default function CatalogV6() {
                         ) : (
                           <button
                             onClick={() => handleAddToCart(product.slug)}
-                            disabled={!canAddMore || outOfStock || addToCartMutation.isPending}
+                            disabled={(!isWaitlistMode && (!canAddMore || outOfStock)) || addToCartMutation.isPending}
                             className="w-full flex items-center justify-center gap-1 px-4 py-2  text-sm font-medium text-white transition-colors hover:opacity-90 disabled:opacity-50"
-                            style={{ backgroundColor: C.darkBrown }}
+                            style={{ backgroundColor: isWaitlistMode ? C.red : C.darkBrown }}
                           >
                             {addToCartMutation.isPending ? (
                               <Loader2 className="w-4 h-4 animate-spin" />
+                            ) : isWaitlistMode ? (
+                              <>
+                                <Plus className="w-4 h-4" />
+                                Add to Box
+                              </>
                             ) : (
                               <>
                                 <Plus className="w-4 h-4" />
@@ -469,6 +486,13 @@ export default function CatalogV6() {
       </div>
 
       <Footer />
+
+      {/* Waitlist Modal */}
+      <WaitlistModal
+        open={waitlistModalOpen}
+        onOpenChange={setWaitlistModalOpen}
+        source="add_to_cart"
+      />
     </div>
   );
 }

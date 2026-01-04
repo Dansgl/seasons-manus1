@@ -6,24 +6,34 @@ import { useAuth } from "@/_core/hooks/useAuth";
 import { useState, useEffect } from "react";
 import { useLocation, Link } from "wouter";
 import { toast } from "sonner";
-import { V6_COLORS as C } from "@/components/v6";
+import { V6_COLORS as C, WaitlistModal } from "@/components/v6";
 import { Loader2 } from "lucide-react";
+import { useWaitlistMode } from "@/hooks/useWaitlistMode";
 
 export default function LoginV6() {
   const [, setLocation] = useLocation();
   const { signInWithEmail, signUpWithEmail, signInWithGoogle, isAuthenticated, loading } = useAuth();
+  const { isWaitlistMode } = useWaitlistMode();
 
   const [activeTab, setActiveTab] = useState<"signin" | "signup">("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [waitlistModalOpen, setWaitlistModalOpen] = useState(false);
 
   useEffect(() => {
     if (isAuthenticated && !loading) {
       setLocation("/");
     }
   }, [isAuthenticated, loading, setLocation]);
+
+  // In waitlist mode, show waitlist modal and redirect to home
+  useEffect(() => {
+    if (isWaitlistMode && !loading) {
+      setWaitlistModalOpen(true);
+    }
+  }, [isWaitlistMode, loading]);
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -267,6 +277,19 @@ export default function LoginV6() {
           </div>
         </div>
       </main>
+
+      {/* Waitlist Modal - shown in waitlist mode */}
+      <WaitlistModal
+        open={waitlistModalOpen}
+        onOpenChange={(open) => {
+          setWaitlistModalOpen(open);
+          // When closing, redirect to home
+          if (!open && isWaitlistMode) {
+            setLocation("/");
+          }
+        }}
+        source="login"
+      />
     </div>
   );
 }

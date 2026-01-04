@@ -1,5 +1,62 @@
 import { supabase } from './supabase';
 
+// ============ WAITLIST ============
+
+export interface WaitlistSignup {
+  id: number;
+  email: string;
+  name: string | null;
+  child_age: string;
+  created_at: string;
+  source: string | null;
+}
+
+/**
+ * Add a signup to the waitlist
+ */
+export async function addToWaitlist(
+  email: string,
+  childAge: string,
+  name?: string,
+  source?: string
+): Promise<{ success: boolean; error?: string }> {
+  const { error } = await supabase
+    .from('waitlist_signups')
+    .insert({
+      email,
+      child_age: childAge,
+      name: name || null,
+      source: source || null,
+    });
+
+  if (error) {
+    // Check for unique constraint violation (duplicate email)
+    if (error.code === '23505') {
+      return { success: false, error: 'This email is already on the waitlist!' };
+    }
+    console.error('Failed to add to waitlist:', error);
+    return { success: false, error: 'Failed to join waitlist' };
+  }
+
+  return { success: true };
+}
+
+/**
+ * Get waitlist count for social proof
+ */
+export async function getWaitlistCount(): Promise<number> {
+  const { count, error } = await supabase
+    .from('waitlist_signups')
+    .select('*', { count: 'exact', head: true });
+
+  if (error) {
+    console.error('Failed to get waitlist count:', error);
+    return 0;
+  }
+
+  return count || 0;
+}
+
 // Types matching the database schema
 export interface User {
   id: number;

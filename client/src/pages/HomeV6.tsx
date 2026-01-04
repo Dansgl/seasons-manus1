@@ -15,9 +15,10 @@
  * - Text brown: #B85C4A
  */
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "wouter";
+import { useWaitlistMode } from "@/hooks/useWaitlistMode";
 import {
   fetchProducts,
   fetchBrands,
@@ -33,7 +34,8 @@ import {
   type SanitySettings,
 } from "@/lib/sanity";
 import { User, ShoppingBag, Plus, Facebook, Instagram, ArrowRight, Sparkles, Shield, Truck, Leaf, Clock } from "lucide-react";
-import { FAQSection, Header as V6Header } from "@/components/v6";
+import { FAQSection, Header as V6Header, WaitlistModal } from "@/components/v6";
+import type { WaitlistSource } from "@/components/v6/WaitlistModal";
 import { format } from "date-fns";
 
 // Fallback images
@@ -122,7 +124,13 @@ function Header() {
 // ============================================
 // HERO
 // ============================================
-function HeroSection({ heroImage }: { heroImage?: string }) {
+interface HeroSectionProps {
+  heroImage?: string;
+  isWaitlistMode?: boolean;
+  onOpenWaitlist?: () => void;
+}
+
+function HeroSection({ heroImage, isWaitlistMode, onOpenWaitlist }: HeroSectionProps) {
   return (
     <section className="py-12 px-6 md:py-16" style={{ backgroundColor: C.beige }}>
       <div className="max-w-7xl mx-auto">
@@ -145,6 +153,29 @@ function HeroSection({ heroImage }: { heroImage?: string }) {
               <br />
               and nothing less.
             </p>
+
+            {/* CTA Button */}
+            <div className="mt-8">
+              {isWaitlistMode ? (
+                <button
+                  onClick={onOpenWaitlist}
+                  className="inline-flex items-center px-8 py-4 text-base font-medium text-white transition-opacity hover:opacity-90"
+                  style={{ backgroundColor: C.red }}
+                >
+                  Join the Waitlist
+                  <ArrowRight className="w-5 h-5 ml-2" />
+                </button>
+              ) : (
+                <Link
+                  href="/catalog"
+                  className="inline-flex items-center px-8 py-4 text-base font-medium text-white transition-opacity hover:opacity-90"
+                  style={{ backgroundColor: C.red }}
+                >
+                  Browse Collection
+                  <ArrowRight className="w-5 h-5 ml-2" />
+                </Link>
+              )}
+            </div>
           </div>
 
           {/* Right Side - Smaller Image aligned to right edge */}
@@ -739,6 +770,9 @@ export default function HomeV6() {
     queryFn: fetchSiteSettings,
   });
 
+  const { isWaitlistMode } = useWaitlistMode();
+  const [waitlistModalOpen, setWaitlistModalOpen] = useState(false);
+
   const heroImage = getSettingsImageUrl(settings?.heroImage, { width: 600, height: 600 });
   const bentoImage1 = getSettingsImageUrl(settings?.bentoImage1, { width: 500, height: 400 });
   const bentoImage2 = getSettingsImageUrl(settings?.bentoImage2, { width: 500, height: 400 });
@@ -747,7 +781,11 @@ export default function HomeV6() {
     <div className="min-h-screen bg-white">
       <V6Header />
       <main>
-        <HeroSection heroImage={heroImage || undefined} />
+        <HeroSection
+          heroImage={heroImage || undefined}
+          isWaitlistMode={isWaitlistMode}
+          onOpenWaitlist={() => setWaitlistModalOpen(true)}
+        />
         <BenefitsBar />
         <PhilosophySection bentoImage1={bentoImage1 || undefined} />
         <CleaningStandard bentoImage2={bentoImage2 || undefined} />
@@ -758,6 +796,13 @@ export default function HomeV6() {
         <FAQSection />
       </main>
       <Footer />
+
+      {/* Waitlist Modal for hero CTA */}
+      <WaitlistModal
+        open={waitlistModalOpen}
+        onOpenChange={setWaitlistModalOpen}
+        source="hero"
+      />
     </div>
   );
 }
