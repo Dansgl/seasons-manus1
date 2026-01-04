@@ -2,9 +2,6 @@ import "dotenv/config";
 import express from "express";
 import { createServer } from "http";
 import net from "net";
-import { createExpressMiddleware } from "@trpc/server/adapters/express";
-import { appRouter } from "../routers";
-import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
 import { generateSitemap } from "./sitemap";
 
@@ -67,15 +64,6 @@ Sitemap: ${process.env.APP_URL || "http://localhost:3000"}/sitemap.xml
 `;
     res.type("text/plain").send(robotsTxt);
   });
-
-  // tRPC API
-  app.use(
-    "/api/trpc",
-    createExpressMiddleware({
-      router: appRouter,
-      createContext,
-    })
-  );
 
   // Development mode uses Vite, production mode uses static files
   if (process.env.NODE_ENV === "development") {
