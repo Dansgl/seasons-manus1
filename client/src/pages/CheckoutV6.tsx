@@ -1,10 +1,10 @@
 /**
  * CheckoutV6 - Checkout page with V6 design system
- * Integrates with Stripe Checkout for subscription payments
+ * Integrates with Stripe Checkout for subscription payments (client-side)
  */
 
 import { useState, useMemo } from "react";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { getCart, getCartCount } from "@/lib/supabase-db";
 import { fetchProducts, urlFor, type SanityProduct } from "@/lib/sanity";
@@ -12,6 +12,13 @@ import { Link } from "wouter";
 import { Loader2, ShoppingBag, Check, Shield, Sparkles, Package, CreditCard } from "lucide-react";
 import { toast } from "sonner";
 import { Header, Footer, V6_COLORS as C } from "@/components/v6";
+import { loadStripe } from "@stripe/stripe-js";
+
+// Initialize Stripe (loaded once)
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
+
+// Stripe Price ID for quarterly subscription (€70/quarter)
+const STRIPE_PRICE_ID = "price_1SmHrdFMnACwrvu0m47a5V7e";
 
 export default function CheckoutV6() {
   const { user, isAuthenticated } = useAuth();
@@ -45,34 +52,9 @@ export default function CheckoutV6() {
       .filter((p): p is SanityProduct => p !== undefined);
   }, [cartSlugs, allProducts]);
 
-  // Mutation to create Stripe checkout session
-  const checkoutMutation = useMutation({
-    mutationFn: async (data: { email: string; cartItems: string[] }) => {
-      const response = await fetch("/api/stripe/create-checkout-session", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "Failed to create checkout session");
-      }
-      return response.json();
-    },
-    onSuccess: (result) => {
-      if (result.url) {
-        // Redirect to Stripe Checkout
-        window.location.href = result.url;
-      } else {
-        toast.error("Failed to create checkout session");
-      }
-    },
-    onError: (error: Error) => {
-      toast.error(error.message || "Failed to create checkout session");
-    },
-  });
+  const [isRedirecting, setIsRedirecting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!agreedToTerms) {
@@ -85,17 +67,38 @@ export default function CheckoutV6() {
       return;
     }
 
-    // Store shipping info in localStorage for after checkout
-    localStorage.setItem("checkout_shipping", JSON.stringify({
-      address: shippingAddress,
-      phone: phone || undefined,
-    }));
+    setIsRedirecting(true);
 
-    // Create Stripe checkout session
-    checkoutMutation.mutate({
-      email: user?.email || "",
-      cartItems: cartSlugs || [],
-    });
+    try {
+      // Store shipping info in localStorage for after checkout
+      localStorage.setItem("checkout_shipping", JSON.stringify({
+        address: shippingAddress,
+        phone: phone || undefined,
+        cartItems: cartSlugs || [],
+      }));
+
+      // Load Stripe and redirect to checkout (client-side)
+      const stripe = await stripePromise;
+      if (!stripe) {
+        throw new Error("Stripe failed to load");
+      }
+
+      const { error } = await stripe.redirectToCheckout({
+        lineItems: [{ price: STRIPE_PRICE_ID, quantity: 1 }],
+        mode: "subscription",
+        successUrl: `${window.location.origin}/dashboard?checkout=success`,
+        cancelUrl: `${window.location.origin}/cart?checkout=canceled`,
+        customerEmail: user?.email || undefined,
+      });
+
+      if (error) {
+        throw error;
+      }
+    } catch (err: any) {
+      console.error("Checkout error:", err);
+      toast.error(err?.message || "Failed to redirect to checkout");
+      setIsRedirecting(false);
+    }
   };
 
   if (!isAuthenticated) {
@@ -289,11 +292,11 @@ export default function CheckoutV6() {
               {/* Submit Button */}
               <button
                 onClick={handleSubmit}
-                disabled={checkoutMutation.isPending || !agreedToTerms}
+                disabled={isRedirecting || !agreedToTerms}
                 className="w-full flex items-center justify-center gap-2 py-4  text-base font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-50"
                 style={{ backgroundColor: C.red }}
               >
-                {checkoutMutation.isPending ? (
+                {isRedirecting ? (
                   <>
                     <Loader2 className="w-5 h-5 animate-spin" />
                     Redirecting to payment...
