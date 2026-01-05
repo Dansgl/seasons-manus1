@@ -1,0 +1,29 @@
+# Baby Seasons - Robots.txt
+# https://babyseasons.ro
+
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://babyseasons.ro/sitemap.xml
+
+# Disallow admin/internal pages
+Disallow: /api/
+Disallow: /dashboard
+Disallow: /checkout
+Disallow: /cart
+Disallow: /swap-selection
+Disallow: /login
+Disallow: /auth/
+
+# Allow crawlers to index these important pages
+Allow: /
+Allow: /catalog
+Allow: /product/
+Allow: /brands
+Allow: /brands/
+Allow: /blog
+Allow: /blog/
+Allow: /how-it-works
+Allow: /faq
+Allow: /about
