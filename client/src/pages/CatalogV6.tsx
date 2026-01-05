@@ -414,13 +414,13 @@ export default function CatalogV6() {
                         </div>
                       </Link>
 
-                      <div>
+                      <div className="flex flex-col">
                         <p className="text-xs font-medium mb-1" style={{ color: C.red }}>
                           {product.brand?.name}
                         </p>
                         <Link
                           href={`/product/${product.slug}`}
-                          className="text-sm font-medium hover:underline line-clamp-2 mb-1"
+                          className="text-sm font-medium hover:underline line-clamp-2 mb-1 min-h-[2.5rem]"
                           style={{ color: C.darkBrown }}
                         >
                           {product.name}
