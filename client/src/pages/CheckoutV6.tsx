@@ -14,8 +14,12 @@ import { toast } from "sonner";
 import { Header, Footer, V6_COLORS as C } from "@/components/v6";
 import { loadStripe } from "@stripe/stripe-js";
 
+// Stripe publishable key (safe to expose - this is public)
+const STRIPE_PUBLISHABLE_KEY = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY ||
+  "pk_test_51SmGhqFMnACwrvu0sfBsnU5udJsVuuNHNnKDodqhBugvq2sB3AtH4wWpvUQQ1vPvFVjDJ8r9q7LWw1qp0D720o0u00ohfSpvDt";
+
 // Initialize Stripe (loaded once)
-const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
+const stripePromise = loadStripe(STRIPE_PUBLISHABLE_KEY);
 
 // Stripe Price ID for quarterly subscription (€70/quarter)
 const STRIPE_PRICE_ID = "price_1SmHrdFMnACwrvu0m47a5V7e";
