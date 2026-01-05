@@ -7,7 +7,7 @@ export const sanityClient = createClient({
   projectId: import.meta.env.VITE_SANITY_PROJECT_ID || "h83nldug",
   dataset: import.meta.env.VITE_SANITY_DATASET || "production",
   apiVersion: "2024-01-01",
-  useCdn: false, // Disabled CDN for real-time updates during development
+  useCdn: true, // Use CDN for faster responses in production
 });
 
 // Image URL builder
