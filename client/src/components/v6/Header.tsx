@@ -108,7 +108,7 @@ export function Header({ announcement }: HeaderProps) {
                   <Link href="/dashboard" className="hover:opacity-70 transition-colors" style={{ color: C.textBrown }}>
                     <User className="w-5 h-5" />
                   </Link>
-                  <Link href="/catalog" className="relative hover:opacity-70 transition-colors" style={{ color: C.textBrown }}>
+                  <Link href="/cart" className="relative hover:opacity-70 transition-colors" style={{ color: C.textBrown }}>
                     <ShoppingBag className="w-5 h-5" />
                     {cartCount !== undefined && cartCount > 0 && (
                       <span
