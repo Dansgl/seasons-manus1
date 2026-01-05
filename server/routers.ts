@@ -1,5 +1,5 @@
 import { systemRouter } from "./_core/systemRouter";
-import { publicProcedure, protectedProcedure, router } from "./_core/trpc";
+import { publicProcedure, protectedProcedure, adminProcedure, router } from "./_core/trpc";
 import { uploadToStorage } from "./_core/supabase";
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
@@ -7,12 +7,59 @@ import * as db from "./db";
 import slugify from "slugify";
 import { parse } from "csv-parse/sync";
 
-// Admin-only procedure
-const adminProcedure = protectedProcedure.use(({ ctx, next }) => {
-  if (ctx.user.role !== "admin") {
-    throw new TRPCError({ code: "FORBIDDEN", message: "Admin access required" });
-  }
-  return next({ ctx });
+// ============ SECURITY CONSTANTS ============
+const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024; // 5MB
+const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"] as const;
+const SAFE_FILENAME_REGEX = /^[a-zA-Z0-9][a-zA-Z0-9._-]*$/;
+
+// ============ VALIDATION SCHEMAS ============
+const safeFilenameSchema = z
+  .string()
+  .min(1)
+  .max(255)
+  .regex(SAFE_FILENAME_REGEX, "Invalid filename: use only letters, numbers, dots, dashes, underscores");
+
+const imageUploadSchema = z.object({
+  fileName: safeFilenameSchema,
+  fileData: z.string().refine(
+    (data) => {
+      try {
+        const buffer = Buffer.from(data, "base64");
+        return buffer.length <= MAX_FILE_SIZE_BYTES;
+      } catch {
+        return false;
+      }
+    },
+    { message: `File too large. Maximum size is ${MAX_FILE_SIZE_BYTES / 1024 / 1024}MB` }
+  ),
+  contentType: z.enum(ALLOWED_IMAGE_TYPES, {
+    message: "Invalid file type. Allowed: JPEG, PNG, WebP, GIF",
+  }),
+});
+
+const shippingAddressSchema = z
+  .string()
+  .min(10, "Address too short")
+  .max(500, "Address too long");
+
+const phoneSchema = z
+  .string()
+  .regex(/^\+?[0-9\s\-()]{7,20}$/, "Invalid phone number format")
+  .optional();
+
+const csvRecordSchema = z.object({
+  brand: z.string().min(1).max(100),
+  name: z.string().min(1).max(255),
+  description: z.string().max(2000).default(""),
+  category: z.enum([
+    "bodysuit", "sleepsuit", "joggers", "jacket", "cardigan",
+    "top", "bottom", "dress", "outerwear", "swimwear",
+    "hat", "shoes", "pjs", "overall",
+  ]),
+  ageRange: z.enum(["0-3m", "3-6m", "6-12m", "12-18m", "18-24m"]),
+  season: z.enum(["summer", "winter", "all-season"]),
+  rrpPrice: z.string().regex(/^\d+(\.\d{1,2})?$/, "Invalid price format"),
+  imageUrl: z.string().url().optional().or(z.literal("")),
 });
 
 export const appRouter = router({
@@ -326,8 +373,8 @@ export const appRouter = router({
     create: protectedProcedure
       .input(
         z.object({
-          shippingAddress: z.string(),
-          phone: z.string().optional(),
+          shippingAddress: shippingAddressSchema,
+          phone: phoneSchema,
         })
       )
       .mutation(async ({ ctx, input }) => {
@@ -675,16 +722,12 @@ export const appRouter = router({
       }),
 
       uploadImage: adminProcedure
-        .input(
-          z.object({
-            fileName: z.string(),
-            fileData: z.string(), // Base64 encoded
-            contentType: z.string(),
-          })
-        )
+        .input(imageUploadSchema)
         .mutation(async ({ input }) => {
           const buffer = Buffer.from(input.fileData, "base64");
-          const path = `products/${Date.now()}-${input.fileName}`;
+          // Sanitize filename and create path
+          const sanitizedName = input.fileName.replace(/[^a-zA-Z0-9._-]/g, "_");
+          const path = `products/${Date.now()}-${sanitizedName}`;
           const url = await uploadToStorage("product-images", path, buffer, input.contentType);
           return { success: true, url };
         }),
@@ -692,38 +735,56 @@ export const appRouter = router({
       bulkImport: adminProcedure
         .input(
           z.object({
-            csvData: z.string(),
+            csvData: z.string().max(10 * 1024 * 1024, "CSV file too large (max 10MB)"),
           })
         )
         .mutation(async ({ input }) => {
           // Parse CSV
-          const records = parse(input.csvData, {
-            columns: true,
-            skip_empty_lines: true,
-            trim: true,
-          }) as Array<{
-            brand: string;
-            name: string;
-            description: string;
-            category: string;
-            ageRange: string;
-            season: string;
-            rrpPrice: string;
-            imageUrl?: string;
-          }>;
+          let records: Array<Record<string, string>>;
+          try {
+            records = parse(input.csvData, {
+              columns: true,
+              skip_empty_lines: true,
+              trim: true,
+            });
+          } catch {
+            throw new TRPCError({
+              code: "BAD_REQUEST",
+              message: "Invalid CSV format",
+            });
+          }
 
-          const products = records.map((record) => ({
-            brand: record.brand,
-            name: record.name,
-            description: record.description,
-            category: record.category as any,
-            ageRange: record.ageRange as any,
-            season: record.season as any,
-            rrpPrice: record.rrpPrice,
-            imageUrl: record.imageUrl || null,
-            ozoneCleaned: true,
-            insuranceIncluded: true,
-          }));
+          // Validate and transform each record
+          const products = [];
+          const errors: string[] = [];
+
+          for (let i = 0; i < records.length; i++) {
+            const record = records[i];
+            const result = csvRecordSchema.safeParse(record);
+            if (!result.success) {
+              errors.push(`Row ${i + 2}: ${result.error.issues.map((e: { message: string }) => e.message).join(", ")}`);
+            } else {
+              products.push({
+                brand: result.data.brand,
+                name: result.data.name,
+                description: result.data.description,
+                category: result.data.category,
+                ageRange: result.data.ageRange,
+                season: result.data.season,
+                rrpPrice: result.data.rrpPrice,
+                imageUrl: result.data.imageUrl || null,
+                ozoneCleaned: true,
+                insuranceIncluded: true,
+              });
+            }
+          }
+
+          if (errors.length > 0) {
+            throw new TRPCError({
+              code: "BAD_REQUEST",
+              message: `Validation errors:\n${errors.slice(0, 10).join("\n")}${errors.length > 10 ? `\n...and ${errors.length - 10} more` : ""}`,
+            });
+          }
 
           const result = await db.bulkCreateProducts(products);
           return { success: true, count: result.length };
@@ -891,16 +952,12 @@ export const appRouter = router({
       }),
 
       uploadImage: adminProcedure
-        .input(
-          z.object({
-            fileName: z.string(),
-            fileData: z.string(), // Base64 encoded
-            contentType: z.string(),
-          })
-        )
+        .input(imageUploadSchema)
         .mutation(async ({ input }) => {
           const buffer = Buffer.from(input.fileData, "base64");
-          const path = `blog/${Date.now()}-${input.fileName}`;
+          // Sanitize filename and create path
+          const sanitizedName = input.fileName.replace(/[^a-zA-Z0-9._-]/g, "_");
+          const path = `blog/${Date.now()}-${sanitizedName}`;
           const url = await uploadToStorage("blog-images", path, buffer, input.contentType);
           return { success: true, url };
         }),
