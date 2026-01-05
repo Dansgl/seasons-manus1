@@ -2,7 +2,7 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 import Stripe from 'stripe';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2025-01-27.acacia',
+  apiVersion: '2024-12-18.acacia',
 });
 
 const RENTAL_BOX_PRICE = 70_00; // €70 in cents
@@ -56,8 +56,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     });
 
     return res.status(200).json({ url: session.url });
-  } catch (err) {
-    console.error('Checkout session error:', err);
-    return res.status(500).json({ error: 'Failed to create checkout session' });
+  } catch (err: any) {
+    console.error('Checkout session error:', err?.message || err);
+    return res.status(500).json({
+      error: 'Failed to create checkout session',
+      details: err?.message
+    });
   }
 }
