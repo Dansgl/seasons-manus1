@@ -2,14 +2,14 @@
  * DashboardV6 - User dashboard with V6 design system
  */
 
-import { useMemo } from "react";
+import { useMemo, useEffect, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { getSubscription, getCurrentBox, cancelSubscription } from "@/lib/supabase-db";
 import { fetchProducts, getProductImageUrl, type SanityProduct } from "@/lib/sanity";
 import { generateReturnLabel } from "@/lib/returnLabel";
-import { Link, useLocation } from "wouter";
-import { Loader2, ShoppingBag, Calendar, Package, Download, ArrowRight, LogOut } from "lucide-react";
+import { Link, useLocation, useSearch } from "wouter";
+import { Loader2, ShoppingBag, Calendar, Package, Download, ArrowRight, LogOut, CheckCircle, PartyPopper } from "lucide-react";
 import { toast } from "sonner";
 import { getLoginUrl } from "@/const";
 import { Header, Footer, V6_COLORS as C } from "@/components/v6";
@@ -17,6 +17,18 @@ import { Header, Footer, V6_COLORS as C } from "@/components/v6";
 export default function DashboardV6() {
   const { user, isAuthenticated, loading: authLoading, signOut } = useAuth();
   const [, setLocation] = useLocation();
+  const searchString = useSearch();
+  const [showCheckoutSuccess, setShowCheckoutSuccess] = useState(false);
+
+  // Check for checkout success
+  useEffect(() => {
+    const params = new URLSearchParams(searchString);
+    if (params.get("checkout") === "success") {
+      setShowCheckoutSuccess(true);
+      // Remove query param from URL without refresh
+      window.history.replaceState({}, "", "/dashboard");
+    }
+  }, [searchString]);
 
   const queryClient = useQueryClient();
 
@@ -83,6 +95,52 @@ export default function DashboardV6() {
   }
 
   if (!subscription) {
+    // Show success message after checkout
+    if (showCheckoutSuccess) {
+      return (
+        <div className="min-h-screen flex flex-col" style={{ backgroundColor: C.beige }}>
+          <Header />
+          <div className="flex-1 flex items-center justify-center px-6">
+            <div className="text-center max-w-md">
+              <div
+                className="w-20 h-20 mx-auto mb-6 flex items-center justify-center"
+                style={{ backgroundColor: C.lavender }}
+              >
+                <PartyPopper className="w-10 h-10" style={{ color: C.red }} />
+              </div>
+              <h1 className="text-3xl md:text-4xl mb-4" style={{ color: C.darkBrown }}>
+                Subscription Activated!
+              </h1>
+              <p className="mb-2 text-lg" style={{ color: C.textBrown }}>
+                Welcome to Seasons! Your payment was successful.
+              </p>
+              <p className="mb-8" style={{ color: C.textBrown }}>
+                We're preparing your first box with the items you selected. You'll receive a confirmation email shortly.
+              </p>
+              <div className="space-y-3">
+                <Link href="/catalog">
+                  <button
+                    className="w-full px-8 py-3 text-base font-medium text-white hover:opacity-90 transition-opacity"
+                    style={{ backgroundColor: C.red }}
+                  >
+                    Continue Browsing
+                  </button>
+                </Link>
+                <button
+                  onClick={() => setShowCheckoutSuccess(false)}
+                  className="w-full px-8 py-3 text-base font-medium border-2 hover:opacity-70 transition-opacity"
+                  style={{ borderColor: C.darkBrown, color: C.darkBrown }}
+                >
+                  View Dashboard
+                </button>
+              </div>
+            </div>
+          </div>
+          <Footer />
+        </div>
+      );
+    }
+
     return (
       <div className="min-h-screen flex flex-col" style={{ backgroundColor: C.beige }}>
         <Header />
@@ -161,7 +219,7 @@ export default function DashboardV6() {
                 <Package className="w-5 h-5" style={{ color: C.textBrown }} />
                 <h3 className="font-medium" style={{ color: C.darkBrown }}>Next Billing</h3>
               </div>
-              <p className="text-4xl font-light" style={{ color: C.darkBrown }}>€70</p>
+              <p className="text-4xl font-light" style={{ color: C.darkBrown }}>350 RON</p>
               <p className="text-sm mt-1" style={{ color: C.textBrown }}>
                 On {new Date(subscription.next_billing_date).toLocaleDateString()}
               </p>

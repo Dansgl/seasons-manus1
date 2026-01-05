@@ -280,7 +280,7 @@ export default function CartV6() {
                   <div className="space-y-4 mb-6">
                     <div className="flex justify-between text-sm">
                       <span style={{ color: C.textBrown }}>Quarterly Price</span>
-                      <span className="font-medium" style={{ color: C.darkBrown }}>€70.00</span>
+                      <span className="font-medium" style={{ color: C.darkBrown }}>350 RON</span>
                     </div>
                     <div className="flex justify-between text-sm">
                       <span style={{ color: C.textBrown }}>Items Selected</span>
@@ -297,7 +297,7 @@ export default function CartV6() {
                   <div className="border-t pt-6 mb-6" style={{ borderColor: C.lavender }}>
                     <div className="flex justify-between items-center mb-2">
                       <span className="font-medium" style={{ color: C.darkBrown }}>Total</span>
-                      <span className="text-3xl font-light" style={{ color: C.darkBrown }}>€70</span>
+                      <span className="text-3xl font-light" style={{ color: C.darkBrown }}>350 RON</span>
                     </div>
                     <p className="text-xs" style={{ color: C.textBrown }}>
                       Billed every 3 months

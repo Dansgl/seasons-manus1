@@ -71,7 +71,7 @@ function Header() {
         className="text-white text-center py-2 px-4 text-sm"
         style={{ backgroundColor: C.red }}
       >
-        Premium baby clothing rental — €70/quarter for 5 designer pieces
+        Premium baby clothing rental — 350 RON/quarter for 5 designer pieces
       </div>
 
       {/* Main Navigation - aligned with content */}

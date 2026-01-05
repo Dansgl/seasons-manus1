@@ -14,7 +14,7 @@ import { toast } from "sonner";
 import { Header, Footer, V6_COLORS as C } from "@/components/v6";
 
 // Stripe Payment Link (hosted by Stripe - no server needed)
-const STRIPE_PAYMENT_LINK = "https://buy.stripe.com/test_9B64gzfrIb38dHiftHbbG00";
+const STRIPE_PAYMENT_LINK = "https://buy.stripe.com/28E7sL5POcAx68u2eW0Jq00";
 
 export default function CheckoutV6() {
   const { user, isAuthenticated } = useAuth();
@@ -222,7 +222,7 @@ export default function CheckoutV6() {
                   <ul className="space-y-3">
                     <li className="flex items-start">
                       <span className="mr-3" style={{ color: C.red }}>•</span>
-                      <span>Quarterly billing of €70 every 3 months</span>
+                      <span>Quarterly billing of 350 RON every 3 months</span>
                     </li>
                     <li className="flex items-start">
                       <span className="mr-3" style={{ color: C.red }}>•</span>
@@ -328,7 +328,7 @@ export default function CheckoutV6() {
                 <div className="border-t pt-4 space-y-2" style={{ borderColor: C.lavender }}>
                   <div className="flex justify-between text-sm">
                     <span style={{ color: C.textBrown }}>Quarterly Subscription</span>
-                    <span style={{ color: C.darkBrown }}>€70.00</span>
+                    <span style={{ color: C.darkBrown }}>350 RON</span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span style={{ color: C.textBrown }}>Items</span>
@@ -343,7 +343,7 @@ export default function CheckoutV6() {
                 <div className="border-t mt-4 pt-4" style={{ borderColor: C.lavender }}>
                   <div className="flex justify-between items-center">
                     <span className="font-medium" style={{ color: C.darkBrown }}>Total Today</span>
-                    <span className="text-3xl font-light" style={{ color: C.darkBrown }}>€70</span>
+                    <span className="text-3xl font-light" style={{ color: C.darkBrown }}>350 RON</span>
                   </div>
                   <p className="text-xs mt-2" style={{ color: C.textBrown }}>
                     Billed quarterly. Next payment in 3 months.

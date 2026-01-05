@@ -18,7 +18,7 @@ const ALL_FAQS: FAQItem[] = [
   {
     category: "Getting Started",
     question: "How does Seasons work?",
-    answer: "Seasons is a baby clothing rental subscription. For €70 per quarter, you select 5 premium designer items. We ship them to you, you enjoy them for 3 months, then return them for a fresh selection in the next size. It's that simple!"
+    answer: "Seasons is a baby clothing rental subscription. For 350 RON per quarter, you select 5 premium designer items. We ship them to you, you enjoy them for 3 months, then return them for a fresh selection in the next size. It's that simple!"
   },
   {
     category: "Getting Started",
@@ -40,7 +40,7 @@ const ALL_FAQS: FAQItem[] = [
   {
     category: "Subscription & Pricing",
     question: "How much does Seasons cost?",
-    answer: "Seasons is €70 per quarter (3 months). This includes 5 premium items, free shipping both ways, insurance for normal wear and tear, and professional Ozone cleaning between uses."
+    answer: "Seasons is 350 RON per quarter (3 months). This includes 5 premium items, free shipping both ways, insurance for normal wear and tear, and professional Ozone cleaning between uses."
   },
   {
     category: "Subscription & Pricing",
@@ -50,7 +50,7 @@ const ALL_FAQS: FAQItem[] = [
   {
     category: "Subscription & Pricing",
     question: "When am I charged?",
-    answer: "You're charged €70 when you start your subscription and then every 3 months at the beginning of each new cycle. We'll send you a reminder before each billing date."
+    answer: "You're charged 350 RON when you start your subscription and then every 3 months at the beginning of each new cycle. We'll send you a reminder before each billing date."
   },
   {
     category: "Subscription & Pricing",

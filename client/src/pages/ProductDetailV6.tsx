@@ -392,7 +392,7 @@ export default function ProductDetailV6() {
                   </li>
                   <li className="flex items-start">
                     <span className="mr-2" style={{ color: C.red }}>✓</span>
-                    Part of your €70 quarterly subscription
+                    Part of your 350 RON quarterly subscription
                   </li>
                 </ul>
               </div>

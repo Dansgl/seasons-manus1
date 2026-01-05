@@ -215,7 +215,7 @@ export default function HowItWorks() {
                 className="text-5xl md:text-6xl font-light mb-2"
                 style={{ color: C.red }}
               >
-                €70
+                350 RON
               </div>
               <p
                 className="text-lg mb-6"

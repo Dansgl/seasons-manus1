@@ -21,7 +21,7 @@ export const TOP_5_FAQS: FAQ[] = [
     answer: "Select 5 designer baby items, receive them at home, use for 3 months, then return for your next box. It's that simple!"
   },
   {
-    question: "What's included in the €70/quarter price?",
+    question: "What's included in the 350 RON/quarter price?",
     answer: "5 premium items, free shipping both ways, insurance for normal wear and tear, and professional Ozone cleaning between uses."
   },
   {

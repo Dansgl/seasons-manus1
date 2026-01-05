@@ -267,7 +267,7 @@ export function WaitlistModal({ open, onOpenChange, source = "header" }: Waitlis
                   <span className="mr-2" style={{ color: C.red }}>
                     &#10003;
                   </span>
-                  5 premium pieces for EUR 70/quarter
+                  5 premium pieces for 350 RON/quarter
                 </li>
                 <li className="flex items-start">
                   <span className="mr-2" style={{ color: C.red }}>
