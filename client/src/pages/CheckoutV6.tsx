@@ -1,25 +1,23 @@
 /**
  * CheckoutV6 - Checkout page with V6 design system
+ * Integrates with Stripe Checkout for subscription payments
  */
 
 import { useState, useMemo } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/_core/hooks/useAuth";
-import { getCart, getCartCount, createSubscription } from "@/lib/supabase-db";
+import { getCart, getCartCount } from "@/lib/supabase-db";
 import { fetchProducts, urlFor, type SanityProduct } from "@/lib/sanity";
-import { Link, useLocation } from "wouter";
-import { Loader2, ShoppingBag, Check, Shield, Sparkles, Package } from "lucide-react";
+import { Link } from "wouter";
+import { Loader2, ShoppingBag, Check, Shield, Sparkles, Package, CreditCard } from "lucide-react";
 import { toast } from "sonner";
 import { Header, Footer, V6_COLORS as C } from "@/components/v6";
 
 export default function CheckoutV6() {
   const { user, isAuthenticated } = useAuth();
-  const [, setLocation] = useLocation();
   const [shippingAddress, setShippingAddress] = useState("");
   const [phone, setPhone] = useState("");
   const [agreedToTerms, setAgreedToTerms] = useState(false);
-
-  const queryClient = useQueryClient();
 
   // Get cart slugs from Supabase
   const { data: cartSlugs, isLoading: cartLoading } = useQuery({
@@ -47,21 +45,30 @@ export default function CheckoutV6() {
       .filter((p): p is SanityProduct => p !== undefined);
   }, [cartSlugs, allProducts]);
 
-  const createSubscriptionMutation = useMutation({
-    mutationFn: (data: { shippingAddress: string; phone?: string }) =>
-      createSubscription(data.shippingAddress, data.phone),
+  // Mutation to create Stripe checkout session
+  const checkoutMutation = useMutation({
+    mutationFn: async (data: { email: string; cartItems: string[] }) => {
+      const response = await fetch("/api/stripe/create-checkout-session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Failed to create checkout session");
+      }
+      return response.json();
+    },
     onSuccess: (result) => {
-      if (result.success) {
-        toast.success("Subscription created successfully!");
-        queryClient.invalidateQueries({ queryKey: ["cart"] });
-        queryClient.invalidateQueries({ queryKey: ["cartCount"] });
-        setLocation("/dashboard");
+      if (result.url) {
+        // Redirect to Stripe Checkout
+        window.location.href = result.url;
       } else {
-        toast.error(result.error || "Failed to create subscription");
+        toast.error("Failed to create checkout session");
       }
     },
-    onError: () => {
-      toast.error("Failed to create subscription");
+    onError: (error: Error) => {
+      toast.error(error.message || "Failed to create checkout session");
     },
   });
 
@@ -78,9 +85,16 @@ export default function CheckoutV6() {
       return;
     }
 
-    createSubscriptionMutation.mutate({
-      shippingAddress,
+    // Store shipping info in localStorage for after checkout
+    localStorage.setItem("checkout_shipping", JSON.stringify({
+      address: shippingAddress,
       phone: phone || undefined,
+    }));
+
+    // Create Stripe checkout session
+    checkoutMutation.mutate({
+      email: user?.email || "",
+      cartItems: cartSlugs || [],
     });
   };
 
@@ -275,19 +289,19 @@ export default function CheckoutV6() {
               {/* Submit Button */}
               <button
                 onClick={handleSubmit}
-                disabled={createSubscriptionMutation.isPending || !agreedToTerms}
+                disabled={checkoutMutation.isPending || !agreedToTerms}
                 className="w-full flex items-center justify-center gap-2 py-4  text-base font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-50"
                 style={{ backgroundColor: C.red }}
               >
-                {createSubscriptionMutation.isPending ? (
+                {checkoutMutation.isPending ? (
                   <>
                     <Loader2 className="w-5 h-5 animate-spin" />
-                    Processing...
+                    Redirecting to payment...
                   </>
                 ) : (
                   <>
-                    <Check className="w-5 h-5" />
-                    Complete Subscription
+                    <CreditCard className="w-5 h-5" />
+                    Proceed to Payment
                   </>
                 )}
               </button>
