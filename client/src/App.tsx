@@ -3,6 +3,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/NotFound";
 import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
+import { UmamiAnalytics } from "./components/UmamiAnalytics";
 import { ThemeProvider } from "./contexts/ThemeContext";
 // Home versions (history)
 import HomeV1 from "./pages/HomeV1";
@@ -71,6 +72,7 @@ function App() {
     <ErrorBoundary>
       <ThemeProvider defaultTheme="light">
         <TooltipProvider>
+          <UmamiAnalytics />
           <Toaster />
           <Router />
         </TooltipProvider>
