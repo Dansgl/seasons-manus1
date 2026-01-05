@@ -2,7 +2,7 @@
  * WaitlistModal - Collects waitlist signups for pre-launch mode
  */
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   Dialog,
@@ -15,6 +15,7 @@ import { V6_COLORS as C } from "./colors";
 import { Loader2, Check, Users } from "lucide-react";
 import { addToWaitlist, getWaitlistCount } from "@/lib/supabase-db";
 import { toast } from "sonner";
+import { trackWaitlistModalOpened, trackWaitlistModalClosed, trackWaitlistSignup } from "@/lib/analytics";
 
 // Age options matching existing product age ranges
 const AGE_OPTIONS = [
@@ -41,8 +42,24 @@ export function WaitlistModal({ open, onOpenChange, source = "header" }: Waitlis
   const [name, setName] = useState("");
   const [childAge, setChildAge] = useState("");
   const [success, setSuccess] = useState(false);
+  const openTimeRef = useRef<number>(0);
 
   const queryClient = useQueryClient();
+
+  // Track modal open/close
+  useEffect(() => {
+    if (open) {
+      openTimeRef.current = Date.now();
+      trackWaitlistModalOpened(source);
+    } else if (openTimeRef.current > 0) {
+      const timeSpent = Math.round((Date.now() - openTimeRef.current) / 1000);
+      if (!success) {
+        // Only track close if they didn't sign up
+        trackWaitlistModalClosed(source, timeSpent);
+      }
+      openTimeRef.current = 0;
+    }
+  }, [open, source, success]);
 
   // Get waitlist count for social proof
   const { data: waitlistCount } = useQuery({
@@ -56,6 +73,14 @@ export function WaitlistModal({ open, onOpenChange, source = "header" }: Waitlis
       if (result.success) {
         setSuccess(true);
         queryClient.invalidateQueries({ queryKey: ["waitlistCount"] });
+
+        // Track successful signup
+        trackWaitlistSignup({
+          email,
+          hasKids: childAge !== "expecting",
+          ageRange: childAge,
+          source,
+        });
       } else {
         toast.error(result.error || "Failed to join waitlist");
       }

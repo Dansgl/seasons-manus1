@@ -13,6 +13,7 @@ import { useAuth } from "@/_core/hooks/useAuth";
 import { getLoginUrl } from "@/const";
 import { Header, Footer, V6_COLORS as C, WaitlistModal, FavoriteButton } from "@/components/v6";
 import { useWaitlistMode } from "@/hooks/useWaitlistMode";
+import { trackAddToCart, trackRemoveFromCart, trackCartFull, trackCatalogFilter, trackCatalogFilterCleared, trackOutOfStockInterest } from "@/lib/analytics";
 import {
   Sheet,
   SheetContent,
@@ -82,13 +83,30 @@ export default function CatalogV6() {
 
   const addToCartMutation = useMutation({
     mutationFn: (slug: string) => addToCart(slug),
-    onSuccess: (result) => {
+    onSuccess: (result, slug) => {
       if (result.success) {
         toast.success("Added to your box!");
         queryClient.invalidateQueries({ queryKey: ["cart"] });
         queryClient.invalidateQueries({ queryKey: ["cartCount"] });
+
+        // Track add to cart
+        const product = allProducts?.find(p => p.slug === slug);
+        if (product) {
+          trackAddToCart({
+            productSlug: slug,
+            productName: product.name,
+            brand: product.brand?.name || 'Unknown',
+            cartCount: (cartCount || 0) + 1,
+            isWaitlistMode: false,
+          });
+        }
       } else {
         toast.error(result.error || "Failed to add item");
+
+        // Track cart full attempt
+        if (result.error?.includes('full') || result.error?.includes('5')) {
+          trackCartFull(slug);
+        }
       }
     },
     onError: () => {
@@ -98,10 +116,13 @@ export default function CatalogV6() {
 
   const removeFromCartMutation = useMutation({
     mutationFn: (slug: string) => removeFromCart(slug),
-    onSuccess: () => {
+    onSuccess: (result, slug) => {
       toast.success("Removed from your box");
       queryClient.invalidateQueries({ queryKey: ["cart"] });
       queryClient.invalidateQueries({ queryKey: ["cartCount"] });
+
+      // Track remove from cart
+      trackRemoveFromCart(slug, (cartCount || 1) - 1);
     },
   });
 
@@ -171,6 +192,40 @@ export default function CatalogV6() {
     setSelectedCategory("");
     setSelectedAgeRange("");
     setSelectedSeason("");
+    trackCatalogFilterCleared();
+  };
+
+  // Filter handlers with tracking
+  const handleBrandFilter = (brand: string) => {
+    setSelectedBrand(brand);
+    if (brand) {
+      const resultCount = allProducts?.filter(p => p.brand?.name === brand).length || 0;
+      trackCatalogFilter({ type: 'brand', value: brand, resultCount });
+    }
+  };
+
+  const handleCategoryFilter = (category: string) => {
+    setSelectedCategory(category);
+    if (category) {
+      const resultCount = allProducts?.filter(p => p.category === category).length || 0;
+      trackCatalogFilter({ type: 'category', value: category, resultCount });
+    }
+  };
+
+  const handleAgeRangeFilter = (ageRange: string) => {
+    setSelectedAgeRange(ageRange);
+    if (ageRange) {
+      const resultCount = allProducts?.filter(p => p.ageRange === ageRange).length || 0;
+      trackCatalogFilter({ type: 'age_range', value: ageRange, resultCount });
+    }
+  };
+
+  const handleSeasonFilter = (season: string) => {
+    setSelectedSeason(season);
+    if (season) {
+      const resultCount = allProducts?.filter(p => p.season === season).length || 0;
+      trackCatalogFilter({ type: 'season', value: season, resultCount });
+    }
   };
 
   const hasActiveFilters = selectedBrand || selectedCategory || selectedAgeRange || selectedSeason;
@@ -200,13 +255,13 @@ export default function CatalogV6() {
       <div>
         <h3 className="text-sm font-semibold mb-3" style={{ color: C.darkBrown }}>Brand</h3>
         <div className="space-y-1">
-          <FilterButton label="All Brands" active={selectedBrand === ""} onClick={() => setSelectedBrand("")} />
+          <FilterButton label="All Brands" active={selectedBrand === ""} onClick={() => handleBrandFilter("")} />
           {brands?.map((brand) => (
             <FilterButton
               key={brand._id}
               label={brand.name}
               active={selectedBrand === brand.name}
-              onClick={() => setSelectedBrand(brand.name)}
+              onClick={() => handleBrandFilter(brand.name)}
             />
           ))}
         </div>
@@ -216,13 +271,13 @@ export default function CatalogV6() {
       <div>
         <h3 className="text-sm font-semibold mb-3" style={{ color: C.darkBrown }}>Category</h3>
         <div className="space-y-1">
-          <FilterButton label="All Categories" active={selectedCategory === ""} onClick={() => setSelectedCategory("")} />
+          <FilterButton label="All Categories" active={selectedCategory === ""} onClick={() => handleCategoryFilter("")} />
           {filterOptions.categories.map((cat) => (
             <FilterButton
               key={cat}
               label={cat}
               active={selectedCategory === cat}
-              onClick={() => setSelectedCategory(cat)}
+              onClick={() => handleCategoryFilter(cat)}
             />
           ))}
         </div>
@@ -232,13 +287,13 @@ export default function CatalogV6() {
       <div>
         <h3 className="text-sm font-semibold mb-3" style={{ color: C.darkBrown }}>Age Range</h3>
         <div className="space-y-1">
-          <FilterButton label="All Ages" active={selectedAgeRange === ""} onClick={() => setSelectedAgeRange("")} />
+          <FilterButton label="All Ages" active={selectedAgeRange === ""} onClick={() => handleAgeRangeFilter("")} />
           {filterOptions.ageRanges.map((age) => (
             <FilterButton
               key={age}
               label={age}
               active={selectedAgeRange === age}
-              onClick={() => setSelectedAgeRange(age)}
+              onClick={() => handleAgeRangeFilter(age)}
             />
           ))}
         </div>
@@ -248,13 +303,13 @@ export default function CatalogV6() {
       <div>
         <h3 className="text-sm font-semibold mb-3" style={{ color: C.darkBrown }}>Season</h3>
         <div className="space-y-1">
-          <FilterButton label="All Seasons" active={selectedSeason === ""} onClick={() => setSelectedSeason("")} />
+          <FilterButton label="All Seasons" active={selectedSeason === ""} onClick={() => handleSeasonFilter("")} />
           {filterOptions.seasons.map((season) => (
             <FilterButton
               key={season}
               label={season}
               active={selectedSeason === season}
-              onClick={() => setSelectedSeason(season)}
+              onClick={() => handleSeasonFilter(season)}
             />
           ))}
         </div>
