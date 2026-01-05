@@ -35,6 +35,7 @@ export default function CatalogV6() {
   const [selectedSeason, setSelectedSeason] = useState<string>("");
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [waitlistModalOpen, setWaitlistModalOpen] = useState(false);
+  const [addingSlug, setAddingSlug] = useState<string | null>(null);
 
   useEffect(() => {
     if (brandFromUrl) {
@@ -84,6 +85,7 @@ export default function CatalogV6() {
   const addToCartMutation = useMutation({
     mutationFn: (slug: string) => addToCart(slug),
     onSuccess: (result, slug) => {
+      setAddingSlug(null);
       if (result.success) {
         toast.success("Added to your box!");
         queryClient.invalidateQueries({ queryKey: ["cart"] });
@@ -110,6 +112,7 @@ export default function CatalogV6() {
       }
     },
     onError: () => {
+      setAddingSlug(null);
       toast.error("Failed to add item");
     },
   });
@@ -180,6 +183,7 @@ export default function CatalogV6() {
       window.location.href = getLoginUrl();
       return;
     }
+    setAddingSlug(slug);
     addToCartMutation.mutate(slug);
   };
 
@@ -492,7 +496,7 @@ export default function CatalogV6() {
                         {inCart && !isWaitlistMode ? (
                           <button
                             onClick={() => handleRemoveFromCart(product.slug)}
-                            className="w-full flex items-center justify-center gap-1 px-4 py-2  text-sm font-medium border-2 transition-colors hover:opacity-70"
+                            className="w-full flex items-center justify-center gap-1 px-4 py-2 text-sm font-medium border-2 transition-colors hover:opacity-70"
                             style={{ borderColor: C.darkBrown, color: C.darkBrown }}
                           >
                             <Minus className="w-4 h-4" />
@@ -501,11 +505,14 @@ export default function CatalogV6() {
                         ) : (
                           <button
                             onClick={() => handleAddToCart(product.slug)}
-                            disabled={(!isWaitlistMode && (!canAddMore || outOfStock)) || addToCartMutation.isPending}
-                            className="w-full flex items-center justify-center gap-1 px-4 py-2  text-sm font-medium text-white transition-colors hover:opacity-90 disabled:opacity-50"
-                            style={{ backgroundColor: isWaitlistMode ? C.red : C.darkBrown }}
+                            disabled={(!isWaitlistMode && (!canAddMore || outOfStock)) || addingSlug === product.slug}
+                            className="w-full flex items-center justify-center gap-1 px-4 py-2 text-sm font-medium text-white border-2 transition-colors hover:opacity-90 disabled:opacity-50"
+                            style={{
+                              backgroundColor: isWaitlistMode ? C.red : C.darkBrown,
+                              borderColor: isWaitlistMode ? C.red : C.darkBrown
+                            }}
                           >
-                            {addToCartMutation.isPending ? (
+                            {addingSlug === product.slug ? (
                               <Loader2 className="w-4 h-4 animate-spin" />
                             ) : isWaitlistMode ? (
                               <>
