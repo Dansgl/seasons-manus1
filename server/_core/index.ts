@@ -2,6 +2,7 @@ import "dotenv/config";
 import express from "express";
 import { createServer } from "http";
 import net from "net";
+import rateLimit from "express-rate-limit";
 import { serveStatic, setupVite } from "./vite";
 import { generateSitemap } from "./sitemap";
 
@@ -28,15 +29,35 @@ async function startServer() {
   const app = express();
   const server = createServer(app);
 
-  // Configure body parser with larger size limit for file uploads
-  app.use(express.json({ limit: "50mb" }));
-  app.use(express.urlencoded({ limit: "50mb", extended: true }));
+  // Configure body parser with reasonable size limit
+  app.use(express.json({ limit: "10mb" }));
+  app.use(express.urlencoded({ limit: "10mb", extended: true }));
 
-  // CORS headers for Supabase Auth
+  // Rate limiting for API endpoints - 100 requests per minute per IP
+  const apiLimiter = rateLimit({
+    windowMs: 60 * 1000, // 1 minute
+    max: 100,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { error: "Too many requests, please try again later." },
+  });
+  app.use("/api", apiLimiter);
+
+  // CORS - restrict to allowed origins
+  const allowedOrigins = [
+    process.env.APP_URL || "http://localhost:3000",
+    "https://babyseasons.ro",
+    "https://www.babyseasons.ro",
+  ].filter(Boolean);
+
   app.use((req, res, next) => {
-    res.header("Access-Control-Allow-Origin", "*");
+    const origin = req.headers.origin;
+    if (origin && allowedOrigins.includes(origin)) {
+      res.header("Access-Control-Allow-Origin", origin);
+    }
     res.header("Access-Control-Allow-Headers", "Authorization, Content-Type");
     res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+    res.header("Access-Control-Allow-Credentials", "true");
     if (req.method === "OPTIONS") {
       res.sendStatus(200);
       return;
