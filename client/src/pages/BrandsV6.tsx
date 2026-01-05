@@ -60,14 +60,16 @@ export default function BrandsV6() {
               return (
                 <Link key={brand._id} href={`/catalog?brand=${encodeURIComponent(brand.name)}`}>
                   <article className="group relative">
-                    {/* Full bleed image */}
-                    <div className="aspect-square overflow-hidden">
+                    {/* Brand logo container */}
+                    <div className="aspect-square overflow-hidden" style={{ backgroundColor: C.white }}>
                       {logoUrl ? (
-                        <img
-                          src={logoUrl}
-                          alt={brand.name}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                        />
+                        <div className="w-full h-full flex items-center justify-center p-6 md:p-8 group-hover:scale-105 transition-transform duration-300">
+                          <img
+                            src={logoUrl}
+                            alt={brand.name}
+                            className="max-w-full max-h-full object-contain"
+                          />
+                        </div>
                       ) : (
                         <div
                           className="w-full h-full flex items-center justify-center"
