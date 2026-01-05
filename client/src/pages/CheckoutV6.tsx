@@ -12,17 +12,9 @@ import { Link } from "wouter";
 import { Loader2, ShoppingBag, Check, Shield, Sparkles, Package, CreditCard } from "lucide-react";
 import { toast } from "sonner";
 import { Header, Footer, V6_COLORS as C } from "@/components/v6";
-import { loadStripe } from "@stripe/stripe-js";
 
-// Stripe publishable key (safe to expose - this is public)
-const STRIPE_PUBLISHABLE_KEY = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY ||
-  "pk_test_51SmGhqFMnACwrvu0sfBsnU5udJsVuuNHNnKDodqhBugvq2sB3AtH4wWpvUQQ1vPvFVjDJ8r9q7LWw1qp0D720o0u00ohfSpvDt";
-
-// Initialize Stripe (loaded once)
-const stripePromise = loadStripe(STRIPE_PUBLISHABLE_KEY);
-
-// Stripe Price ID for quarterly subscription (€70/quarter)
-const STRIPE_PRICE_ID = "price_1SmHrdFMnACwrvu0m47a5V7e";
+// Stripe Payment Link (hosted by Stripe - no server needed)
+const STRIPE_PAYMENT_LINK = "https://buy.stripe.com/test_9B64gzfrIb38dHiftHbbG00";
 
 export default function CheckoutV6() {
   const { user, isAuthenticated } = useAuth();
@@ -58,7 +50,7 @@ export default function CheckoutV6() {
 
   const [isRedirecting, setIsRedirecting] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!agreedToTerms) {
@@ -73,36 +65,20 @@ export default function CheckoutV6() {
 
     setIsRedirecting(true);
 
-    try {
-      // Store shipping info in localStorage for after checkout
-      localStorage.setItem("checkout_shipping", JSON.stringify({
-        address: shippingAddress,
-        phone: phone || undefined,
-        cartItems: cartSlugs || [],
-      }));
+    // Store shipping info in localStorage for after checkout
+    localStorage.setItem("checkout_shipping", JSON.stringify({
+      address: shippingAddress,
+      phone: phone || undefined,
+      cartItems: cartSlugs || [],
+      email: user?.email,
+    }));
 
-      // Load Stripe and redirect to checkout (client-side)
-      const stripe = await stripePromise;
-      if (!stripe) {
-        throw new Error("Stripe failed to load");
-      }
+    // Redirect to Stripe Payment Link (prefill email if available)
+    const paymentUrl = user?.email
+      ? `${STRIPE_PAYMENT_LINK}?prefilled_email=${encodeURIComponent(user.email)}`
+      : STRIPE_PAYMENT_LINK;
 
-      const { error } = await stripe.redirectToCheckout({
-        lineItems: [{ price: STRIPE_PRICE_ID, quantity: 1 }],
-        mode: "subscription",
-        successUrl: `${window.location.origin}/dashboard?checkout=success`,
-        cancelUrl: `${window.location.origin}/cart?checkout=canceled`,
-        customerEmail: user?.email || undefined,
-      });
-
-      if (error) {
-        throw error;
-      }
-    } catch (err: any) {
-      console.error("Checkout error:", err);
-      toast.error(err?.message || "Failed to redirect to checkout");
-      setIsRedirecting(false);
-    }
+    window.location.href = paymentUrl;
   };
 
   if (!isAuthenticated) {
