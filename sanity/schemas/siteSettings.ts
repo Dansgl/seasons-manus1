@@ -179,6 +179,111 @@ export default defineType({
       title: "Footer Text",
       type: "string",
     }),
+    // Homepage sections
+    defineField({
+      name: "announcementBar",
+      title: "Announcement Bar",
+      type: "object",
+      fields: [
+        {
+          name: "text",
+          title: "Text",
+          type: "string",
+          initialValue: "Premium baby clothing rental — €70/quarter for 5 designer pieces",
+        },
+        {
+          name: "enabled",
+          title: "Enabled",
+          type: "boolean",
+          initialValue: true,
+        },
+      ],
+    }),
+    defineField({
+      name: "sectionTitles",
+      title: "Section Titles",
+      type: "object",
+      description: "Customize homepage section headings",
+      fields: [
+        {
+          name: "mostLoved",
+          title: "Most Loved Section",
+          type: "string",
+          initialValue: "Most loved",
+        },
+        {
+          name: "ourBrands",
+          title: "Our Brands Section",
+          type: "string",
+          initialValue: "Our brands",
+        },
+        {
+          name: "fromTheBlog",
+          title: "From the Blog Section",
+          type: "string",
+          initialValue: "From the blog",
+        },
+      ],
+    }),
+    defineField({
+      name: "philosophySection",
+      title: "Philosophy Section",
+      type: "object",
+      description: "The 'Our Philosophy' section on homepage",
+      fields: [
+        {
+          name: "title",
+          title: "Title",
+          type: "string",
+          initialValue: "Our philosophy",
+        },
+        {
+          name: "content",
+          title: "Content",
+          type: "text",
+          initialValue: "Premium European fashion for your little one, delivered fresh each season. We handle the cleaning, you enjoy the moments.",
+        },
+      ],
+    }),
+    defineField({
+      name: "qualitySection",
+      title: "Cleaning/Quality Section",
+      type: "object",
+      description: "The cleaning standard section on homepage",
+      fields: [
+        {
+          name: "title",
+          title: "Title",
+          type: "string",
+          initialValue: "The cleaning standard",
+        },
+        {
+          name: "content",
+          title: "Content",
+          type: "text",
+          initialValue: "Ozone-cleaned, hypoallergenic, and baby-safe. Every garment meets hospital-grade cleanliness before reaching your little one.",
+        },
+      ],
+    }),
+    defineField({
+      name: "newsletterSection",
+      title: "Newsletter/Waitlist Section",
+      type: "object",
+      fields: [
+        {
+          name: "title",
+          title: "Title",
+          type: "string",
+          initialValue: "Join the waitlist",
+        },
+        {
+          name: "content",
+          title: "Content",
+          type: "text",
+          initialValue: "Be the first to know when we launch. Early access, exclusive offers, and sustainable style tips.",
+        },
+      ],
+    }),
   ],
   preview: {
     prepare() {

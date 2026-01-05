@@ -9,6 +9,7 @@ import post from "./post";
 
 // Settings
 import siteSettings from "./siteSettings";
+import aboutPage from "./aboutPage";
 
 export const schemaTypes = [
   // Products
@@ -20,4 +21,5 @@ export const schemaTypes = [
   post,
   // Settings
   siteSettings,
+  aboutPage,
 ];

@@ -23,8 +23,10 @@ export interface SanityBrand {
   name: string;
   slug: { current: string };
   logo?: SanityImageSource;
+  brandImage?: SanityImageSource;
   description?: string;
   website?: string;
+  featured?: boolean;
 }
 
 export interface SanityProduct {
@@ -54,11 +56,11 @@ export function getProductImageUrl(
   product: SanityProduct,
   options?: { width?: number; height?: number }
 ): string | null {
-  const { width = 400, height = 400 } = options || {};
+  const { width = 800, height = 800 } = options || {};
 
   // Prefer Sanity uploaded image
   if (product.mainImage) {
-    return urlFor(product.mainImage).width(width).height(height).fit("crop").auto("format").url();
+    return urlFor(product.mainImage).width(width).height(height).fit("crop").quality(90).auto("format").url();
   }
 
   // Fall back to external URL (Unsplash)
@@ -66,7 +68,7 @@ export function getProductImageUrl(
     // Unsplash URLs can be resized with query params
     const url = product.externalImageUrl;
     if (url.includes('unsplash.com')) {
-      return `${url}&w=${width}&h=${height}&fit=crop&auto=format`;
+      return `${url}&w=${width}&h=${height}&fit=crop&auto=format&q=90`;
     }
     return url;
   }
@@ -114,16 +116,16 @@ export function getPostImageUrl(
   post: SanityPost,
   options?: { width?: number; height?: number }
 ): string | null {
-  const { width = 400, height = 400 } = options || {};
+  const { width = 800, height = 600 } = options || {};
 
   if (post.mainImage) {
-    return urlFor(post.mainImage).width(width).height(height).auto("format").url();
+    return urlFor(post.mainImage).width(width).height(height).quality(90).auto("format").url();
   }
 
   if (post.externalImageUrl) {
     const url = post.externalImageUrl;
     if (url.includes('unsplash.com')) {
-      return `${url}&w=${width}&h=${height}&fit=crop&auto=format`;
+      return `${url}&w=${width}&h=${height}&fit=crop&auto=format&q=90`;
     }
     return url;
   }
@@ -156,6 +158,63 @@ export interface SanitySettings {
     facebook?: string;
     pinterest?: string;
   };
+  // New homepage section fields
+  announcementBar?: {
+    text?: string;
+    enabled?: boolean;
+  };
+  sectionTitles?: {
+    mostLoved?: string;
+    ourBrands?: string;
+    fromTheBlog?: string;
+  };
+  philosophySection?: {
+    title?: string;
+    content?: string;
+  };
+  qualitySection?: {
+    title?: string;
+    content?: string;
+  };
+  newsletterSection?: {
+    title?: string;
+    content?: string;
+  };
+}
+
+export interface SanityAboutPage {
+  _id: string;
+  heroTitle?: string;
+  heroSubtitle?: string;
+  missionSection?: {
+    title?: string;
+    content?: any[]; // Portable Text
+  };
+  valuesSection?: {
+    title?: string;
+    values?: Array<{
+      title: string;
+      description: string;
+      icon: string;
+    }>;
+  };
+  storySection?: {
+    title?: string;
+    content?: any[]; // Portable Text
+  };
+  impactSection?: {
+    title?: string;
+    stats?: Array<{
+      value: string;
+      label: string;
+    }>;
+  };
+  ctaSection?: {
+    title?: string;
+    content?: string;
+    buttonText?: string;
+    buttonLink?: string;
+  };
 }
 
 // Helper to get settings image URL
@@ -164,8 +223,8 @@ export function getSettingsImageUrl(
   options?: { width?: number; height?: number }
 ): string | null {
   if (!image) return null;
-  const { width = 600, height = 800 } = options || {};
-  return urlFor(image).width(width).height(height).auto("format").url();
+  const { width = 1200, height = 1200 } = options || {};
+  return urlFor(image).width(width).height(height).quality(90).auto("format").url();
 }
 
 // GROQ Queries
@@ -239,6 +298,17 @@ export const queries = {
     name,
     "slug": slug.current,
     logo,
+    brandImage,
+    description,
+    featured
+  }`,
+
+  featuredBrands: `*[_type == "brand" && featured == true] | order(name asc) [0...3] {
+    _id,
+    name,
+    "slug": slug.current,
+    logo,
+    brandImage,
     description
   }`,
 
@@ -317,7 +387,24 @@ export const queries = {
     bentoImage2,
     benefits,
     contactEmail,
-    socialLinks
+    socialLinks,
+    announcementBar,
+    sectionTitles,
+    philosophySection,
+    qualitySection,
+    newsletterSection
+  }`,
+
+  // About Page
+  aboutPage: `*[_type == "aboutPage"][0] {
+    _id,
+    heroTitle,
+    heroSubtitle,
+    missionSection,
+    valuesSection,
+    storySection,
+    impactSection,
+    ctaSection
   }`,
 };
 
@@ -342,6 +429,10 @@ export async function fetchBrands() {
   return sanityClient.fetch<SanityBrand[]>(queries.allBrands);
 }
 
+export async function fetchFeaturedBrands() {
+  return sanityClient.fetch<SanityBrand[]>(queries.featuredBrands);
+}
+
 export async function fetchPosts() {
   return sanityClient.fetch<SanityPost[]>(queries.allPosts);
 }
@@ -360,4 +451,8 @@ export async function fetchCategories() {
 
 export async function fetchSiteSettings() {
   return sanityClient.fetch<SanitySettings>(queries.siteSettings);
+}
+
+export async function fetchAboutPage() {
+  return sanityClient.fetch<SanityAboutPage>(queries.aboutPage);
 }

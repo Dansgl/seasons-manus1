@@ -125,6 +125,69 @@ export default defineType({
             },
           ],
         },
+        {
+          type: "object",
+          name: "gallery",
+          title: "Image Gallery",
+          fields: [
+            {
+              name: "images",
+              title: "Images",
+              type: "array",
+              of: [
+                {
+                  type: "image",
+                  options: { hotspot: true },
+                  fields: [
+                    {
+                      name: "alt",
+                      type: "string",
+                      title: "Alt Text",
+                    },
+                    {
+                      name: "caption",
+                      type: "string",
+                      title: "Caption",
+                    },
+                  ],
+                },
+              ],
+              validation: (Rule) => Rule.min(2).max(12),
+            },
+            {
+              name: "layout",
+              title: "Layout",
+              type: "string",
+              options: {
+                list: [
+                  { title: "Grid (2 columns)", value: "grid-2" },
+                  { title: "Grid (3 columns)", value: "grid-3" },
+                  { title: "Masonry", value: "masonry" },
+                  { title: "Carousel", value: "carousel" },
+                ],
+              },
+              initialValue: "grid-2",
+            },
+            {
+              name: "caption",
+              title: "Gallery Caption",
+              type: "string",
+              description: "Optional caption for the entire gallery",
+            },
+          ],
+          preview: {
+            select: {
+              images: "images",
+              layout: "layout",
+            },
+            prepare({ images, layout }) {
+              return {
+                title: `Gallery (${images?.length || 0} images)`,
+                subtitle: layout || "grid-2",
+              };
+            },
+          },
+        },
       ],
     }),
     // SEO Fields

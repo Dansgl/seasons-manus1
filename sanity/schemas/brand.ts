@@ -39,6 +39,22 @@ export default defineType({
       title: "Website",
       type: "url",
     }),
+    defineField({
+      name: "brandImage",
+      title: "Brand Card Image",
+      type: "image",
+      description: "Custom image for homepage brand card (different from logo)",
+      options: {
+        hotspot: true,
+      },
+    }),
+    defineField({
+      name: "featured",
+      title: "Featured on Homepage",
+      type: "boolean",
+      description: "Show this brand in the homepage 'Our Brands' section",
+      initialValue: false,
+    }),
   ],
   preview: {
     select: {

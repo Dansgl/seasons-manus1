@@ -22,6 +22,7 @@ import { useWaitlistMode } from "@/hooks/useWaitlistMode";
 import {
   fetchProducts,
   fetchBrands,
+  fetchFeaturedBrands,
   fetchFeaturedPosts,
   fetchSiteSettings,
   getProductImageUrl,
@@ -197,14 +198,21 @@ function HeroSection({ heroImage, isWaitlistMode, onOpenWaitlist }: HeroSectionP
 // ============================================
 // BENEFITS BAR (scrolling)
 // ============================================
-function BenefitsBar() {
-  const benefits = [
-    "Ozone Cleaned",
-    "Insurance Included",
-    "Free Shipping",
-    "Sustainable",
-    "Flexible Swaps",
-  ];
+interface BenefitsBarProps {
+  benefits?: Array<{ title: string; description?: string; icon?: string }>;
+}
+
+function BenefitsBar({ benefits: sanityBenefits }: BenefitsBarProps) {
+  // Use Sanity benefits if available, otherwise fallback
+  const benefits = sanityBenefits?.length
+    ? sanityBenefits.map(b => b.title)
+    : [
+        "Ozone Cleaned",
+        "Insurance Included",
+        "Free Shipping",
+        "Sustainable",
+        "Flexible Swaps",
+      ];
 
   // Create items with sparkle separators
   const items = benefits.flatMap((label, i) => [
@@ -255,7 +263,13 @@ function BenefitsBar() {
 // ============================================
 // PHILOSOPHY (2-column grid)
 // ============================================
-function PhilosophySection({ bentoImage1 }: { bentoImage1?: string }) {
+interface PhilosophySectionProps {
+  bentoImage1?: string;
+  title?: string;
+  content?: string;
+}
+
+function PhilosophySection({ bentoImage1, title, content }: PhilosophySectionProps) {
   return (
     <section className="grid grid-cols-1 md:grid-cols-2">
       {/* Left Side - Lavender Background with Text */}
@@ -265,11 +279,10 @@ function PhilosophySection({ bentoImage1 }: { bentoImage1?: string }) {
       >
         <div className="max-w-md">
           <h2 className="text-3xl md:text-4xl mb-4" style={{ color: C.darkBrown }}>
-            Our philosophy
+            {title || "Our philosophy"}
           </h2>
           <p className="text-base" style={{ color: C.darkBrown }}>
-            Premium European fashion for your little one. Curated with care, cleaned with
-            medical-grade sanitization. Only the best for your baby.
+            {content || "Premium European fashion for your little one. Curated with care, cleaned with medical-grade sanitization. Only the best for your baby."}
           </p>
         </div>
       </div>
@@ -289,7 +302,13 @@ function PhilosophySection({ bentoImage1 }: { bentoImage1?: string }) {
 // ============================================
 // SKINCARE STANDARD (adapted for Seasons)
 // ============================================
-function CleaningStandard({ bentoImage2 }: { bentoImage2?: string }) {
+interface CleaningStandardProps {
+  bentoImage2?: string;
+  title?: string;
+  content?: string;
+}
+
+function CleaningStandard({ bentoImage2, title, content }: CleaningStandardProps) {
   return (
     <section className="grid grid-cols-1 md:grid-cols-2">
       {/* Left Side - Full Bleed Image */}
@@ -307,10 +326,11 @@ function CleaningStandard({ bentoImage2 }: { bentoImage2?: string }) {
         style={{ backgroundColor: C.darkBrown }}
       >
         <div className="max-w-md text-center">
-          <h2 className="text-3xl md:text-4xl mb-6 text-white">The cleaning standard</h2>
+          <h2 className="text-3xl md:text-4xl mb-6 text-white">
+            {title || "The cleaning standard"}
+          </h2>
           <p className="text-base leading-relaxed text-white/90">
-            Ozone-cleaned, hypoallergenic, and baby-safe. Every piece is professionally sanitized
-            to medical-grade standards. Safe for even the most sensitive skin.
+            {content || "Ozone-cleaned, hypoallergenic, and baby-safe. Every piece is professionally sanitized to medical-grade standards. Safe for even the most sensitive skin."}
           </p>
         </div>
       </div>
@@ -321,7 +341,11 @@ function CleaningStandard({ bentoImage2 }: { bentoImage2?: string }) {
 // ============================================
 // MOST LOVED (one product per brand, 3x2 grid, no gaps, text overlay)
 // ============================================
-function MostLoved() {
+interface MostLovedProps {
+  sectionTitle?: string;
+}
+
+function MostLoved({ sectionTitle }: MostLovedProps) {
   const { data: allProducts, isLoading } = useQuery<SanityProduct[]>({
     queryKey: ["sanity", "products"],
     queryFn: fetchProducts,
@@ -364,7 +388,7 @@ function MostLoved() {
       <div className="px-6 py-8">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <h2 className="text-3xl md:text-4xl" style={{ color: C.darkBrown }}>
-            Most loved
+            {sectionTitle || "Most loved"}
           </h2>
           <Link
             href="/catalog"
@@ -429,14 +453,24 @@ function MostLoved() {
 // ============================================
 // COLLECTIONS (3x1 grid with brand photos)
 // ============================================
-function Collections() {
-  const { data: brands } = useQuery<SanityBrand[]>({
+interface CollectionsProps {
+  sectionTitle?: string;
+}
+
+function Collections({ sectionTitle }: CollectionsProps) {
+  // Try featured brands first, fall back to all brands
+  const { data: featuredBrands } = useQuery<SanityBrand[]>({
+    queryKey: ["sanity", "featuredBrands"],
+    queryFn: fetchFeaturedBrands,
+  });
+
+  const { data: allBrands } = useQuery<SanityBrand[]>({
     queryKey: ["sanity", "brands"],
     queryFn: fetchBrands,
   });
 
-  // Get first 3 brands
-  const displayBrands = brands?.slice(0, 3) || [];
+  // Use featured brands if available, otherwise first 3 from all brands
+  const displayBrands = (featuredBrands?.length ? featuredBrands : allBrands?.slice(0, 3)) || [];
 
   // Alternating background colors - green, lavender (for Studio Koter), red
   const bgColors = [C.green, C.lavender, C.red];
@@ -449,7 +483,7 @@ function Collections() {
         <div className="px-6 py-8">
           <div className="max-w-7xl mx-auto flex items-center justify-between">
             <h2 className="text-3xl md:text-4xl" style={{ color: C.darkBrown }}>
-              Our brands
+              {sectionTitle || "Our brands"}
             </h2>
             <Link
               href="/brands"
@@ -467,7 +501,12 @@ function Collections() {
         {displayBrands.map((brand, index) => {
           const bgColor = bgColors[index % bgColors.length];
           const textColor = textColors[index % textColors.length];
-          const logoUrl = brand.logo ? urlFor(brand.logo).width(400).height(400).auto("format").url() : null;
+          // Prefer brandImage over logo for homepage cards
+          const imageUrl = brand.brandImage
+            ? urlFor(brand.brandImage).width(800).height(800).auto("format").url()
+            : brand.logo
+            ? urlFor(brand.logo).width(800).height(800).auto("format").url()
+            : null;
 
           return (
             <Link
@@ -481,9 +520,9 @@ function Collections() {
               >
                 {/* Brand Image Frame - zoom to fit, no white edges */}
                 <div className="relative mb-6 w-48 h-48 md:w-56 md:h-56 overflow-hidden">
-                  {logoUrl ? (
+                  {imageUrl ? (
                     <img
-                      src={logoUrl}
+                      src={imageUrl}
                       alt={brand.name}
                       className="w-full h-full object-cover"
                     />
@@ -543,15 +582,21 @@ function Collections() {
 // ============================================
 // NEWSLETTER
 // ============================================
-function Newsletter() {
+interface NewsletterProps {
+  title?: string;
+  content?: string;
+}
+
+function Newsletter({ title, content }: NewsletterProps) {
   return (
     <section className="py-16 px-6" style={{ backgroundColor: C.navy }}>
       <div className="max-w-4xl mx-auto">
         <div className="mb-8">
-          <h2 className="text-white text-3xl md:text-4xl mb-4">Join the waitlist</h2>
+          <h2 className="text-white text-3xl md:text-4xl mb-4">
+            {title || "Join the waitlist"}
+          </h2>
           <p className="text-white/90 text-base">
-            Be the first to know when we launch. Get exclusive access to our curated baby fashion
-            collection.
+            {content || "Be the first to know when we launch. Get exclusive access to our curated baby fashion collection."}
           </p>
         </div>
 
@@ -577,7 +622,11 @@ function Newsletter() {
 // ============================================
 // BLOG PREVIEW
 // ============================================
-function BlogPreview() {
+interface BlogPreviewProps {
+  sectionTitle?: string;
+}
+
+function BlogPreview({ sectionTitle }: BlogPreviewProps) {
   const { data: posts } = useQuery<SanityPost[]>({
     queryKey: ["sanity", "featuredPosts"],
     queryFn: fetchFeaturedPosts,
@@ -595,7 +644,7 @@ function BlogPreview() {
       <div className="px-6 py-8">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <h2 className="text-3xl md:text-4xl" style={{ color: C.darkBrown }}>
-            From the blog
+            {sectionTitle || "From the blog"}
           </h2>
           <Link
             href="/blog"
@@ -773,9 +822,9 @@ export default function HomeV6() {
   const { isWaitlistMode } = useWaitlistMode();
   const [waitlistModalOpen, setWaitlistModalOpen] = useState(false);
 
-  const heroImage = getSettingsImageUrl(settings?.heroImage, { width: 600, height: 600 });
-  const bentoImage1 = getSettingsImageUrl(settings?.bentoImage1, { width: 500, height: 400 });
-  const bentoImage2 = getSettingsImageUrl(settings?.bentoImage2, { width: 500, height: 400 });
+  const heroImage = getSettingsImageUrl(settings?.heroImage, { width: 1200, height: 1200 });
+  const bentoImage1 = getSettingsImageUrl(settings?.bentoImage1, { width: 1200, height: 1000 });
+  const bentoImage2 = getSettingsImageUrl(settings?.bentoImage2, { width: 1200, height: 1000 });
 
   return (
     <div className="min-h-screen bg-white">
@@ -786,13 +835,24 @@ export default function HomeV6() {
           isWaitlistMode={isWaitlistMode}
           onOpenWaitlist={() => setWaitlistModalOpen(true)}
         />
-        <BenefitsBar />
-        <PhilosophySection bentoImage1={bentoImage1 || undefined} />
-        <CleaningStandard bentoImage2={bentoImage2 || undefined} />
-        <MostLoved />
-        <Collections />
-        <Newsletter />
-        <BlogPreview />
+        <BenefitsBar benefits={settings?.benefits} />
+        <PhilosophySection
+          bentoImage1={bentoImage1 || undefined}
+          title={settings?.philosophySection?.title}
+          content={settings?.philosophySection?.content}
+        />
+        <CleaningStandard
+          bentoImage2={bentoImage2 || undefined}
+          title={settings?.qualitySection?.title}
+          content={settings?.qualitySection?.content}
+        />
+        <MostLoved sectionTitle={settings?.sectionTitles?.mostLoved} />
+        <Collections sectionTitle={settings?.sectionTitles?.ourBrands} />
+        <Newsletter
+          title={settings?.newsletterSection?.title}
+          content={settings?.newsletterSection?.content}
+        />
+        <BlogPreview sectionTitle={settings?.sectionTitles?.fromTheBlog} />
         <FAQSection />
       </main>
       <Footer />
