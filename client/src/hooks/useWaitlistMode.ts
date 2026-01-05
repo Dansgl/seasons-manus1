@@ -10,9 +10,7 @@
  */
 
 export function useWaitlistMode() {
-  // TEMP: Hardcode waitlist mode until env var issue is resolved
-  const isWaitlistMode = true;
-  // const isWaitlistMode = import.meta.env.VITE_WAITLIST_MODE === "true";
+  const isWaitlistMode = import.meta.env.VITE_WAITLIST_MODE === "true";
 
   return {
     isWaitlistMode,

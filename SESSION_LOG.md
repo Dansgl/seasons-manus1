@@ -91,4 +91,52 @@ Separated test/live Stripe modes and reverted production to waitlist mode.
 
 ---
 
+## Session: 2026-01-05 (Part 3)
+
+### Summary
+Technical SEO, bug fixes, and domain configuration.
+
+### What Was Done
+
+#### 1. Technical SEO (Romanian)
+- Created `robots.txt` with sitemap reference
+- Created `sitemap.xml` with main pages
+- Added Romanian meta tags (title, description, keywords)
+- Added Open Graph + Twitter card meta tags
+- Added schema.org structured data (Organization + Service)
+- Set page language to Romanian (`lang="ro"`)
+
+#### 2. Bug Fixes
+- Fixed cart/checkout images (use `getProductImageUrl` helper)
+- Fixed catalog button heights (Add/Remove same size)
+- Fixed per-product spinner (only clicked button spins)
+- Fixed brand logos display (object-contain + padding)
+- Fixed Sanity CORS (enabled CDN mode)
+
+#### 3. Domain Configuration
+- Fixed www.babyseasons.ro DNS (CNAME to Vercel)
+- Both www and non-www now point to same deployment
+
+#### 4. CSP Updates
+- Added Sanity project-specific domains
+- Added Umami analytics domains
+
+### Files Modified
+- `client/public/robots.txt` - NEW
+- `client/public/sitemap.xml` - NEW
+- `client/index.html` - SEO meta tags
+- `client/src/pages/CartV6.tsx` - Image fix
+- `client/src/pages/CheckoutV6.tsx` - Image fix
+- `client/src/pages/CatalogV6.tsx` - Button fixes
+- `client/src/pages/BrandsV6.tsx` - Logo display fix
+- `client/src/lib/sanity.ts` - Enable CDN
+- `vercel.json` - CSP updates
+
+### Current State
+- **babyseasons.ro**: Waitlist mode, Sanity working
+- **www.babyseasons.ro**: Same as above
+- **Local dev**: Test Stripe payments working
+
+---
+
 *Last updated: 2026-01-05*
