@@ -200,6 +200,20 @@ export const cartItems = pgTable("cart_items", {
 export type CartItem = typeof cartItems.$inferSelect;
 export type InsertCartItem = typeof cartItems.$inferInsert;
 
+// ============ USER FAVORITES ============
+// Wishlist for all users - helps with demand analytics
+
+export const userFavorites = pgTable("user_favorites", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  // Reference to Sanity product by slug
+  sanityProductSlug: varchar("sanity_product_slug", { length: 255 }).notNull(),
+  addedAt: timestamp("added_at", { withTimezone: true }).defaultNow().notNull(),
+});
+
+export type UserFavorite = typeof userFavorites.$inferSelect;
+export type InsertUserFavorite = typeof userFavorites.$inferInsert;
+
 // ============ SWAP ITEMS (for next box selection) ============
 
 export const swapItems = pgTable("swap_items", {

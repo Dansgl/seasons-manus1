@@ -11,7 +11,7 @@ import { Plus, Minus, Loader2, ShoppingBag, X, Filter, Check } from "lucide-reac
 import { toast } from "sonner";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { getLoginUrl } from "@/const";
-import { Header, Footer, V6_COLORS as C, WaitlistModal } from "@/components/v6";
+import { Header, Footer, V6_COLORS as C, WaitlistModal, FavoriteButton } from "@/components/v6";
 import { useWaitlistMode } from "@/hooks/useWaitlistMode";
 import {
   Sheet,
@@ -411,6 +411,11 @@ export default function CatalogV6() {
                               <Check className="w-4 h-4 text-white" />
                             </div>
                           )}
+
+                          {/* Favorite Button */}
+                          <div className="absolute bottom-3 right-3">
+                            <FavoriteButton productSlug={product.slug} size="sm" />
+                          </div>
                         </div>
                       </Link>
 

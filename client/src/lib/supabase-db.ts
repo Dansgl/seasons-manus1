@@ -338,6 +338,119 @@ export async function clearCart(): Promise<{ success: boolean; error?: string }>
   return { success: true };
 }
 
+// ============ FAVORITES (WISHLIST) ============
+
+/**
+ * Get all items in the user's favorites (returns slugs)
+ */
+export async function getFavorites(): Promise<string[]> {
+  const user = await getCurrentUser();
+  if (!user) return [];
+
+  const { data, error } = await supabase
+    .from('user_favorites')
+    .select('sanity_product_slug')
+    .eq('user_id', user.id)
+    .order('added_at', { ascending: false });
+
+  if (error || !data) return [];
+  return data.map(item => item.sanity_product_slug);
+}
+
+/**
+ * Get favorites count
+ */
+export async function getFavoritesCount(): Promise<number> {
+  const user = await getCurrentUser();
+  if (!user) return 0;
+
+  const { count, error } = await supabase
+    .from('user_favorites')
+    .select('*', { count: 'exact', head: true })
+    .eq('user_id', user.id);
+
+  if (error) return 0;
+  return count || 0;
+}
+
+/**
+ * Check if item is in favorites
+ */
+export async function isInFavorites(slug: string): Promise<boolean> {
+  const user = await getCurrentUser();
+  if (!user) return false;
+
+  const { count } = await supabase
+    .from('user_favorites')
+    .select('*', { count: 'exact', head: true })
+    .eq('user_id', user.id)
+    .eq('sanity_product_slug', slug);
+
+  return (count || 0) > 0;
+}
+
+/**
+ * Add item to favorites
+ */
+export async function addToFavorites(slug: string): Promise<{ success: boolean; error?: string }> {
+  const user = await getCurrentUser();
+  if (!user) return { success: false, error: 'Not authenticated' };
+
+  // Check if already in favorites
+  const inFavorites = await isInFavorites(slug);
+  if (inFavorites) {
+    return { success: false, error: 'This item is already in your favorites.' };
+  }
+
+  // Add to favorites
+  const { error } = await supabase
+    .from('user_favorites')
+    .insert({ user_id: user.id, sanity_product_slug: slug });
+
+  if (error) {
+    console.error('Failed to add to favorites:', error);
+    return { success: false, error: 'Failed to add item to favorites' };
+  }
+
+  return { success: true };
+}
+
+/**
+ * Remove item from favorites
+ */
+export async function removeFromFavorites(slug: string): Promise<{ success: boolean; error?: string }> {
+  const user = await getCurrentUser();
+  if (!user) return { success: false, error: 'Not authenticated' };
+
+  const { error } = await supabase
+    .from('user_favorites')
+    .delete()
+    .eq('user_id', user.id)
+    .eq('sanity_product_slug', slug);
+
+  if (error) {
+    console.error('Failed to remove from favorites:', error);
+    return { success: false, error: 'Failed to remove item from favorites' };
+  }
+
+  return { success: true };
+}
+
+/**
+ * Toggle favorite status (add if not favorited, remove if favorited)
+ */
+export async function toggleFavorite(slug: string): Promise<{ success: boolean; isFavorited: boolean; error?: string }> {
+  const inFavorites = await isInFavorites(slug);
+
+  if (inFavorites) {
+    const result = await removeFromFavorites(slug);
+    return { ...result, isFavorited: false };
+  } else {
+    const result = await addToFavorites(slug);
+    return { ...result, isFavorited: true };
+  }
+}
+
 // ============ SUBSCRIPTION ============
 
 /**

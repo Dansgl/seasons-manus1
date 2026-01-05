@@ -1,9 +1,9 @@
 import { Link } from "wouter";
-import { User, ShoppingBag, Menu, X } from "lucide-react";
+import { User, ShoppingBag, Menu, X, Heart } from "lucide-react";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { V6_COLORS as C } from "./colors";
-import { getCartCount } from "@/lib/supabase-db";
+import { getCartCount, getFavoritesCount } from "@/lib/supabase-db";
 import { useWaitlistMode } from "@/hooks/useWaitlistMode";
 import { WaitlistModal, type WaitlistSource } from "./WaitlistModal";
 
@@ -21,6 +21,13 @@ export function Header({ announcement }: HeaderProps) {
   const { data: cartCount } = useQuery({
     queryKey: ["cartCount"],
     queryFn: getCartCount,
+    enabled: !isWaitlistMode,
+  });
+
+  // Get favorites count (always enabled)
+  const { data: favoritesCount } = useQuery({
+    queryKey: ["favoritesCount"],
+    queryFn: getFavoritesCount,
     enabled: !isWaitlistMode,
   });
 
@@ -108,6 +115,17 @@ export function Header({ announcement }: HeaderProps) {
                   <Link href="/dashboard" className="hover:opacity-70 transition-colors" style={{ color: C.textBrown }}>
                     <User className="w-5 h-5" />
                   </Link>
+                  <Link href="/favorites" className="relative hover:opacity-70 transition-colors" style={{ color: C.textBrown }}>
+                    <Heart className="w-5 h-5" />
+                    {favoritesCount !== undefined && favoritesCount > 0 && (
+                      <span
+                        className="absolute -top-2 -right-2 w-5 h-5 flex items-center justify-center text-xs font-bold text-white"
+                        style={{ backgroundColor: C.red }}
+                      >
+                        {favoritesCount}
+                      </span>
+                    )}
+                  </Link>
                   <Link href="/cart" className="relative hover:opacity-70 transition-colors" style={{ color: C.textBrown }}>
                     <ShoppingBag className="w-5 h-5" />
                     {cartCount !== undefined && cartCount > 0 && (
@@ -165,14 +183,24 @@ export function Header({ announcement }: HeaderProps) {
                   Join Waitlist
                 </button>
               ) : (
-                <Link
-                  href="/dashboard"
-                  className="block hover:opacity-70 transition-colors"
-                  style={{ color: C.textBrown }}
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  My Account
-                </Link>
+                <>
+                  <Link
+                    href="/favorites"
+                    className="block hover:opacity-70 transition-colors"
+                    style={{ color: C.textBrown }}
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    My Favorites
+                  </Link>
+                  <Link
+                    href="/dashboard"
+                    className="block hover:opacity-70 transition-colors"
+                    style={{ color: C.textBrown }}
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    My Account
+                  </Link>
+                </>
               )}
             </div>
           </div>

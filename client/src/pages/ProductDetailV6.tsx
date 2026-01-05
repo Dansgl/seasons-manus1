@@ -19,7 +19,7 @@ import { Loader2, ShoppingBag, Shield, Sparkles, ArrowLeft, Plus, Minus } from "
 import { toast } from "sonner";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { getLoginUrl } from "@/const";
-import { Header, Footer, V6_COLORS as C, WaitlistModal } from "@/components/v6";
+import { Header, Footer, V6_COLORS as C, WaitlistModal, FavoriteButton } from "@/components/v6";
 import { useWaitlistMode } from "@/hooks/useWaitlistMode";
 import type { SanityImageSource } from "@sanity/image-url/lib/types/types";
 
@@ -397,36 +397,39 @@ export default function ProductDetailV6() {
                 </ul>
               </div>
 
-              {/* Add/Remove Button */}
-              {isInCart && !isWaitlistMode ? (
-                <button
-                  onClick={handleRemoveFromCart}
-                  disabled={removeFromCartMutation.isPending}
-                  className="w-full flex items-center justify-center gap-2 px-6 py-4  text-base font-medium border-2 transition-colors hover:opacity-70 disabled:opacity-50"
-                  style={{ borderColor: C.darkBrown, color: C.darkBrown }}
-                >
-                  {removeFromCartMutation.isPending && <Loader2 className="w-4 h-4 animate-spin" />}
-                  <Minus className="w-4 h-4" />
-                  Remove from Box
-                </button>
-              ) : (
-                <button
-                  onClick={handleAddToCart}
-                  disabled={(!isWaitlistMode && (!canAddMore || outOfStock)) || addToCartMutation.isPending}
-                  className="w-full flex items-center justify-center gap-2 px-6 py-4  text-base font-medium text-white transition-colors hover:opacity-90 disabled:opacity-50"
-                  style={{ backgroundColor: isWaitlistMode ? C.red : (outOfStock ? C.textBrown : C.red) }}
-                >
-                  {addToCartMutation.isPending && <Loader2 className="w-4 h-4 animate-spin" />}
-                  {!addToCartMutation.isPending && <Plus className="w-4 h-4" />}
-                  {isWaitlistMode
-                    ? "Add to Box"
-                    : outOfStock
-                    ? "Out of Stock"
-                    : !canAddMore
-                    ? "Box is Full (5/5)"
-                    : "Add to Box"}
-                </button>
-              )}
+              {/* Add/Remove Button & Favorite */}
+              <div className="flex gap-3">
+                {isInCart && !isWaitlistMode ? (
+                  <button
+                    onClick={handleRemoveFromCart}
+                    disabled={removeFromCartMutation.isPending}
+                    className="flex-1 flex items-center justify-center gap-2 px-6 py-4  text-base font-medium border-2 transition-colors hover:opacity-70 disabled:opacity-50"
+                    style={{ borderColor: C.darkBrown, color: C.darkBrown }}
+                  >
+                    {removeFromCartMutation.isPending && <Loader2 className="w-4 h-4 animate-spin" />}
+                    <Minus className="w-4 h-4" />
+                    Remove from Box
+                  </button>
+                ) : (
+                  <button
+                    onClick={handleAddToCart}
+                    disabled={(!isWaitlistMode && (!canAddMore || outOfStock)) || addToCartMutation.isPending}
+                    className="flex-1 flex items-center justify-center gap-2 px-6 py-4  text-base font-medium text-white transition-colors hover:opacity-90 disabled:opacity-50"
+                    style={{ backgroundColor: isWaitlistMode ? C.red : (outOfStock ? C.textBrown : C.red) }}
+                  >
+                    {addToCartMutation.isPending && <Loader2 className="w-4 h-4 animate-spin" />}
+                    {!addToCartMutation.isPending && <Plus className="w-4 h-4" />}
+                    {isWaitlistMode
+                      ? "Add to Box"
+                      : outOfStock
+                      ? "Out of Stock"
+                      : !canAddMore
+                      ? "Box is Full (5/5)"
+                      : "Add to Box"}
+                  </button>
+                )}
+                <FavoriteButton productSlug={slug} size="lg" />
+              </div>
 
               {isAuthenticated && !isWaitlistMode && cartCount !== undefined && (
                 <p className="text-center text-sm mt-4" style={{ color: C.textBrown }}>

@@ -4,3 +4,4 @@ export { Footer } from "./Footer";
 export { FAQSection, TOP_5_FAQS, type FAQ } from "./FAQSection";
 export { WaitlistModal } from "./WaitlistModal";
 export type { WaitlistSource } from "./WaitlistModal";
+export { FavoriteButton, migrateWaitlistFavorites } from "./FavoriteButton";

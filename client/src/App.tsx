@@ -18,6 +18,7 @@ import DashboardV6 from "./pages/DashboardV6";
 import LoginV6 from "./pages/LoginV6";
 import CheckoutV6 from "./pages/CheckoutV6";
 import CartV6 from "./pages/CartV6";
+import FavoritesV6 from "./pages/FavoritesV6";
 import BrandsV6 from "./pages/BrandsV6";
 import BlogV6 from "./pages/BlogV6";
 import BlogPostV6 from "./pages/BlogPostV6";
@@ -37,6 +38,7 @@ function Router() {
       <Route path={"/catalog"} component={CatalogV6} />
       <Route path={"/product/:slug"} component={ProductDetailV6} />
       <Route path={"/cart"} component={CartV6} />
+      <Route path={"/favorites"} component={FavoritesV6} />
       <Route path={"/dashboard"} component={DashboardV6} />
       <Route path={"/login"} component={LoginV6} />
       <Route path={"/checkout"} component={CheckoutV6} />
