@@ -6,7 +6,7 @@ import { useMemo, useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { getFavorites, removeFromFavorites, addToCart, getCartCount } from "@/lib/supabase-db";
-import { fetchProducts, urlFor, type SanityProduct } from "@/lib/sanity";
+import { fetchProducts, getProductImageUrl, type SanityProduct } from "@/lib/sanity";
 import { Link } from "wouter";
 import { Heart, ShoppingBag, Plus, Loader2, X } from "lucide-react";
 import { toast } from "sonner";
@@ -182,16 +182,19 @@ export default function FavoritesV6() {
             </div>
           ) : (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-              {favoriteProducts.map((product) => (
+              {favoriteProducts.map((product) => {
+                const imageUrl = getProductImageUrl(product, { width: 400, height: 400 });
+
+                return (
                 <div key={product._id} className="group">
                   <Link href={`/product/${product.slug}`}>
                     <div
                       className="aspect-square relative overflow-hidden mb-3"
                       style={{ backgroundColor: C.white }}
                     >
-                      {product.mainImage ? (
+                      {imageUrl ? (
                         <img
-                          src={urlFor(product.mainImage).width(400).height(400).auto("format").url()}
+                          src={imageUrl}
                           alt={product.name}
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                         />
@@ -259,7 +262,8 @@ export default function FavoritesV6() {
                     )}
                   </div>
                 </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>

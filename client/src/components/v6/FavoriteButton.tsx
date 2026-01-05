@@ -29,7 +29,8 @@ export function FavoriteButton({ productSlug, className = "", size = "md" }: Fav
 
   // Icon sizes
   const iconSize = size === "sm" ? "w-4 h-4" : size === "md" ? "w-5 h-5" : "w-6 h-6";
-  const buttonSize = size === "sm" ? "w-8 h-8" : size === "md" ? "w-9 h-9" : "w-10 h-10";
+  // Use custom className if provided, otherwise use default button size
+  const buttonSize = className ? "" : (size === "sm" ? "w-8 h-8" : size === "md" ? "w-9 h-9" : "w-10 h-10");
 
   // Load localStorage favorites for waitlist mode
   useEffect(() => {

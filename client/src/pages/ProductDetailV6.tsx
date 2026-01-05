@@ -428,7 +428,11 @@ export default function ProductDetailV6() {
                       : "Add to Box"}
                   </button>
                 )}
-                <FavoriteButton productSlug={slug} size="lg" />
+                <FavoriteButton
+                  productSlug={slug}
+                  size="lg"
+                  className="w-16 h-full aspect-square"
+                />
               </div>
 
               {isAuthenticated && !isWaitlistMode && cartCount !== undefined && (
