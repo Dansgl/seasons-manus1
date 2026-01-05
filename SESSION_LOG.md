@@ -139,4 +139,43 @@ Technical SEO, bug fixes, and domain configuration.
 
 ---
 
+## Session: 2026-01-05 (Part 4)
+
+### Summary
+Final polish: favicon, env var fix, health checks.
+
+### What Was Done
+
+#### 1. Favicon
+- Created proper favicon from orange "S" logo
+- Sizes: 32x32 (2.3KB) and 64x64 (4.2KB)
+- Replaced 4.8MB full logo with optimized versions
+
+#### 2. Waitlist Mode Fix
+- Restored env var-based waitlist mode
+- `VITE_WAITLIST_MODE=true` in Vercel for production
+- babyseasons.ro → Waitlist mode
+- baby-seasons.vercel.app → Full working site for testing
+
+#### 3. Sanity CDN
+- Switched to `useCdn: true` - fixed CORS issues
+- All products/brands now loading correctly
+
+#### 4. Health Check Completed
+- HTTP status: 200 ✓
+- robots.txt & sitemap.xml: Working ✓
+- SEO meta tags: All present ✓
+- Schema.org: 2 JSON-LD blocks ✓
+- Security headers: All configured ✓
+- Favicon: Optimized ✓
+
+### Final State
+| Site | Mode | Status |
+|------|------|--------|
+| babyseasons.ro | Waitlist | ✅ Working |
+| www.babyseasons.ro | Waitlist | ✅ Working |
+| baby-seasons.vercel.app | Full site | ✅ Working |
+
+---
+
 *Last updated: 2026-01-05*
