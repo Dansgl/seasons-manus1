@@ -6,7 +6,7 @@ import { useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { getCart, getCartCount, removeFromCart } from "@/lib/supabase-db";
-import { fetchProducts, urlFor, type SanityProduct } from "@/lib/sanity";
+import { fetchProducts, getProductImageUrl, type SanityProduct } from "@/lib/sanity";
 import { Link, useLocation } from "wouter";
 import { Loader2, ShoppingBag, X, ArrowRight, Package, Sparkles } from "lucide-react";
 import { toast } from "sonner";
@@ -189,9 +189,9 @@ export default function CartV6() {
                         className="w-24 h-24 md:w-32 md:h-32 flex-shrink-0 overflow-hidden"
                         style={{ backgroundColor: C.beige }}
                       >
-                        {product.mainImage ? (
+                        {getProductImageUrl(product, { width: 200, height: 200 }) ? (
                           <img
-                            src={urlFor(product.mainImage).width(200).height(200).auto("format").url()}
+                            src={getProductImageUrl(product, { width: 200, height: 200 })!}
                             alt={product.name}
                             className="w-full h-full object-cover"
                           />

@@ -7,7 +7,7 @@ import { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { getCart, getCartCount } from "@/lib/supabase-db";
-import { fetchProducts, urlFor, type SanityProduct } from "@/lib/sanity";
+import { fetchProducts, getProductImageUrl, type SanityProduct } from "@/lib/sanity";
 import { Link } from "wouter";
 import { Loader2, ShoppingBag, Check, Shield, Sparkles, Package, CreditCard } from "lucide-react";
 import { toast } from "sonner";
@@ -302,10 +302,10 @@ export default function CheckoutV6() {
                 <div className="space-y-4 mb-6">
                   {cartProducts.map((product) => (
                     <div key={product._id} className="flex gap-3">
-                      <div className="w-16 h-16  flex-shrink-0 overflow-hidden" style={{ backgroundColor: C.beige }}>
-                        {product.mainImage ? (
+                      <div className="w-16 h-16 flex-shrink-0 overflow-hidden" style={{ backgroundColor: C.beige }}>
+                        {getProductImageUrl(product, { width: 64, height: 64 }) ? (
                           <img
-                            src={urlFor(product.mainImage).width(64).height(64).auto("format").url()}
+                            src={getProductImageUrl(product, { width: 64, height: 64 })!}
                             alt={product.name}
                             className="w-full h-full object-cover"
                           />
