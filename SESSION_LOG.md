@@ -227,4 +227,82 @@ Umami analytics fixes, UI alignment fixes, and performance optimization attempt 
 
 ---
 
-*Last updated: 2026-01-05*
+## Session: 2026-01-06
+
+### Summary
+Major code cleanup, architecture improvements, waitlist mode UX fixes, and copywriting review for founder.
+
+### What Was Done
+
+#### 1. Code Architecture Analysis
+- Ran code-architect-advisor agent on codebase
+- Initial score: **6.5/10**
+- After fixes: **7.5/10**
+- Identified critical issues: Stripe webhooks, race conditions, dead code
+
+#### 2. Code Cleanup (-4220 lines!)
+- **Deleted unused Home pages**: HomeV1, HomeV2, HomeV3, HomeV4, HomeV5, Home.tsx
+- **Deleted dead Stripe server code**: api/stripe/, server/lib/stripe.ts
+- Fixed color import duplication in HomeV6
+
+#### 3. New Components
+- **CheckoutErrorBoundary**: Error boundary for checkout flow with recovery options
+- **OptimizedImage**: Image component with loading states and fallbacks
+- **Code splitting**: React.lazy for Dashboard, Checkout, Catalog, Product pages
+
+#### 4. Critical Bug Fixes
+- **Post-checkout handler**: Dashboard now syncs subscription from localStorage after Stripe redirect
+- **Inventory race condition**: Created RPC function with row-level locking (`scripts/create-reserve-inventory-rpc.sql`)
+
+#### 5. Waitlist Mode UX Fixes
+- Changed "Add to Box" → "Join Waitlist" in CatalogV6 and ProductDetailV6
+- Changed favorites toast: "sign up" → "join waitlist"
+- Verified Header correctly shows waitlist button (no cart/favorites icons)
+
+#### 6. Copywriting Review
+- Ran copywriting-god agent on Romanian marketing copy
+- Generated comprehensive analysis: **6.8/10 score**
+- Created PDF report for founder: `docs/Review-Copy-BabySeasons.pdf`
+- Fixed Romanian diacritics (Arial Unicode MS font)
+
+#### 7. Documentation
+- Created `CLAUDE.md` project documentation
+- Created `docs/LESSONS_LEARNED.md`
+- Updated `docs/VERCEL-STRIPE-CONNECTION-ISSUES.md`
+
+### Files Modified/Created
+```
+NEW FILES:
+- CLAUDE.md
+- client/src/components/v6/CheckoutErrorBoundary.tsx
+- client/src/components/v6/OptimizedImage.tsx
+- docs/Review-Copy-BabySeasons.pdf
+- docs/LESSONS_LEARNED.md
+- scripts/create-copywriting-review-pdf.py
+- scripts/create-reserve-inventory-rpc.sql
+
+MODIFIED:
+- client/src/App.tsx (code splitting)
+- client/src/pages/DashboardV6.tsx (post-checkout handler)
+- client/src/pages/CatalogV6.tsx (waitlist mode text)
+- client/src/pages/ProductDetailV6.tsx (waitlist mode text)
+- client/src/components/v6/FavoriteButton.tsx (waitlist mode toast)
+- client/src/lib/supabase-db.ts (RPC inventory function)
+- server/_core/index.ts (removed Stripe imports)
+
+DELETED:
+- client/src/pages/Home.tsx
+- client/src/pages/HomeV1-V5.tsx
+- api/stripe/create-checkout-session.ts
+- api/stripe/webhook.ts
+- server/lib/stripe.ts
+```
+
+### Pending Tasks
+- [ ] Run `scripts/create-reserve-inventory-rpc.sql` in Supabase SQL editor
+- [ ] Implement copywriting recommendations from PDF
+- [ ] Add real testimonials and numbers (replace "X" placeholders)
+
+---
+
+*Last updated: 2026-01-06*
