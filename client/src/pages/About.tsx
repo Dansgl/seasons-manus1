@@ -112,11 +112,12 @@ export default function About() {
                   )}
                 </div>
               </div>
-              <div
-                className="aspect-square flex items-center justify-center"
-                style={{ backgroundColor: C.beige }}
-              >
-                <Recycle className="w-32 h-32" style={{ color: C.lavender }} />
+              <div className="aspect-square overflow-hidden">
+                <img
+                  src="/about-story.jpg"
+                  alt="Mama și copilul jucându-se împreună"
+                  className="w-full h-full object-cover"
+                />
               </div>
             </div>
           </div>
