@@ -120,8 +120,8 @@ interface HeroSectionProps {
 
 function HeroSection({ heroImage, isWaitlistMode, onOpenWaitlist }: HeroSectionProps) {
   return (
-    <section className="py-12 px-6 md:py-16" style={{ backgroundColor: C.beige }}>
-      <div className="max-w-7xl mx-auto">
+    <section className="py-12 px-12 md:py-16 md:px-16" style={{ backgroundColor: C.beige }}>
+      <div className="max-w-7xl mx-auto px-0">
         {/* Two Column Layout */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
           {/* Left Side - Title and Subhead */}

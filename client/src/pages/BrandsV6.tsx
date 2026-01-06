@@ -28,11 +28,10 @@ export default function BrandsV6() {
           <div className="px-6 py-8 md:py-12">
             <div className="max-w-7xl mx-auto">
               <h1 className="text-3xl md:text-5xl mb-4" style={{ color: C.darkBrown }}>
-                Our Brands
+                Brandurile noastre
               </h1>
               <p className="max-w-2xl" style={{ color: C.textBrown }}>
-                We partner with the finest European baby clothing brands, each selected for their commitment
-                to quality, sustainability, and timeless design.
+                Colaborăm cu cele mai bune branduri europene de haine pentru bebeluși, fiecare selectat pentru calitate, sustenabilitate și design atemporal.
               </p>
             </div>
           </div>
@@ -46,8 +45,8 @@ export default function BrandsV6() {
         ) : brands?.length === 0 ? (
           <div className="text-center py-20" style={{ backgroundColor: C.beige }}>
             <Building2 className="w-16 h-16 mx-auto mb-4" style={{ color: C.lavender }} />
-            <h2 className="text-xl font-medium mb-2" style={{ color: C.darkBrown }}>No brands yet</h2>
-            <p style={{ color: C.textBrown }}>Check back soon!</p>
+            <h2 className="text-xl font-medium mb-2" style={{ color: C.darkBrown }}>Niciun brand încă</h2>
+            <p style={{ color: C.textBrown }}>Revino în curând!</p>
           </div>
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-3">
@@ -112,7 +111,7 @@ export default function BrandsV6() {
           <div className="px-6 py-8">
             <div className="max-w-7xl mx-auto">
               <h2 className="text-3xl md:text-4xl" style={{ color: C.darkBrown }}>
-                Why we choose these brands
+                De ce alegem aceste branduri
               </h2>
             </div>
           </div>
@@ -126,10 +125,10 @@ export default function BrandsV6() {
           >
             <Leaf className="w-10 h-10 mb-4 text-white" />
             <h3 className="text-lg font-medium mb-2 text-center text-white">
-              Quality Materials
+              Materiale de calitate
             </h3>
             <p className="text-sm text-center text-white/80">
-              Organic cottons, natural fibers, and fabrics gentle on sensitive skin.
+              Bumbac organic, fibre naturale și materiale delicate pentru pielea sensibilă.
             </p>
           </div>
           <div
@@ -138,10 +137,10 @@ export default function BrandsV6() {
           >
             <Heart className="w-10 h-10 mb-4 text-white" />
             <h3 className="text-lg font-medium mb-2 text-center text-white">
-              Ethical Production
+              Producție etică
             </h3>
             <p className="text-sm text-center text-white/80">
-              Fair wages, safe working conditions, and transparent supply chains.
+              Salarii corecte, condiții de muncă sigure și lanțuri de aprovizionare transparente.
             </p>
           </div>
           <div
@@ -150,10 +149,10 @@ export default function BrandsV6() {
           >
             <Sparkles className="w-10 h-10 mb-4" style={{ color: C.darkBrown }} />
             <h3 className="text-lg font-medium mb-2 text-center" style={{ color: C.darkBrown }}>
-              Timeless Design
+              Design atemporal
             </h3>
             <p className="text-sm text-center" style={{ color: C.darkBrown }}>
-              Classic aesthetics that transcend trends and pass beautifully between children.
+              Estetică clasică ce transcende trendurile și trece frumos de la un copil la altul.
             </p>
           </div>
         </section>
