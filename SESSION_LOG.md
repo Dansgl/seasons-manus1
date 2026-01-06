@@ -305,4 +305,83 @@ DELETED:
 
 ---
 
+## Session: 2026-01-06 (Continued)
+
+### Summary
+Competitor due diligence, blog content localization, skill file creation, and UI updates.
+
+### What Was Done
+
+#### 1. Competitor Due Diligence
+- User (Ioana) flagged that many competitors I mentioned were closed
+- Verified via WebFetch which services are actually active in 2025-2026:
+
+| Competitor | Status | Notes |
+|------------|--------|-------|
+| OR Collective (UK) | ✅ Active | orcollective.co.uk |
+| Borro (Netherlands) | ✅ Active | borro-it.com |
+| Qookeee (Germany) | ✅ Active | qookeee.com |
+| UpChoose (USA) | ✅ Active | upchoose.com |
+| Little Lendables (Canada) | ✅ Active | littlelendables.com |
+| Bundlee (UK) | ❌ Closed | Now selling, not renting |
+| The Little Loop (UK) | ❌ Closed | Announced closing Oct 2023 |
+| SuperLooper (UK) | ❌ Closed | Now "super looper life" wellness |
+| Lullaloop (UK) | ❌ Closed | No website |
+| Circos (EU) | ❌ Closed | Instagram says "closed" |
+| Vigga (Denmark) | ❌ Closed | No longer operating |
+| OiOiOi (EU) | ❌ Closed | Website not found |
+
+#### 2. Blog Content Work
+- **Deleted**: Ozone cleaning article (user said "we're not sure we'll have that")
+- **Created**: Competitor article "4 Servicii de închiriere haine bebeluși internaționale"
+- **Translated**: All 4 existing English blog posts to Romanian with SEO keywords:
+  1. "Garderoba capsulă pentru bebeluș: 5 piese esențiale"
+  2. "Revoluția economiei circulare: cum închirierea hainelor pentru bebeluși transformă parentingul"
+  3. "Ascensiunea modei circulare pentru copii"
+  4. "Brandurile premium pe care le iubim"
+
+- **Fixed**: Romanian title capitalization (don't capitalize every word like English)
+- **Created**: Author bio for Ioana (founder, son's name is Iona)
+
+#### 3. Skill File for Blog Writing
+- Created `.claude/skills/seasons-blog-writer.md`
+- Contains:
+  - Brand voice guidelines (empatic, prietenos, pragmatic)
+  - What to avoid (ton predicator, anglicisme, clișee)
+  - SEO best practices and keywords
+  - Article structure template
+  - Romanian-specific conventions
+  - Sanity CMS field requirements
+
+#### 4. UI Update: Most Loved Section
+- Changed from 3x2 grid (6 products) to 6x2 grid (12 products)
+- Updated grid classes: `grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6`
+- Changed skeleton count from 6 to 12
+- Changed product slice from 6 to 12
+
+### Files Modified/Created
+```
+NEW FILES:
+- .claude/skills/seasons-blog-writer.md
+
+MODIFIED:
+- client/src/pages/HomeV6.tsx (Most Loved grid: 12 products, 6 columns)
+
+SANITY CMS (via API):
+- Created/Updated 5 blog posts (all Romanian)
+- Created author profile: Ioana
+- Deleted: ozone cleaning post, duplicate posts
+```
+
+### Dev Servers Running
+- Main app: http://localhost:3033
+- Sanity Studio: http://localhost:3333
+
+### Notes
+- Romanian doesn't use title case capitalization (only first letter + proper nouns)
+- Most European baby clothes rental competitors have closed - market opportunity for Seasons
+- PDF diacritics (ș, ț) render acceptably with Arial Unicode MS but not perfectly
+
+---
+
 *Last updated: 2026-01-06*

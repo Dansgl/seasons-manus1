@@ -17,31 +17,31 @@ interface FAQSectionProps {
 // Default top 5 FAQs used across all pages
 export const TOP_5_FAQS: FAQ[] = [
   {
-    question: "How does Seasons work?",
-    answer: "Select 5 designer baby items, receive them at home, use for 3 months, then return for your next box. It's that simple!"
+    question: "Cum funcționează Seasons?",
+    answer: "Selectezi 5 articole de designer pentru bebeluși, le primești acasă, le folosești 3 luni, apoi le returnezi pentru următorul pachet. Atât de simplu!"
   },
   {
-    question: "What's included in the 350 RON/quarter price?",
-    answer: "5 premium items, free shipping both ways, insurance for normal wear and tear, and professional Ozone cleaning between uses."
+    question: "Ce este inclus în prețul de 350 lei/sezon?",
+    answer: "5 articole premium, asigurare pentru uzură normală și pete, și curățenie profesională între utilizări."
   },
   {
-    question: "What if items get damaged?",
-    answer: "Normal wear and tear is included in your subscription. We understand babies are messy! Only excessive damage may incur additional costs."
+    question: "Ce se întâmplă dacă hainele se deteriorează?",
+    answer: "Uzura normală este inclusă în abonament. Știm că bebelușii se murdăresc! Doar deteriorarea excesivă poate implica costuri suplimentare."
   },
   {
-    question: "Can I cancel anytime?",
-    answer: "Yes! Cancel from your dashboard anytime with no penalties. Just return your current items and you're all set."
+    question: "Pot să anulez oricând?",
+    answer: "Da! Poți anula din contul tău oricând, fără penalități. Doar returnează articolele curente și gata."
   },
   {
-    question: "Which brands do you carry?",
-    answer: "We carry premium European brands like Petit Bateau, Bonpoint, Tartine et Chocolat, Jacadi, and many more designer labels."
+    question: "Ce branduri aveți?",
+    answer: "Avem branduri premium europene precum Happymess, Studio Koter, Maru+Bo și multe alte etichete de designer."
   }
 ];
 
 export function FAQSection({
   faqs = TOP_5_FAQS,
   showViewAll = true,
-  title = "Common Questions"
+  title = "Întrebări frecvente"
 }: FAQSectionProps) {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
@@ -99,7 +99,7 @@ export function FAQSection({
                 className="inline-block px-6 py-3 border-2 text-sm font-medium hover:opacity-70 transition-opacity"
                 style={{ borderColor: C.darkBrown, color: C.darkBrown }}
               >
-                View All FAQs
+                Vezi toate întrebările
               </span>
             </Link>
           </div>

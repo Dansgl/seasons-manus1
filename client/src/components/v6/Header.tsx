@@ -44,7 +44,7 @@ export function Header({ announcement }: HeaderProps) {
           className="text-white text-center py-2 px-4 text-sm"
           style={{ backgroundColor: C.red }}
         >
-          {announcement || "Premium baby clothing rental — 350 RON/quarter for 5 designer pieces"}
+          {announcement || "Închiriază haine pentru bebeluși și copii mici începând cu 350 lei/capsulă - 5 articole premium livrate la tine acasă"}
         </div>
       )}
 

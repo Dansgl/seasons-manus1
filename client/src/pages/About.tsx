@@ -24,31 +24,31 @@ export default function About() {
   });
 
   // Default values for when Sanity data isn't set
-  const heroTitle = aboutPage?.heroTitle || "Rethinking Baby Fashion";
-  const heroSubtitle = aboutPage?.heroSubtitle || "We believe every baby deserves beautiful, high-quality clothing without the waste. Seasons is building a circular fashion future for families.";
+  const heroTitle = aboutPage?.heroTitle || "Seasons";
+  const heroSubtitle = aboutPage?.heroSubtitle || "Hainele pot avea viață lungă dacă circulă între familii. Tu poți avea viață mai ușoară dacă scapi de grija lor. Cei mici pot fi și mai cuceritori în albumul de familie.";
 
-  const missionTitle = aboutPage?.missionSection?.title || "Our Mission";
-  const valuesTitle = aboutPage?.valuesSection?.title || "Our Values";
-  const storyTitle = aboutPage?.storySection?.title || "Our Story";
-  const impactTitle = aboutPage?.impactSection?.title || "Our Impact";
-  const ctaTitle = aboutPage?.ctaSection?.title || "Join the Movement";
-  const ctaContent = aboutPage?.ctaSection?.content || "Start your sustainable parenting journey with Seasons. €70 per quarter for 5 premium items.";
-  const ctaButtonText = aboutPage?.ctaSection?.buttonText || "Browse Collection";
+  const missionTitle = aboutPage?.missionSection?.title || "Misiunea noastră";
+  const valuesTitle = aboutPage?.valuesSection?.title || "Valorile noastre";
+  const storyTitle = aboutPage?.storySection?.title || "Povestea noastră";
+  const impactTitle = aboutPage?.impactSection?.title || "Impact";
+  const ctaTitle = aboutPage?.ctaSection?.title || "Alătură-te comunității noastre";
+  const ctaContent = aboutPage?.ctaSection?.content || "Încearcă o alternativă sustenabilă închiriind haine pentru cel mic începând de la 350 lei pe sezon. Primul tău pachet poate ajunge în 3-5 zile. 5 articole premium. Curățare inclusă. Fără obligații pe termen lung.";
+  const ctaButtonText = aboutPage?.ctaSection?.buttonText || "Explorează selecția";
   const ctaButtonLink = aboutPage?.ctaSection?.buttonLink || "/catalog";
 
   // Default values
   const defaultValues = [
-    { title: "Sustainability", description: "Every rental extends a garment's life and reduces fashion waste.", icon: "Leaf" },
-    { title: "Quality", description: "Only premium European brands that meet our strict standards.", icon: "Heart" },
-    { title: "Care", description: "Professional Ozone cleaning ensures hygiene between every use.", icon: "Recycle" },
-    { title: "Community", description: "Building a network of families who share our vision.", icon: "Users" },
+    { title: "Sustenabilitate", description: "Fiecare ciclu de închiriere extinde viața unui articol și reduce risipa.", icon: "Leaf" },
+    { title: "Calitate", description: "Numai branduri premium care produc cu materiale de calitate, durabile și atenție la detalii.", icon: "Heart" },
+    { title: "Grijă", description: "Curățare profesională și mici reparații între ciclurile de închiriere.", icon: "Recycle" },
+    { title: "Comunitate", description: "Întâlnirea cu un grup de familii care îți împărtășesc viziunea.", icon: "Users" },
   ];
 
   const defaultStats = [
-    { value: "5+", label: "Lives per garment" },
-    { value: "80%", label: "Less waste vs buying" },
-    { value: "50+", label: "Premium brands" },
-    { value: "100%", label: "Ozone cleaned" },
+    { value: "5+", label: "Cicluri pe articol" },
+    { value: "80%", label: "Mai puțină risipă vs cumpărat" },
+    { value: "100%", label: "Curățare profesională" },
+    { value: "3-5", label: "Zile livrare" },
   ];
 
   const values = aboutPage?.valuesSection?.values?.length ? aboutPage.valuesSection.values : defaultValues;
@@ -94,18 +94,19 @@ export default function About() {
                   ) : (
                     <>
                       <p className="leading-relaxed">
-                        Babies grow fast. In the first year alone, they typically go through
-                        7 clothing sizes. That's a lot of clothes that get worn for just a
-                        few weeks before being outgrown.
+                        Copiii cresc repede. 7 mărimi în primii 2 ani. Haine purtate câteva
+                        săptămâni, apoi lăsate deoparte. Peste 183 de milioane de articole
+                        ajung anual în gropile de gunoi.
                       </p>
                       <p className="leading-relaxed">
-                        At Seasons, we're on a mission to break the cycle of buy-use-discard.
-                        We give premium baby clothing multiple lives, reducing waste while
-                        giving families access to designer quality at a fraction of the cost.
+                        La Seasons ne-am propus să oprim ciclul ăsta de cumpărat-purtat-aruncat.
+                        Dăm hainelor mai multe vieți, reducem risipa și oferim familiilor acces
+                        la calitate premium la o fracțiune din preț.
                       </p>
                       <p className="leading-relaxed">
-                        Our circular model means less production, less waste in landfills,
-                        and more joy in every tiny outfit.
+                        Lucrăm cu branduri care produc etic, local, cu materiale de calitate.
+                        Modelul nostru circular înseamnă mai puțină producție, mai puțină risipă
+                        și mai multă bucurie în fiecare ținută mică.
                       </p>
                     </>
                   )}
@@ -173,25 +174,25 @@ export default function About() {
               ) : (
                 <>
                   <p className="leading-relaxed">
-                    Seasons was born from a simple observation: our closets were overflowing
-                    with beautiful baby clothes that were worn only a handful of times before
-                    being outgrown.
+                    Seasons a pornit de la o pasiune pentru haine și design - combinații inedite
+                    și piese de calitate pe care le ții 10 ani în garderobă.
                   </p>
                   <p className="leading-relaxed">
-                    We saw friends passing bags of clothes between families, charity shops
-                    bursting with tiny garments, and landfills receiving millions of
-                    textile items each year. There had to be a better way.
+                    Apoi a apărut un bebeluș în ecuație. Bineînțeles că m-a luat valul - la 2 noaptea
+                    scrollam prin body-uri, tricouașe și salopete simpatice. După câteva sesiuni de
+                    shopping online în miez de noapte, mi-am dat seama că nu ai cum să investești în
+                    haine de calitate pentru el. N-are sens. Crește prea repede.
                   </p>
                   <p className="leading-relaxed">
-                    So we created Seasons — a rental service that gives premium baby clothing
-                    the extended life it deserves. Each garment in our collection is carefully
-                    curated, professionally cleaned, and loved by multiple families before
-                    being responsibly recycled.
+                    Alternativele? Fast fashion cu ofertă accesibilă, dar poate nu aceeași calitate.
+                    Grupuri de Facebook unde vânezi măsura potrivită. OLX și Vinted pe care dai scroll
+                    cu orele. Pachetul de la prietena care îți dă hainele rămase mici.
                   </p>
                   <p className="leading-relaxed">
-                    Based in Slovakia and serving families across Europe, we're proud to be
-                    part of the circular fashion movement. Every subscription is a step toward
-                    a more sustainable future for our children.
+                    Ne-am imaginat o garderobă comună. Haine în care investești pe termen lung, pe care
+                    le alegi cu atenție și de care ai grijă. Pentru că cei mici le poartă atât de puțin,
+                    are mult mai mult sens să le închiriezi pe o perioadă limitată și să le returnezi.
+                    Alte familii se bucură de ele fără bătăi de cap.
                   </p>
                 </>
               )}

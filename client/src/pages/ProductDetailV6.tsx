@@ -325,7 +325,7 @@ export default function ProductDetailV6() {
                   style={{ backgroundColor: C.lavender, color: C.darkBrown }}
                 >
                   <Shield className="w-3 h-3 mr-1" />
-                  Ozone Cleaned
+                  Curățat profesional
                 </span>
                 <span
                   className="inline-flex items-center px-3 py-1  text-xs font-medium"
@@ -380,7 +380,7 @@ export default function ProductDetailV6() {
                 <ul className="space-y-2 text-sm" style={{ color: C.textBrown }}>
                   <li className="flex items-start">
                     <span className="mr-2" style={{ color: C.red }}>✓</span>
-                    Medical-grade Ozone cleaning between every rental
+                    Curățenie profesională între fiecare închiriere
                   </li>
                   <li className="flex items-start">
                     <span className="mr-2" style={{ color: C.red }}>✓</span>

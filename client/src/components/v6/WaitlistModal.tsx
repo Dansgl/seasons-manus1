@@ -19,14 +19,14 @@ import { trackWaitlistModalOpened, trackWaitlistModalClosed, trackWaitlistSignup
 
 // Age options matching existing product age ranges
 const AGE_OPTIONS = [
-  { value: "expecting", label: "Expecting" },
-  { value: "0-3 months", label: "0-3 months" },
-  { value: "3-6 months", label: "3-6 months" },
-  { value: "6-12 months", label: "6-12 months" },
-  { value: "12-18 months", label: "12-18 months" },
-  { value: "18-24 months", label: "18-24 months" },
-  { value: "2-3 years", label: "2-3 years" },
-  { value: "4-5 years", label: "4-5 years" },
+  { value: "expecting", label: "Aștept un copil" },
+  { value: "0-3 months", label: "0-3 luni" },
+  { value: "3-6 months", label: "3-6 luni" },
+  { value: "6-12 months", label: "6-12 luni" },
+  { value: "12-18 months", label: "12-18 luni" },
+  { value: "18-24 months", label: "18-24 luni" },
+  { value: "2-3 years", label: "2-3 ani" },
+  { value: "4-5 years", label: "4-5 ani" },
 ];
 
 export type WaitlistSource = "header" | "hero" | "add_to_cart" | "exit_intent" | "login";
@@ -134,10 +134,10 @@ export function WaitlistModal({ open, onOpenChange, source = "header" }: Waitlis
                 className="text-2xl mb-2"
                 style={{ color: C.darkBrown }}
               >
-                You're on the list!
+                Ești pe listă!
               </DialogTitle>
               <DialogDescription style={{ color: C.textBrown }}>
-                We'll let you know when Seasons launches. Get ready to dress your little one in premium style.
+                Te anunțăm când deschidem ușile. Pregătește-te să îl îmbraci pe cel mic în haine premium.
               </DialogDescription>
             </DialogHeader>
             <button
@@ -145,7 +145,7 @@ export function WaitlistModal({ open, onOpenChange, source = "header" }: Waitlis
               className="mt-8 px-8 py-3 text-sm font-medium text-white transition-opacity hover:opacity-90"
               style={{ backgroundColor: C.red }}
             >
-              Continue Browsing
+              Explorează selecția
             </button>
           </div>
         ) : (
@@ -156,13 +156,13 @@ export function WaitlistModal({ open, onOpenChange, source = "header" }: Waitlis
                 className="text-2xl text-center"
                 style={{ color: C.darkBrown }}
               >
-                Join the Waitlist
+                Intră pe waitlist
               </DialogTitle>
               <DialogDescription
                 className="text-center"
                 style={{ color: C.textBrown }}
               >
-                Be first to access premium baby clothing rental
+                Acces exclusiv la colecția noastră de haine pentru bebeluși și copii mici
               </DialogDescription>
             </DialogHeader>
 
@@ -173,7 +173,7 @@ export function WaitlistModal({ open, onOpenChange, source = "header" }: Waitlis
             >
               <Users className="w-4 h-4" style={{ color: C.textBrown }} />
               <span className="text-sm" style={{ color: C.textBrown }}>
-                Join <strong style={{ color: C.darkBrown }}>{displayCount}+</strong> parents on the waitlist
+                Alătură-te celor <strong style={{ color: C.darkBrown }}>{displayCount}+</strong> părinți pe waitlist
               </span>
             </div>
 
@@ -184,11 +184,11 @@ export function WaitlistModal({ open, onOpenChange, source = "header" }: Waitlis
                   className="block text-sm font-medium mb-1"
                   style={{ color: C.darkBrown }}
                 >
-                  Name <span style={{ color: C.textBrown }}>(optional)</span>
+                  Nume <span style={{ color: C.textBrown }}>(opțional)</span>
                 </label>
                 <input
                   type="text"
-                  placeholder="Your name"
+                  placeholder="Numele tău"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   className="w-full px-4 py-3 border-2 text-sm focus:outline-none transition-colors"
@@ -206,7 +206,7 @@ export function WaitlistModal({ open, onOpenChange, source = "header" }: Waitlis
                 </label>
                 <input
                   type="email"
-                  placeholder="you@example.com"
+                  placeholder="tu@exemplu.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
@@ -221,7 +221,7 @@ export function WaitlistModal({ open, onOpenChange, source = "header" }: Waitlis
                   className="block text-sm font-medium mb-1"
                   style={{ color: C.darkBrown }}
                 >
-                  Child's Age <span style={{ color: C.red }}>*</span>
+                  Vârsta copilului <span style={{ color: C.red }}>*</span>
                 </label>
                 <select
                   value={childAge}
@@ -233,7 +233,7 @@ export function WaitlistModal({ open, onOpenChange, source = "header" }: Waitlis
                     color: childAge ? C.darkBrown : C.textBrown,
                   }}
                 >
-                  <option value="">Select age range</option>
+                  <option value="">Selectează vârsta</option>
                   {AGE_OPTIONS.map((option) => (
                     <option key={option.value} value={option.value}>
                       {option.label}
@@ -252,10 +252,10 @@ export function WaitlistModal({ open, onOpenChange, source = "header" }: Waitlis
                 {submitMutation.isPending ? (
                   <>
                     <Loader2 className="w-4 h-4 animate-spin" />
-                    Joining...
+                    Se procesează...
                   </>
                 ) : (
-                  "Join the Waitlist"
+                  "Intră pe waitlist"
                 )}
               </button>
             </form>
@@ -267,19 +267,19 @@ export function WaitlistModal({ open, onOpenChange, source = "header" }: Waitlis
                   <span className="mr-2" style={{ color: C.red }}>
                     &#10003;
                   </span>
-                  5 premium pieces for 350 RON/quarter
+                  5 articole premium pentru 350 lei/sezon
                 </li>
                 <li className="flex items-start">
                   <span className="mr-2" style={{ color: C.red }}>
                     &#10003;
                   </span>
-                  Designer brands, professionally cleaned
+                  Branduri premium, curățate profesional
                 </li>
                 <li className="flex items-start">
                   <span className="mr-2" style={{ color: C.red }}>
                     &#10003;
                   </span>
-                  Free shipping &amp; easy returns
+                  Asigurare pentru pete și retururi simple
                 </li>
               </ul>
             </div>

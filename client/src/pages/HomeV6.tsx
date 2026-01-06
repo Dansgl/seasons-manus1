@@ -58,7 +58,7 @@ function Header() {
         className="text-white text-center py-2 px-4 text-sm"
         style={{ backgroundColor: C.red }}
       >
-        Premium baby clothing rental — 350 RON/quarter for 5 designer pieces
+        Închiriază haine pentru bebeluși și copii mici începând cu 350 lei/capsulă - 5 articole premium livrate la tine acasă
       </div>
 
       {/* Main Navigation - aligned with content */}
@@ -127,19 +127,16 @@ function HeroSection({ heroImage, isWaitlistMode, onOpenWaitlist }: HeroSectionP
           {/* Left Side - Title and Subhead */}
           <div>
             <h1
-              className="text-[60px] md:text-[100px] leading-[0.9] tracking-tighter"
+              className="text-2xl md:text-4xl leading-tight tracking-tight"
               style={{ fontFamily: "Arial Black, sans-serif", fontWeight: 900, color: C.red }}
             >
-              SEASONS
+              De ce să plătești prețul întreg pentru haine purtate 6 săptămâni?
             </h1>
-            <p className="text-base mt-2" style={{ color: C.textBrown }}>
-              Baby fashion, simplified.
+            <p className="text-base mt-6 leading-relaxed" style={{ color: C.textBrown }}>
+              Copiii cresc peste noapte. Teancul de haine pe care trebuie să le dai mai departe parcă și mai repede.
             </p>
-            {/* Caption - left aligned under title */}
-            <p className="text-sm mt-8" style={{ color: C.textBrown }}>
-              Only premium, caring brands,
-              <br />
-              and nothing less.
+            <p className="text-sm mt-4 leading-relaxed" style={{ color: C.textBrown }}>
+              De ce să nu încerci ceva nou? Alege haine noi în fiecare sezon, de purtat cât îi vin, de returnat când încep să rămână mici. De sortat, curățat, pozat, trimis mai departe ne ocupăm noi.
             </p>
 
             {/* CTA Button */}
@@ -150,7 +147,7 @@ function HeroSection({ heroImage, isWaitlistMode, onOpenWaitlist }: HeroSectionP
                   className="inline-flex items-center px-8 py-4 text-base font-medium text-white transition-opacity hover:opacity-90"
                   style={{ backgroundColor: C.red }}
                 >
-                  Join the Waitlist
+                  Intră pe waitlist
                   <ArrowRight className="w-5 h-5 ml-2" />
                 </button>
               ) : (
@@ -159,7 +156,7 @@ function HeroSection({ heroImage, isWaitlistMode, onOpenWaitlist }: HeroSectionP
                   className="inline-flex items-center px-8 py-4 text-base font-medium text-white transition-opacity hover:opacity-90"
                   style={{ backgroundColor: C.red }}
                 >
-                  Browse Collection
+                  Explorează selecția
                   <ArrowRight className="w-5 h-5 ml-2" />
                 </Link>
               )}
@@ -194,11 +191,11 @@ function BenefitsBar({ benefits: sanityBenefits }: BenefitsBarProps) {
   const benefits = sanityBenefits?.length
     ? sanityBenefits.map(b => b.title)
     : [
-        "Ozone Cleaned",
-        "Insurance Included",
-        "Free Shipping",
-        "Sustainable",
-        "Flexible Swaps",
+        "No waste, no fuss",
+        "Branduri premium la o fracțiune din preț",
+        "Abonament sezonier",
+        "Asigurare pete",
+        "Curățenie profesională între folosiri",
       ];
 
   // Create items with sparkle separators
@@ -257,6 +254,12 @@ interface PhilosophySectionProps {
 }
 
 function PhilosophySection({ bentoImage1, title, content }: PhilosophySectionProps) {
+  const defaultContent = `Haine de designer pe care nu prea ai da banii pentru doar câteva luni. Piese vintage descoperite la second. Mai puțin timp petrecut vânând măsura 86 prin grupuri de Facebook sau lână merinos fără defecte pe Vinted.
+
+Toate astea pot fi ușurate de o garderobă comună, cu închiriere sezonieră. Noi curatoriem branduri premium, vânăm vintage, ne ocupăm de curățenie profesională și de toată logistica.
+
+Tu ai mai mult timp de smotocit.`;
+
   return (
     <section className="grid grid-cols-1 md:grid-cols-2">
       {/* Left Side - Lavender Background with Text */}
@@ -266,10 +269,10 @@ function PhilosophySection({ bentoImage1, title, content }: PhilosophySectionPro
       >
         <div className="max-w-md">
           <h2 className="text-3xl md:text-4xl mb-4" style={{ color: C.darkBrown }}>
-            {title || "Our philosophy"}
+            {title || "Viziunea noastră"}
           </h2>
-          <p className="text-base" style={{ color: C.darkBrown }}>
-            {content || "Premium European fashion for your little one. Curated with care, cleaned with medical-grade sanitization. Only the best for your baby."}
+          <p className="text-base whitespace-pre-line" style={{ color: C.darkBrown }}>
+            {content || defaultContent}
           </p>
         </div>
       </div>
@@ -296,6 +299,12 @@ interface CleaningStandardProps {
 }
 
 function CleaningStandard({ bentoImage2, title, content }: CleaningStandardProps) {
+  const defaultContent = `Fără panică. Copiii se pătează. Agață haine. Se joacă în noroi. E treaba lor.
+
+Ce e inclus în abonament: Asigurare pentru pete și mici defecte. Adică copilul tău se poate juca liniștit fără să stai cu inima-n dinți.
+
+Ce facem noi: Între fiecare ciclu de închiriere: curățenie profesională și reparații minore. Hainele ajung la tine curate și gata de purtat.`;
+
   return (
     <section className="grid grid-cols-1 md:grid-cols-2">
       {/* Left Side - Full Bleed Image */}
@@ -314,10 +323,10 @@ function CleaningStandard({ bentoImage2, title, content }: CleaningStandardProps
       >
         <div className="max-w-md text-left">
           <h2 className="text-3xl md:text-4xl mb-6 text-white">
-            {title || "The cleaning standard"}
+            {title || "Pete, rupturi și alte realități"}
           </h2>
-          <p className="text-base leading-relaxed text-white/90">
-            {content || "Ozone-cleaned, hypoallergenic, and baby-safe. Every piece is professionally sanitized to medical-grade standards. Safe for even the most sensitive skin."}
+          <p className="text-base leading-relaxed text-white/90 whitespace-pre-line">
+            {content || defaultContent}
           </p>
         </div>
       </div>
@@ -326,7 +335,7 @@ function CleaningStandard({ bentoImage2, title, content }: CleaningStandardProps
 }
 
 // ============================================
-// MOST LOVED (one product per brand, 3x2 grid, no gaps, text overlay)
+// MOST LOVED (featured products, 6x2 grid, no gaps, text overlay)
 // ============================================
 interface MostLovedProps {
   sectionTitle?: string;
@@ -338,36 +347,19 @@ function MostLoved({ sectionTitle }: MostLovedProps) {
     queryFn: fetchProducts,
   });
 
-  // Get one unique product per brand (up to 6)
+  // Get featured products (up to 8 for 4x2 grid)
   const display = useMemo(() => {
     if (!allProducts) return [];
-    const seenBrands = new Set<string>();
-    const uniqueProducts: SanityProduct[] = [];
-
-    for (const product of allProducts) {
-      const brandName = product.brand?.name;
-      if (brandName && !seenBrands.has(brandName)) {
-        seenBrands.add(brandName);
-        uniqueProducts.push(product);
-        if (uniqueProducts.length >= 6) break;
-      }
-    }
-
-    // If we don't have 6 unique brands, fill with remaining products
-    if (uniqueProducts.length < 6) {
-      for (const product of allProducts) {
-        if (!uniqueProducts.find(p => p._id === product._id)) {
-          uniqueProducts.push(product);
-          if (uniqueProducts.length >= 6) break;
-        }
-      }
-    }
-
-    return uniqueProducts;
+    // Return first 8 products for the grid
+    return allProducts.slice(0, 8);
   }, [allProducts]);
 
-  // Accent colors for each product card - expanded palette
-  const accentColors = [C.red, C.green, C.blue, C.navy, C.lavender, C.darkBrown];
+  // Background colors for grid - pattern ensures no adjacent cells (horizontal/vertical) share same color
+  // For 4-column grid: alternating pattern that works for both rows
+  const gridColors = [
+    C.red, C.green, C.lavender, C.navy,      // Row 1
+    C.lavender, C.navy, C.red, C.green,      // Row 2
+  ];
 
   return (
     <section style={{ backgroundColor: C.beige }}>
@@ -375,7 +367,7 @@ function MostLoved({ sectionTitle }: MostLovedProps) {
       <div className="px-6 py-8">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <h2 className="text-3xl md:text-4xl" style={{ color: C.darkBrown }}>
-            {sectionTitle || "Most loved"}
+            {sectionTitle || "Cele mai populare"}
           </h2>
           <Link
             href="/catalog"
@@ -387,46 +379,43 @@ function MostLoved({ sectionTitle }: MostLovedProps) {
         </div>
       </div>
 
-      {/* Full-width grid with no gaps */}
-      <div className="grid grid-cols-2 md:grid-cols-3">
+      {/* Full-width grid with no gaps - 4x2 on desktop */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4">
         {isLoading
-          ? [...Array(6)].map((_, i) => (
-              <div key={i} className="aspect-square animate-pulse" style={{ backgroundColor: C.lavender }} />
+          ? [...Array(8)].map((_, i) => (
+              <div key={i} className="aspect-square animate-pulse" style={{ backgroundColor: gridColors[i % gridColors.length] }} />
             ))
           : display.map((product, index) => {
               const img = getProductImageUrl(product, { width: 500, height: 500 });
-              const accentColor = accentColors[index % accentColors.length];
+              const bgColor = gridColors[index % gridColors.length];
 
               return (
                 <Link key={product._id} href={`/product/${product.slug}`}>
-                  <article className="group relative">
-                    {/* Full bleed image */}
-                    <div className="aspect-square overflow-hidden">
-                      {img ? (
-                        <img
-                          src={img}
-                          alt={product.name}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center" style={{ backgroundColor: C.lavender }}>
-                          <ShoppingBag className="w-12 h-12" style={{ color: C.darkBrown, opacity: 0.3 }} />
-                        </div>
-                      )}
+                  <article
+                    className="group aspect-square relative p-6"
+                    style={{ backgroundColor: bgColor }}
+                  >
+                    {/* Fixed-size image frame centered */}
+                    <div className="absolute inset-6 bottom-16 flex items-center justify-center">
+                      <div className="w-full h-full max-w-[75%] max-h-[75%] overflow-hidden">
+                        {img ? (
+                          <img
+                            src={img}
+                            alt={product.name}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center" style={{ backgroundColor: C.white }}>
+                            <ShoppingBag className="w-12 h-12" style={{ color: C.darkBrown, opacity: 0.3 }} />
+                          </div>
+                        )}
+                      </div>
                     </div>
-                    {/* Text overlay at bottom */}
-                    <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/70 to-transparent">
-                      <p className="text-xs text-white/80 mb-1">
-                        {product.brand?.name}
-                      </p>
-                      <h3 className="text-sm text-white line-clamp-1 mb-2">
+                    {/* Text at fixed position - left aligned, top of text area */}
+                    <div className="absolute bottom-4 left-6 right-6 h-10 text-left">
+                      <h3 className="text-sm text-white font-medium line-clamp-2 leading-tight">
                         {product.name}
                       </h3>
-                      {/* Colored stripe */}
-                      <div
-                        className="h-1 w-10"
-                        style={{ backgroundColor: accentColor }}
-                      />
                     </div>
                   </article>
                 </Link>

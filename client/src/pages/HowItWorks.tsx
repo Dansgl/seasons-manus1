@@ -18,26 +18,26 @@ import { Header, Footer, FAQSection, V6_COLORS as C } from "@/components/v6";
 const STEPS = [
   {
     number: "01",
-    title: "Browse & Select",
-    description: "Explore our curated collection of premium baby clothing from top European brands. Pick 5 items that match your baby's current size and style.",
+    title: "Selecție",
+    description: "Explorează colecția noastră curatoriată de haine premium pentru bebeluși și copii de la branduri alese cu atenție. Selectezi 5 articole în mărimea și stilul dorit pe care le adaugi în coș.",
     icon: ShoppingBag
   },
   {
     number: "02",
-    title: "Receive Your Box",
-    description: "Your box arrives within 3-5 business days. Each item is professionally cleaned with Ozone technology, individually packaged, and ready to wear.",
+    title: "Primești pachetul",
+    description: "După ce plătești vei primi pachetul în 3-5 zile lucrătoare, pachet care vine cu o etichetă pentru retur și un ghid de îngrijire. Tot ce primești este curățat profesional, potrivit pentru tenul bebelușului tău.",
     icon: Package
   },
   {
     number: "03",
-    title: "Enjoy for 3 Months",
-    description: "Dress your little one in designer pieces! Normal wear and tear is covered. Spills happen — we've got you covered with included insurance.",
+    title: "Purtați hainele fără griji",
+    description: "Îl îmbraci pe cel mic în haine una și una! Deteriorarea normală este inclusă în asigurare, la fel și mici pete.",
     icon: Sparkles
   },
   {
     number: "04",
-    title: "Swap & Repeat",
-    description: "When your cycle ends, return your items using the pre-paid label and select 5 new pieces in the next size up. The fashion never stops!",
+    title: "Returnezi și comanzi altele",
+    description: "La finalul celor 3 luni de abonament returnezi produsele folosind eticheta inclusă în pachetul inițial și vezi ce îți mai surâde din colecție. Actualizăm constant garderoba.",
     icon: Repeat
   }
 ];
@@ -45,23 +45,18 @@ const STEPS = [
 const FEATURES = [
   {
     icon: Shield,
-    title: "Insurance Included",
-    description: "Normal wear and tear is covered. No need to stress over small accidents."
+    title: "Asigurare pentru pete și deteriorare",
+    description: "Uzura normală e acoperită de abonament. Nu trebuie să îți faci griji pentru pete mici sau rupturi."
   },
   {
     icon: Sparkles,
-    title: "Ozone Cleaned",
-    description: "Hospital-grade sanitization between every use for complete peace of mind."
-  },
-  {
-    icon: Truck,
-    title: "Free Shipping",
-    description: "Both ways! We send items to you and provide a pre-paid return label."
+    title: "Curățenie profesională",
+    description: "Fiecare articol este curățat la spălătorie ecologică între ciclurile de închiriere."
   },
   {
     icon: Timer,
-    title: "3-Month Cycles",
-    description: "Perfectly timed to match your baby's growth spurts and changing needs."
+    title: "1 ciclu de 3 luni",
+    description: "Închiriere sezonieră pentru a veni în întâmpinarea măsurilor și a anotimpurilor."
   }
 ];
 
@@ -78,21 +73,22 @@ export default function HowItWorks() {
               className="text-3xl md:text-5xl tracking-tight mb-6"
               style={{ color: C.darkBrown }}
             >
-              How Seasons Works
+              Cum funcționează
             </h1>
             <p
               className="text-lg md:text-xl leading-relaxed mb-8"
               style={{ color: C.textBrown }}
             >
-              Premium baby clothing, delivered to your door. Keep what you love for 3 months,
-              then swap for the next size. Simple, sustainable, stylish.
+              Primești ce ți-ai ales din selecția noastră direct la tine acasă. Cel mic le poartă
+              3 luni sau până când îi rămân mici, după care le returnezi și alegi alte haine în
+              abonamentul sezonier.
             </p>
             <Link href="/catalog">
               <span
                 className="inline-flex items-center gap-2 px-8 py-3 text-base font-medium text-white hover:opacity-90 transition-opacity"
                 style={{ backgroundColor: C.red }}
               >
-                Start Browsing
+                Explorează selecția
                 <ArrowRight className="w-5 h-5" />
               </span>
             </Link>
@@ -106,7 +102,7 @@ export default function HowItWorks() {
               className="text-2xl md:text-3xl text-center mb-16"
               style={{ color: C.darkBrown }}
             >
-              Four Simple Steps
+              4 pași simpli
             </h2>
 
             <div className="space-y-12 md:space-y-0 md:grid md:grid-cols-4 md:gap-8">
@@ -163,10 +159,10 @@ export default function HowItWorks() {
               className="text-2xl md:text-3xl text-center mb-12"
               style={{ color: C.darkBrown }}
             >
-              What's Included
+              Ce e inclus
             </h2>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid md:grid-cols-3 gap-6">
               {FEATURES.map((feature) => (
                 <div
                   key={feature.title}
@@ -204,7 +200,7 @@ export default function HowItWorks() {
               className="text-2xl md:text-3xl mb-8"
               style={{ color: C.darkBrown }}
             >
-              Simple Pricing
+              Preț unic
             </h2>
 
             <div
@@ -215,23 +211,22 @@ export default function HowItWorks() {
                 className="text-5xl md:text-6xl font-light mb-2"
                 style={{ color: C.red }}
               >
-                350 RON
+                350 lei
               </div>
               <p
                 className="text-lg mb-6"
                 style={{ color: C.darkBrown }}
               >
-                per quarter (3 months)
+                pe sezon (3 luni)
               </p>
 
               <ul className="space-y-3 text-left max-w-sm mx-auto mb-8">
                 {[
-                  "5 premium designer items",
-                  "Free shipping both ways",
-                  "Insurance for wear & tear",
-                  "Professional Ozone cleaning",
-                  "Pre-paid return label",
-                  "Cancel anytime"
+                  "5 produse la alegere din colecția premium",
+                  "Asigurare pentru uzură și pete",
+                  "Curățare profesională între folosiri",
+                  "Etichetă de retur inclusă",
+                  "Fără obligații pe termen lung"
                 ].map((item) => (
                   <li
                     key={item}
@@ -249,7 +244,7 @@ export default function HowItWorks() {
                   className="inline-block px-8 py-3 text-base font-medium text-white hover:opacity-90 transition-opacity"
                   style={{ backgroundColor: C.red }}
                 >
-                  Get Started
+                  Începe acum
                 </span>
               </Link>
             </div>
@@ -263,7 +258,7 @@ export default function HowItWorks() {
               className="text-2xl md:text-3xl text-center mb-12"
               style={{ color: C.darkBrown }}
             >
-              Why Rent vs Buy?
+              De ce să închiriezi vs să cumperi?
             </h2>
 
             <div className="grid md:grid-cols-2 gap-8">
@@ -276,28 +271,28 @@ export default function HowItWorks() {
                   className="font-semibold mb-4 pb-4 border-b"
                   style={{ color: C.textBrown, borderColor: C.lavender }}
                 >
-                  Buying
+                  Cumpărare
                 </h3>
                 <ul className="space-y-3 text-sm" style={{ color: C.textBrown }}>
                   <li className="flex items-start gap-3">
                     <span>✗</span>
-                    <span>€500+ per year on clothes quickly outgrown</span>
+                    <span>3000 lei+ pe an pe haine care rămân mici în câteva luni</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <span>✗</span>
-                    <span>Closets full of unused items</span>
+                    <span>Dulapuri pline de haine pe care nu le mai folosești</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <span>✗</span>
-                    <span>Environmental impact of fast fashion</span>
+                    <span>Impactul lanțurilor de fast fashion asupra modei</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <span>✗</span>
-                    <span>Hassle of reselling or donating</span>
+                    <span>Timp și energie pentru sortare și revânzare</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <span>✗</span>
-                    <span>Storage space needed</span>
+                    <span>Spațiu de depozitare</span>
                   </li>
                 </ul>
               </div>
@@ -316,23 +311,23 @@ export default function HowItWorks() {
                 <ul className="space-y-3 text-sm" style={{ color: C.textBrown }}>
                   <li className="flex items-start gap-3">
                     <span style={{ color: C.red }}>✓</span>
-                    <span>€280 per year for premium designer clothes</span>
+                    <span>1400 lei pe an pentru haine de la branduri premium</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <span style={{ color: C.red }}>✓</span>
-                    <span>Fresh rotation every quarter</span>
+                    <span>Reîmprospătarea garderobei în fiecare sezon</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <span style={{ color: C.red }}>✓</span>
-                    <span>Circular, sustainable fashion</span>
+                    <span>Modă circulară, sustenabilă</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <span style={{ color: C.red }}>✓</span>
-                    <span>Simple returns with pre-paid labels</span>
+                    <span>Retururi simple cu etichete pregătite</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <span style={{ color: C.red }}>✓</span>
-                    <span>No storage, no clutter</span>
+                    <span>Fără depozitare și timp pierdut</span>
                   </li>
                 </ul>
               </div>
@@ -347,18 +342,18 @@ export default function HowItWorks() {
         >
           <div className="max-w-2xl mx-auto px-6">
             <h2 className="text-2xl md:text-3xl text-white mb-4">
-              Ready to Start?
+              Ești gata să începi?
             </h2>
             <p className="text-white/80 mb-8">
-              Browse our collection and pick your first 5 items.
-              Your baby's wardrobe refresh is just a few clicks away.
+              Uită-te în colecția noastră și alege primele 5 articole din abonament.
+              Și fii parte din schimbare.
             </p>
             <Link href="/catalog">
               <span
                 className="inline-flex items-center gap-2 px-8 py-3 text-base font-medium hover:opacity-90 transition-opacity"
                 style={{ backgroundColor: C.white, color: C.red }}
               >
-                Browse Collection
+                Explorează selecția
                 <ArrowRight className="w-5 h-5" />
               </span>
             </Link>

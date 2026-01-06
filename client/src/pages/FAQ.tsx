@@ -14,131 +14,131 @@ interface FAQItem {
 }
 
 const ALL_FAQS: FAQItem[] = [
-  // Getting Started
+  // Primii pași
   {
-    category: "Getting Started",
-    question: "How does Seasons work?",
-    answer: "Seasons is a baby clothing rental subscription. For 350 RON per quarter, you select 5 premium designer items. We ship them to you, you enjoy them for 3 months, then return them for a fresh selection in the next size. It's that simple!"
+    category: "Primii pași",
+    question: "Cum funcționează Seasons?",
+    answer: "Seasons este un serviciu de închiriere haine pentru bebeluși prin abonament. Pentru 350 lei pe sezon, selectezi 5 articole premium de designer. Ți le trimitem acasă, le folosești 3 luni, apoi le returnezi pentru o nouă selecție în mărimea următoare. Atât de simplu!"
   },
   {
-    category: "Getting Started",
-    question: "Who is Seasons for?",
-    answer: "Seasons is perfect for parents who want high-quality, designer baby clothing without the waste. Whether you care about sustainability, love premium brands, or simply want to save money on clothes your baby will quickly outgrow, Seasons is for you."
+    category: "Primii pași",
+    question: "Pentru cine este Seasons?",
+    answer: "Seasons este perfect pentru părinții care vor haine de designer de înaltă calitate fără risipă. Fie că îți pasă de sustenabilitate, iubești brandurile premium, sau pur și simplu vrei să economisești pe haine pe care bebelușul le va depăși rapid, Seasons este pentru tine."
   },
   {
-    category: "Getting Started",
-    question: "What sizes do you offer?",
-    answer: "We carry sizes from newborn (0-3 months) through toddler (up to 3 years). Our collection grows with your child, making it easy to size up each quarter."
+    category: "Primii pași",
+    question: "Ce mărimi aveți?",
+    answer: "Avem mărimi de la nou-născut (0-3 luni) până la copii mici (până la 3 ani). Colecția noastră crește odată cu copilul tău, făcând ușor trecerea la mărimea următoare în fiecare sezon."
   },
   {
-    category: "Getting Started",
-    question: "Which brands do you carry?",
-    answer: "We partner with premium European brands including Petit Bateau, Bonpoint, Tartine et Chocolat, Jacadi, Stella McCartney Kids, and many more. Every item in our collection meets our strict quality standards."
-  },
-
-  // Subscription & Pricing
-  {
-    category: "Subscription & Pricing",
-    question: "How much does Seasons cost?",
-    answer: "Seasons is 350 RON per quarter (3 months). This includes 5 premium items, free shipping both ways, insurance for normal wear and tear, and professional Ozone cleaning between uses."
-  },
-  {
-    category: "Subscription & Pricing",
-    question: "Can I cancel my subscription?",
-    answer: "Yes! You can cancel anytime from your dashboard with no penalties. Simply return your current items using the pre-paid label, and your subscription will end."
-  },
-  {
-    category: "Subscription & Pricing",
-    question: "When am I charged?",
-    answer: "You're charged 350 RON when you start your subscription and then every 3 months at the beginning of each new cycle. We'll send you a reminder before each billing date."
-  },
-  {
-    category: "Subscription & Pricing",
-    question: "What payment methods do you accept?",
-    answer: "We accept all major credit cards (Visa, Mastercard, American Express) and PayPal. All payments are processed securely."
+    category: "Primii pași",
+    question: "Ce branduri aveți?",
+    answer: "Colaborăm cu branduri premium europene precum Happymess, Studio Koter, Maru+Bo și multe altele. Fiecare articol din colecția noastră respectă standardele noastre stricte de calitate."
   },
 
-  // Shipping & Returns
+  // Abonament și prețuri
   {
-    category: "Shipping & Returns",
-    question: "Where do you ship?",
-    answer: "We currently ship to Slovakia, Romania, Czech Republic, Hungary, Austria, and Germany. We're expanding to more European countries soon!"
+    category: "Abonament și prețuri",
+    question: "Cât costă Seasons?",
+    answer: "Seasons costă 350 lei pe sezon (3 luni). Aceasta include 5 articole premium, asigurare pentru uzură normală și pete, și curățenie profesională între utilizări."
   },
   {
-    category: "Shipping & Returns",
-    question: "How long does shipping take?",
-    answer: "Standard delivery takes 3-5 business days within our service area. You'll receive a tracking number once your box ships."
+    category: "Abonament și prețuri",
+    question: "Pot să anulez abonamentul?",
+    answer: "Da! Poți anula oricând din contul tău, fără penalități. Pur și simplu returnează articolele curente folosind eticheta de retur, și abonamentul se va încheia."
   },
   {
-    category: "Shipping & Returns",
-    question: "How do I return items?",
-    answer: "Easy! Each box includes a pre-paid return label. Simply pack your items in the original packaging, attach the label, and drop it at any postal point. We'll handle the rest."
+    category: "Abonament și prețuri",
+    question: "Când sunt taxat?",
+    answer: "Ești taxat 350 lei când începi abonamentul și apoi la fiecare 3 luni la începutul fiecărui nou ciclu. Îți vom trimite un reminder înainte de fiecare dată de facturare."
   },
   {
-    category: "Shipping & Returns",
-    question: "When do I need to return items?",
-    answer: "Items should be returned by the end of your 3-month cycle. We'll send you reminders when your return window opens and approaches. Late returns may affect your next box."
-  },
-
-  // Quality & Care
-  {
-    category: "Quality & Care",
-    question: "Are items clean and safe?",
-    answer: "Absolutely. Every item undergoes professional Ozone cleaning between uses — the same technology used in hospitals. This eliminates 99.9% of bacteria and allergens while being gentle on fabrics."
-  },
-  {
-    category: "Quality & Care",
-    question: "What condition are the items in?",
-    answer: "All items are in excellent condition. We carefully inspect every piece before and after each rental. Items showing significant wear are retired from circulation."
-  },
-  {
-    category: "Quality & Care",
-    question: "What if an item arrives damaged?",
-    answer: "Please contact us within 48 hours of receiving your box. We'll arrange a replacement and provide a return label for the damaged item."
-  },
-  {
-    category: "Quality & Care",
-    question: "How should I care for rented items?",
-    answer: "Care for them as you would your own clothes! Follow the care labels, wash with similar colors, and avoid bleach. Normal wear is expected and covered by our insurance."
+    category: "Abonament și prețuri",
+    question: "Ce metode de plată acceptați?",
+    answer: "Acceptăm toate cardurile de credit majore (Visa, Mastercard, American Express) și PayPal. Toate plățile sunt procesate în siguranță."
   },
 
-  // Damage & Insurance
+  // Livrare și retururi
   {
-    category: "Damage & Insurance",
-    question: "What if my baby damages an item?",
-    answer: "Normal wear and tear is included — we know babies are messy! Small stains, minor snags, and general use marks are all covered. Only excessive damage (large tears, permanent stains from negligence, missing items) may incur additional costs."
+    category: "Livrare și retururi",
+    question: "Unde livrați?",
+    answer: "În prezent livrăm în România. Ne extindem în curând și în alte țări europene!"
   },
   {
-    category: "Damage & Insurance",
-    question: "What counts as normal wear and tear?",
-    answer: "Small food stains (we can remove most!), minor pilling, slight fading from washing, small snags, and general softening of fabric. Basically, if your baby wore it and loved it, you're covered."
+    category: "Livrare și retururi",
+    question: "Cât durează livrarea?",
+    answer: "Livrarea standard durează 3-5 zile lucrătoare. Vei primi un număr de tracking odată ce pachetul tău este expediat."
   },
   {
-    category: "Damage & Insurance",
-    question: "Is there an excess or deductible?",
-    answer: "No. Our insurance is included in your subscription with no additional costs for covered damage. We only charge for excessive damage or lost items."
+    category: "Livrare și retururi",
+    question: "Cum returnez articolele?",
+    answer: "Simplu! Fiecare pachet include o etichetă de retur. Pur și simplu împachetează articolele în ambalajul original, atașează eticheta și predă-l la orice punct poștal. Noi ne ocupăm de restul."
+  },
+  {
+    category: "Livrare și retururi",
+    question: "Când trebuie să returnez articolele?",
+    answer: "Articolele trebuie returnate până la sfârșitul ciclului de 3 luni. Îți vom trimite remindere când se deschide și se apropie fereastra de retur. Retururile întârziate pot afecta următorul pachet."
   },
 
-  // Selecting Items
+  // Calitate și îngrijire
   {
-    category: "Selecting Items",
-    question: "Can I choose specific items?",
-    answer: "Yes! You browse our full catalog and select exactly which 5 items you want. No surprise boxes here — you get to pick what you love."
+    category: "Calitate și îngrijire",
+    question: "Sunt articolele curate și sigure?",
+    answer: "Absolut. Fiecare articol trece prin curățenie profesională între utilizări la o spălătorie ecologică. Aceasta elimină 99.9% din bacterii și alergeni, fiind totodată blândă cu țesăturile."
   },
   {
-    category: "Selecting Items",
-    question: "What if something I want is unavailable?",
-    answer: "Some popular items may be out on rental. Add them to your wishlist, and we'll notify you when they're back. In the meantime, explore similar styles!"
+    category: "Calitate și îngrijire",
+    question: "În ce stare sunt articolele?",
+    answer: "Toate articolele sunt în stare excelentă. Inspectăm cu atenție fiecare piesă înainte și după fiecare închiriere. Articolele care prezintă uzură semnificativă sunt retrase din circulație."
   },
   {
-    category: "Selecting Items",
-    question: "Can I swap items mid-cycle?",
-    answer: "Your 5 items are yours for the full 3-month cycle. At the end of each cycle, you'll have a swap window to select your next 5 items. This ensures you always have pieces perfectly sized for your growing baby."
+    category: "Calitate și îngrijire",
+    question: "Ce se întâmplă dacă un articol ajunge deteriorat?",
+    answer: "Te rugăm să ne contactezi în 48 de ore de la primirea pachetului. Vom aranja un înlocuitor și vom furniza o etichetă de retur pentru articolul deteriorat."
   },
   {
-    category: "Selecting Items",
-    question: "Can I keep an item I love?",
-    answer: "Currently, all items must be returned. We're working on a 'buy to keep' option for future. Stay tuned!"
+    category: "Calitate și îngrijire",
+    question: "Cum să îngrijesc articolele închiriate?",
+    answer: "Îngrijește-le așa cum ai face cu propriile haine! Urmează etichetele de îngrijire, spală cu culori similare și evită înălbitorul. Uzura normală este așteptată și acoperită de asigurarea noastră."
+  },
+
+  // Deteriorare și asigurare
+  {
+    category: "Deteriorare și asigurare",
+    question: "Ce se întâmplă dacă bebelușul deteriorează un articol?",
+    answer: "Uzura normală este inclusă — știm că bebelușii se murdăresc! Pete mici, zgârieturi minore și semne de utilizare generală sunt toate acoperite. Doar deteriorarea excesivă (rupturi mari, pete permanente din neglijență, articole lipsă) poate implica costuri suplimentare."
+  },
+  {
+    category: "Deteriorare și asigurare",
+    question: "Ce se consideră uzură normală?",
+    answer: "Pete mici de mâncare (putem îndepărta majoritatea!), scămoșare minoră, decolorare ușoară de la spălare, zgârieturi mici și înmuierea generală a țesăturii. Practic, dacă bebelușul tău a purtat și a iubit, ești acoperit."
+  },
+  {
+    category: "Deteriorare și asigurare",
+    question: "Există o franciză sau deductibilă?",
+    answer: "Nu. Asigurarea noastră este inclusă în abonament fără costuri suplimentare pentru deteriorarea acoperită. Taxăm doar pentru deteriorare excesivă sau articole pierdute."
+  },
+
+  // Selectarea articolelor
+  {
+    category: "Selectarea articolelor",
+    question: "Pot să aleg articole specifice?",
+    answer: "Da! Răsfoiești catalogul nostru complet și selectezi exact care 5 articole vrei. Nicio surpriză aici — tu alegi ce îți place."
+  },
+  {
+    category: "Selectarea articolelor",
+    question: "Ce se întâmplă dacă ceva ce vreau nu este disponibil?",
+    answer: "Unele articole populare pot fi în curs de închiriere. Adaugă-le la lista de dorințe și te vom notifica când sunt din nou disponibile. Între timp, explorează stiluri similare!"
+  },
+  {
+    category: "Selectarea articolelor",
+    question: "Pot să schimb articole în timpul ciclului?",
+    answer: "Cele 5 articole sunt ale tale pentru întregul ciclu de 3 luni. La sfârșitul fiecărui ciclu, vei avea o fereastră de schimb pentru a selecta următoarele 5 articole. Aceasta asigură că ai mereu piese perfect dimensionate pentru bebelușul tău în creștere."
+  },
+  {
+    category: "Selectarea articolelor",
+    question: "Pot să păstrez un articol care îmi place?",
+    answer: "În prezent, toate articolele trebuie returnate. Lucrăm la o opțiune de 'cumpără pentru a păstra' pentru viitor. Rămâi pe fază!"
   }
 ];
 
@@ -180,14 +180,14 @@ export default function FAQ() {
               className="text-3xl md:text-5xl tracking-tight mb-6"
               style={{ color: C.darkBrown }}
             >
-              Frequently Asked Questions
+              Întrebări frecvente
             </h1>
             <p
               className="text-lg md:text-xl leading-relaxed mb-8"
               style={{ color: C.textBrown }}
             >
-              Everything you need to know about Seasons.
-              Can't find what you're looking for? Contact us anytime.
+              Tot ce trebuie să știi despre Seasons.
+              Nu găsești ce cauți? Contactează-ne oricând.
             </p>
 
             {/* Search */}
@@ -200,7 +200,7 @@ export default function FAQ() {
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Search questions..."
+                placeholder="Caută întrebări..."
                 className="w-full pl-12 pr-4 py-3 border-2 text-sm focus:outline-none transition-colors"
                 style={{ borderColor: C.lavender, color: C.darkBrown, backgroundColor: C.white }}
               />
@@ -220,7 +220,7 @@ export default function FAQ() {
                   color: selectedCategory === null ? C.white : C.textBrown
                 }}
               >
-                All
+                Toate
               </button>
               {CATEGORIES.map(category => (
                 <button
@@ -245,8 +245,8 @@ export default function FAQ() {
             {Object.keys(groupedFAQs).length === 0 ? (
               <div className="text-center py-12" style={{ backgroundColor: C.white }}>
                 <p style={{ color: C.textBrown }}>
-                  No questions found matching "{searchTerm}".
-                  Try a different search term or browse all categories.
+                  Nu am găsit întrebări pentru "{searchTerm}".
+                  Încearcă un alt termen sau răsfoiește toate categoriile.
                 </p>
               </div>
             ) : (
@@ -317,20 +317,20 @@ export default function FAQ() {
               className="text-2xl md:text-3xl mb-4"
               style={{ color: C.darkBrown }}
             >
-              Still Have Questions?
+              Ai alte întrebări?
             </h2>
             <p
               className="mb-8"
               style={{ color: C.textBrown }}
             >
-              We're here to help! Reach out and our team will get back to you within 24 hours.
+              Suntem aici să te ajutăm! Contactează-ne și echipa noastră îți va răspunde în 24 de ore.
             </p>
             <Link href="/contact">
               <span
                 className="inline-block px-8 py-3 text-base font-medium text-white hover:opacity-90 transition-opacity"
                 style={{ backgroundColor: C.red }}
               >
-                Contact Us
+                Contactează-ne
               </span>
             </Link>
           </div>

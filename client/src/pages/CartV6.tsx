@@ -328,7 +328,7 @@ export default function CartV6() {
                     </div>
                     <div className="flex items-center gap-2 text-xs" style={{ color: C.textBrown }}>
                       <Sparkles className="w-4 h-4 flex-shrink-0" style={{ color: C.red }} />
-                      <span>Ozone cleaned & sanitized</span>
+                      <span>Curățate profesional</span>
                     </div>
                     <div className="flex items-center gap-2 text-xs" style={{ color: C.textBrown }}>
                       <Package className="w-4 h-4 flex-shrink-0" style={{ color: C.red }} />

@@ -239,7 +239,7 @@ function CheckoutV6Content() {
                     </li>
                     <li className="flex items-start">
                       <span className="mr-3" style={{ color: C.red }}>•</span>
-                      <span>All items are professionally cleaned with Ozone technology</span>
+                      <span>Toate articolele sunt curățate profesional</span>
                     </li>
                     <li className="flex items-start">
                       <span className="mr-3" style={{ color: C.red }}>•</span>
@@ -359,7 +359,7 @@ function CheckoutV6Content() {
                   </div>
                   <div className="flex items-center gap-2 text-xs" style={{ color: C.textBrown }}>
                     <Sparkles className="w-4 h-4" style={{ color: C.red }} />
-                    <span>Ozone cleaned</span>
+                    <span>Curățat profesional</span>
                   </div>
                   <div className="flex items-center gap-2 text-xs" style={{ color: C.textBrown }}>
                     <Package className="w-4 h-4" style={{ color: C.red }} />
