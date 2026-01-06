@@ -550,30 +550,39 @@ export async function createSubscription(
     return { success: false, error: 'Failed to create box' };
   }
 
-  // Reserve inventory for each cart item
+  // Reserve inventory for each cart item using atomic RPC to prevent race conditions
   for (const slug of cartSlugs) {
-    // Find first available inventory item
-    const { data: inventoryItem } = await supabase
-      .from('inventory_items')
-      .select('id')
-      .eq('sanity_product_slug', slug)
-      .eq('state', 'available')
-      .or('quarantine_until.is.null,quarantine_until.lt.now()')
-      .limit(1)
-      .single();
+    // Use atomic RPC function to find, lock, and reserve inventory in one transaction
+    const { data: inventoryId, error: rpcError } = await supabase
+      .rpc('reserve_inventory_item', {
+        p_box_id: box.id,
+        p_sanity_product_slug: slug
+      });
 
-    if (inventoryItem) {
-      // Add to box
-      await supabase
-        .from('box_items')
-        .insert({ box_id: box.id, inventory_item_id: inventoryItem.id });
-
-      // Mark as active
-      await supabase
+    if (rpcError) {
+      console.error('Failed to reserve inventory via RPC:', rpcError);
+      // Fallback to non-atomic method if RPC doesn't exist yet
+      const { data: inventoryItem } = await supabase
         .from('inventory_items')
-        .update({ state: 'active', updated_at: new Date().toISOString() })
-        .eq('id', inventoryItem.id);
+        .select('id')
+        .eq('sanity_product_slug', slug)
+        .eq('state', 'available')
+        .or('quarantine_until.is.null,quarantine_until.lt.now()')
+        .limit(1)
+        .single();
+
+      if (inventoryItem) {
+        await supabase
+          .from('box_items')
+          .insert({ box_id: box.id, inventory_item_id: inventoryItem.id });
+
+        await supabase
+          .from('inventory_items')
+          .update({ state: 'active', updated_at: new Date().toISOString() })
+          .eq('id', inventoryItem.id);
+      }
     }
+    // If RPC succeeded and returned null, item was out of stock - continue anyway
   }
 
   // Clear cart
@@ -807,26 +816,36 @@ export async function confirmSwap(): Promise<{ success: boolean; boxId?: number;
     return { success: false, error: 'Failed to create new box' };
   }
 
-  // Reserve inventory for each swap item
+  // Reserve inventory for each swap item using atomic RPC to prevent race conditions
   for (const slug of swapSlugs) {
-    const { data: inventoryItem } = await supabase
-      .from('inventory_items')
-      .select('id')
-      .eq('sanity_product_slug', slug)
-      .eq('state', 'available')
-      .or('quarantine_until.is.null,quarantine_until.lt.now()')
-      .limit(1)
-      .single();
+    const { data: inventoryId, error: rpcError } = await supabase
+      .rpc('reserve_inventory_item', {
+        p_box_id: box.id,
+        p_sanity_product_slug: slug
+      });
 
-    if (inventoryItem) {
-      await supabase
-        .from('box_items')
-        .insert({ box_id: box.id, inventory_item_id: inventoryItem.id });
-
-      await supabase
+    if (rpcError) {
+      console.error('Failed to reserve inventory via RPC:', rpcError);
+      // Fallback to non-atomic method if RPC doesn't exist yet
+      const { data: inventoryItem } = await supabase
         .from('inventory_items')
-        .update({ state: 'active', updated_at: new Date().toISOString() })
-        .eq('id', inventoryItem.id);
+        .select('id')
+        .eq('sanity_product_slug', slug)
+        .eq('state', 'available')
+        .or('quarantine_until.is.null,quarantine_until.lt.now()')
+        .limit(1)
+        .single();
+
+      if (inventoryItem) {
+        await supabase
+          .from('box_items')
+          .insert({ box_id: box.id, inventory_item_id: inventoryItem.id });
+
+        await supabase
+          .from('inventory_items')
+          .update({ state: 'active', updated_at: new Date().toISOString() })
+          .eq('id', inventoryItem.id);
+      }
     }
   }
 

@@ -178,4 +178,53 @@ Final polish: favicon, env var fix, health checks.
 
 ---
 
+## Session: 2026-01-05 (Part 5)
+
+### Summary
+Umami analytics fixes, UI alignment fixes, and performance optimization attempt (reverted).
+
+### What Was Done
+
+#### 1. Umami Analytics Fix
+- Fixed `VITE_UMAMI_WEBSITE_ID` env var (had trailing `\n` character)
+- Fixed `VITE_WAITLIST_MODE` env var (same issue)
+- Added `https://api-gateway.umami.dev` to CSP connect-src
+- **Note**: Ad blockers block Umami - test with ad blocker disabled
+
+#### 2. UI Alignment Fix
+- Fixed "The cleaning standard" section text alignment
+- Changed from `text-center` to `text-left` to match "Our philosophy" section
+
+#### 3. Stripe Research Documentation
+- Created `docs/VERCEL-STRIPE-CONNECTION-ISSUES.md`
+- Documented why Vercel Hobby plan has Stripe connection issues
+- Documented our solution (Payment Links instead of serverless)
+
+#### 4. Performance Optimization (REVERTED)
+- Attempted to add `loading="lazy"` to images
+- Attempted to add `fetchPriority="high"` to hero image
+- Attempted to add preconnect/dns-prefetch hints
+- **All reverted** - caused Safari mobile crash
+- Lighthouse score remains ~50 (acceptable for React SPA)
+
+### Files Modified
+- `vercel.json` - Added Umami API gateway to CSP
+- `client/src/pages/HomeV6.tsx` - Text alignment fix
+- `docs/VERCEL-STRIPE-CONNECTION-ISSUES.md` - NEW
+
+### Current State
+| Site | Mode | Status |
+|------|------|--------|
+| babyseasons.ro | Waitlist | ✅ Working |
+| Safari Mobile | - | ✅ Working (after revert) |
+| Umami Analytics | - | ✅ Working (disable ad blocker to test) |
+
+### Lighthouse Scores (Mobile)
+- Performance: 42-52 (typical for React SPA)
+- Accessibility: 78
+- Best Practices: 96
+- SEO: 100 ✓
+
+---
+
 *Last updated: 2026-01-05*

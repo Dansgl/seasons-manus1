@@ -5,7 +5,6 @@ import net from "net";
 import rateLimit from "express-rate-limit";
 import { serveStatic, setupVite } from "./vite";
 import { generateSitemap } from "./sitemap";
-import { createCheckoutSession, constructWebhookEvent } from "../lib/stripe";
 
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise((resolve) => {
@@ -29,63 +28,6 @@ async function findAvailablePort(startPort: number = 3000): Promise<number> {
 async function startServer() {
   const app = express();
   const server = createServer(app);
-
-  // Stripe webhook handler - MUST be before body parser (needs raw body)
-  app.post("/api/stripe/webhook", express.raw({ type: "application/json" }), async (req, res) => {
-    const signature = req.headers["stripe-signature"] as string;
-    const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
-
-    if (!webhookSecret) {
-      console.error("STRIPE_WEBHOOK_SECRET not configured");
-      res.status(500).json({ error: "Webhook not configured" });
-      return;
-    }
-
-    try {
-      const event = constructWebhookEvent(req.body, signature, webhookSecret);
-
-      // Handle different event types
-      switch (event.type) {
-        case "checkout.session.completed": {
-          const session = event.data.object;
-          console.log("Checkout completed:", session.id);
-          // TODO: Activate user subscription in database
-          break;
-        }
-        case "customer.subscription.updated": {
-          const subscription = event.data.object;
-          console.log("Subscription updated:", subscription.id);
-          // TODO: Update subscription status in database
-          break;
-        }
-        case "customer.subscription.deleted": {
-          const subscription = event.data.object;
-          console.log("Subscription canceled:", subscription.id);
-          // TODO: Mark subscription as canceled in database
-          break;
-        }
-        case "invoice.payment_succeeded": {
-          const invoice = event.data.object;
-          console.log("Payment succeeded:", invoice.id);
-          // TODO: Record payment in database
-          break;
-        }
-        case "invoice.payment_failed": {
-          const invoice = event.data.object;
-          console.log("Payment failed:", invoice.id);
-          // TODO: Handle failed payment (notify user, update status)
-          break;
-        }
-        default:
-          console.log("Unhandled event type:", event.type);
-      }
-
-      res.json({ received: true });
-    } catch (err) {
-      console.error("Webhook error:", err);
-      res.status(400).json({ error: "Webhook signature verification failed" });
-    }
-  });
 
   // Configure body parser with reasonable size limit
   app.use(express.json({ limit: "10mb" }));
@@ -142,34 +84,6 @@ Allow: /
 Sitemap: ${process.env.APP_URL || "http://localhost:3000"}/sitemap.xml
 `;
     res.type("text/plain").send(robotsTxt);
-  });
-
-  // Stripe Checkout Session endpoint
-  app.post("/api/stripe/create-checkout-session", async (req, res) => {
-    try {
-      const { email, cartItems } = req.body;
-
-      if (!email) {
-        res.status(400).json({ error: "Email is required" });
-        return;
-      }
-
-      const baseUrl = process.env.APP_URL || "http://localhost:3000";
-
-      const session = await createCheckoutSession({
-        customerEmail: email,
-        successUrl: `${baseUrl}/dashboard?checkout=success&session_id={CHECKOUT_SESSION_ID}`,
-        cancelUrl: `${baseUrl}/cart?checkout=canceled`,
-        metadata: {
-          cartItems: JSON.stringify(cartItems || []),
-        },
-      });
-
-      res.json({ url: session.url });
-    } catch (err) {
-      console.error("Checkout session error:", err);
-      res.status(500).json({ error: "Failed to create checkout session" });
-    }
   });
 
   // Development mode uses Vite, production mode uses static files

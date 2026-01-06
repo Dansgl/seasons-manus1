@@ -418,9 +418,9 @@ export default function ProductDetailV6() {
                     style={{ backgroundColor: isWaitlistMode ? C.red : (outOfStock ? C.textBrown : C.red) }}
                   >
                     {addToCartMutation.isPending && <Loader2 className="w-4 h-4 animate-spin" />}
-                    {!addToCartMutation.isPending && <Plus className="w-4 h-4" />}
+                    {!addToCartMutation.isPending && !isWaitlistMode && <Plus className="w-4 h-4" />}
                     {isWaitlistMode
-                      ? "Add to Box"
+                      ? "Join Waitlist"
                       : outOfStock
                       ? "Out of Stock"
                       : !canAddMore

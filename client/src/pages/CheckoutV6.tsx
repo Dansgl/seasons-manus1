@@ -11,13 +11,13 @@ import { fetchProducts, getProductImageUrl, type SanityProduct } from "@/lib/san
 import { Link } from "wouter";
 import { Loader2, ShoppingBag, Check, Shield, Sparkles, Package, CreditCard } from "lucide-react";
 import { toast } from "sonner";
-import { Header, Footer, V6_COLORS as C } from "@/components/v6";
+import { Header, Footer, V6_COLORS as C, CheckoutErrorBoundary } from "@/components/v6";
 
 // Stripe Payment Link (hosted by Stripe - no server needed)
 // Use test mode link for development, live link for production
 const STRIPE_PAYMENT_LINK = import.meta.env.VITE_STRIPE_PAYMENT_LINK || "https://buy.stripe.com/28E7sL5POcAx68u2eW0Jq00";
 
-export default function CheckoutV6() {
+function CheckoutV6Content() {
   const { user, isAuthenticated } = useAuth();
   const [shippingAddress, setShippingAddress] = useState("");
   const [phone, setPhone] = useState("");
@@ -374,5 +374,14 @@ export default function CheckoutV6() {
 
       <Footer />
     </div>
+  );
+}
+
+// Wrap with error boundary for better checkout error handling
+export default function CheckoutV6() {
+  return (
+    <CheckoutErrorBoundary>
+      <CheckoutV6Content />
+    </CheckoutErrorBoundary>
   );
 }

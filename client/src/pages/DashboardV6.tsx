@@ -2,14 +2,14 @@
  * DashboardV6 - User dashboard with V6 design system
  */
 
-import { useMemo, useEffect, useState } from "react";
+import { useMemo, useEffect, useState, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/_core/hooks/useAuth";
-import { getSubscription, getCurrentBox, cancelSubscription } from "@/lib/supabase-db";
+import { getSubscription, getCurrentBox, cancelSubscription, createSubscription } from "@/lib/supabase-db";
 import { fetchProducts, getProductImageUrl, type SanityProduct } from "@/lib/sanity";
 import { generateReturnLabel } from "@/lib/returnLabel";
 import { Link, useLocation, useSearch } from "wouter";
-import { Loader2, ShoppingBag, Calendar, Package, Download, ArrowRight, LogOut, CheckCircle, PartyPopper } from "lucide-react";
+import { Loader2, ShoppingBag, Calendar, Package, Download, ArrowRight, LogOut, CheckCircle, PartyPopper, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 import { getLoginUrl } from "@/const";
 import { Header, Footer, V6_COLORS as C } from "@/components/v6";
@@ -19,18 +19,82 @@ export default function DashboardV6() {
   const [, setLocation] = useLocation();
   const searchString = useSearch();
   const [showCheckoutSuccess, setShowCheckoutSuccess] = useState(false);
-
-  // Check for checkout success
-  useEffect(() => {
-    const params = new URLSearchParams(searchString);
-    if (params.get("checkout") === "success") {
-      setShowCheckoutSuccess(true);
-      // Remove query param from URL without refresh
-      window.history.replaceState({}, "", "/dashboard");
-    }
-  }, [searchString]);
+  const [checkoutProcessing, setCheckoutProcessing] = useState(false);
+  const [checkoutError, setCheckoutError] = useState<string | null>(null);
+  const checkoutProcessedRef = useRef(false);
 
   const queryClient = useQueryClient();
+
+  // Handle post-checkout: create subscription from localStorage data
+  useEffect(() => {
+    const params = new URLSearchParams(searchString);
+    if (params.get("checkout") !== "success") return;
+    if (!isAuthenticated || authLoading) return;
+    if (checkoutProcessedRef.current) return;
+
+    // Mark as processed to prevent double execution
+    checkoutProcessedRef.current = true;
+
+    // Remove query param from URL immediately
+    window.history.replaceState({}, "", "/dashboard");
+
+    const processCheckout = async () => {
+      setCheckoutProcessing(true);
+      setCheckoutError(null);
+
+      try {
+        // Read checkout data from localStorage
+        const checkoutDataStr = localStorage.getItem("checkout_shipping");
+        if (!checkoutDataStr) {
+          // No checkout data - user may have already processed or came here directly
+          // Just show success if they have a subscription, otherwise show normal dashboard
+          setCheckoutProcessing(false);
+          return;
+        }
+
+        const checkoutData = JSON.parse(checkoutDataStr);
+        const { address, phone } = checkoutData;
+
+        if (!address) {
+          setCheckoutError("Missing shipping address. Please contact support.");
+          setCheckoutProcessing(false);
+          return;
+        }
+
+        // Create the subscription
+        const result = await createSubscription(address, phone);
+
+        if (result.success) {
+          // Clear localStorage
+          localStorage.removeItem("checkout_shipping");
+
+          // Invalidate queries to refresh data
+          queryClient.invalidateQueries({ queryKey: ["subscription"] });
+          queryClient.invalidateQueries({ queryKey: ["currentBox"] });
+          queryClient.invalidateQueries({ queryKey: ["cart"] });
+          queryClient.invalidateQueries({ queryKey: ["cartCount"] });
+
+          setShowCheckoutSuccess(true);
+          toast.success("Subscription activated!");
+        } else {
+          // Check if they already have an active subscription (payment succeeded but already processed)
+          if (result.error?.includes("already have an active subscription")) {
+            localStorage.removeItem("checkout_shipping");
+            setShowCheckoutSuccess(true);
+          } else {
+            setCheckoutError(result.error || "Failed to activate subscription");
+          }
+        }
+      } catch (err) {
+        console.error("Checkout processing error:", err);
+        setCheckoutError("An error occurred while activating your subscription");
+      } finally {
+        setCheckoutProcessing(false);
+      }
+    };
+
+    processCheckout();
+  }, [searchString, isAuthenticated, authLoading, queryClient]);
 
   const { data: subscription, isLoading: subLoading } = useQuery({
     queryKey: ["subscription"],
@@ -90,6 +154,66 @@ export default function DashboardV6() {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: C.beige }}>
         <Loader2 className="w-8 h-8 animate-spin" style={{ color: C.textBrown }} />
+      </div>
+    );
+  }
+
+  // Show processing state while creating subscription after checkout
+  if (checkoutProcessing) {
+    return (
+      <div className="min-h-screen flex flex-col" style={{ backgroundColor: C.beige }}>
+        <Header />
+        <div className="flex-1 flex items-center justify-center px-6">
+          <div className="text-center max-w-md">
+            <Loader2 className="w-12 h-12 animate-spin mx-auto mb-6" style={{ color: C.red }} />
+            <h1 className="text-2xl md:text-3xl mb-4" style={{ color: C.darkBrown }}>
+              Activating Your Subscription...
+            </h1>
+            <p style={{ color: C.textBrown }}>
+              Please wait while we set up your account and reserve your items.
+            </p>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  // Show error state if checkout processing failed
+  if (checkoutError) {
+    return (
+      <div className="min-h-screen flex flex-col" style={{ backgroundColor: C.beige }}>
+        <Header />
+        <div className="flex-1 flex items-center justify-center px-6">
+          <div className="text-center max-w-md">
+            <div
+              className="w-20 h-20 mx-auto mb-6 flex items-center justify-center"
+              style={{ backgroundColor: C.lavender }}
+            >
+              <AlertCircle className="w-10 h-10" style={{ color: C.red }} />
+            </div>
+            <h1 className="text-2xl md:text-3xl mb-4" style={{ color: C.darkBrown }}>
+              Something Went Wrong
+            </h1>
+            <p className="mb-6" style={{ color: C.textBrown }}>
+              {checkoutError}
+            </p>
+            <p className="mb-8 text-sm" style={{ color: C.textBrown }}>
+              Your payment was successful. Please contact support at support@babyseasons.ro and we'll resolve this immediately.
+            </p>
+            <button
+              onClick={() => {
+                setCheckoutError(null);
+                checkoutProcessedRef.current = false;
+              }}
+              className="px-8 py-3 text-base font-medium border-2 hover:opacity-70 transition-opacity"
+              style={{ borderColor: C.darkBrown, color: C.darkBrown }}
+            >
+              Try Again
+            </button>
+          </div>
+        </div>
+        <Footer />
       </div>
     );
   }
@@ -335,7 +459,7 @@ export default function DashboardV6() {
                 onClick={() => {
                   generateReturnLabel({
                     customerName: user?.name || "Customer",
-                    customerAddress: user?.shippingAddress || "Address not provided",
+                    customerAddress: (user as any)?.shipping_address || "Address not provided",
                     boxId: currentBox.id,
                     subscriptionId: subscription.id,
                     returnByDate: new Date(currentBox.return_by_date).toLocaleDateString(),

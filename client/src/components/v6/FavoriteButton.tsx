@@ -77,7 +77,7 @@ export function FavoriteButton({ productSlug, className = "", size = "md" }: Fav
       toast.success("Removed from favorites");
     } else {
       newFavorites = [...current, productSlug];
-      toast.success("Added to favorites - sign up to save them!");
+      toast.success("Added to favorites - join waitlist to save them!");
     }
 
     setLocalFavorites(newFavorites);

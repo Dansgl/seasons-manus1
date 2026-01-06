@@ -516,8 +516,7 @@ export default function CatalogV6() {
                               <Loader2 className="w-4 h-4 animate-spin" />
                             ) : isWaitlistMode ? (
                               <>
-                                <Plus className="w-4 h-4" />
-                                Add to Box
+                                Join Waitlist
                               </>
                             ) : (
                               <>

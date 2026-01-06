@@ -34,8 +34,8 @@ import {
   type SanityPost,
   type SanitySettings,
 } from "@/lib/sanity";
-import { User, ShoppingBag, Plus, Facebook, Instagram, ArrowRight, Sparkles, Shield, Truck, Leaf, Clock } from "lucide-react";
-import { FAQSection, Header as V6Header, WaitlistModal } from "@/components/v6";
+import { User, ShoppingBag, Plus, Facebook, Instagram, ArrowRight, Sparkles, Shield, Truck, Leaf, Clock, Search } from "lucide-react";
+import { FAQSection, Header as V6Header, WaitlistModal, V6_COLORS as C } from "@/components/v6";
 import type { WaitlistSource } from "@/components/v6/WaitlistModal";
 import { format } from "date-fns";
 
@@ -46,19 +46,6 @@ const FALLBACK_IMAGES = {
   bento2: "https://images.unsplash.com/photo-1596870230751-ebdfce98ec42?w=500&h=400&fit=crop",
 };
 
-// Colors from Pitch template + extended palette
-const C = {
-  red: "#FF3C1F",
-  darkBrown: "#5C1A11",
-  lavender: "#D4B8F0",
-  beige: "#F5F1ED",
-  textBrown: "#B85C4A",
-  white: "#ffffff",
-  // Extended palette for section separation
-  green: "#157145",
-  blue: "#3685B5",
-  navy: "#141B41",
-};
 
 // ============================================
 // HEADER
@@ -325,7 +312,7 @@ function CleaningStandard({ bentoImage2, title, content }: CleaningStandardProps
         className="p-12 md:p-16 flex items-center justify-center min-h-[350px] md:min-h-[400px]"
         style={{ backgroundColor: C.darkBrown }}
       >
-        <div className="max-w-md text-center">
+        <div className="max-w-md text-left">
           <h2 className="text-3xl md:text-4xl mb-6 text-white">
             {title || "The cleaning standard"}
           </h2>

@@ -43,8 +43,31 @@ git add -A && git commit -m "message" && git push origin main && vercel --prod
 
 ## Session Workflow
 1. Read `SESSION_LOG.md` for context
-2. Ask user what they want to work on
-3. Update `SESSION_LOG.md` at end of session with what was done
+2. Read `docs/LESSONS_LEARNED.md` to avoid repeating mistakes
+3. Ask user what they want to work on
+4. **At end of session** (or when user says "done", "log", "wrap up"):
+   - Update `SESSION_LOG.md` with what was done
+   - Add any new lessons to `docs/LESSONS_LEARNED.md`
+
+## Automatic Logging Rules
+- **When a bug is fixed**: Add to LESSONS_LEARNED if it could happen again
+- **When something breaks unexpectedly**: Document the cause and fix
+- **When a workaround is needed**: Document why the normal approach didn't work
+- **When an env var issue is found**: Always document the exact fix
+- **When CSP blocks something**: Add the required domains to lessons
+- **When Safari/mobile breaks**: Document what caused it
+
+## Lessons Learned Categories
+When adding to `docs/LESSONS_LEARNED.md`, use these categories:
+- Vercel Environment Variables
+- Vercel Serverless Functions
+- Safari/Mobile Compatibility
+- Content Security Policy (CSP)
+- Analytics & Ad Blockers
+- React SPA Performance
+- DNS & Domain Configuration
+- Image Handling
+- Other Gotchas
 
 ## Current Status (as of 2026-01-05)
 - Stripe payment flow: WORKING (test mode)
