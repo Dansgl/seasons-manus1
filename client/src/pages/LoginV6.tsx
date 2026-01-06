@@ -102,10 +102,10 @@ export default function LoginV6() {
             {/* Title */}
             <div className="text-center mb-8">
               <h1 className="text-2xl mb-2" style={{ color: C.darkBrown }}>
-                Welcome to Seasons
+                Bine ai venit la Seasons
               </h1>
               <p className="text-sm" style={{ color: C.textBrown }}>
-                Premium baby clothing rental
+                Închiriere haine premium pentru bebeluși
               </p>
             </div>
 
@@ -119,7 +119,7 @@ export default function LoginV6() {
                   color: activeTab === "signin" ? C.darkBrown : C.textBrown,
                 }}
               >
-                Sign In
+                Autentificare
               </button>
               <button
                 onClick={() => setActiveTab("signup")}
@@ -129,7 +129,7 @@ export default function LoginV6() {
                   color: activeTab === "signup" ? C.darkBrown : C.textBrown,
                 }}
               >
-                Sign Up
+                Înregistrare
               </button>
             </div>
 
@@ -152,11 +152,11 @@ export default function LoginV6() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-1" style={{ color: C.darkBrown }}>
-                    Password
+                    Parolă
                   </label>
                   <input
                     type="password"
-                    placeholder="Your password"
+                    placeholder="Parola ta"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
@@ -170,7 +170,7 @@ export default function LoginV6() {
                   className="w-full py-3  text-sm font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-50"
                   style={{ backgroundColor: C.red }}
                 >
-                  {isSubmitting ? "Signing in..." : "Sign In"}
+                  {isSubmitting ? "Se autentifică..." : "Autentifică-te"}
                 </button>
               </form>
             )}
@@ -180,11 +180,11 @@ export default function LoginV6() {
               <form onSubmit={handleSignUp} className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium mb-1" style={{ color: C.darkBrown }}>
-                    Name
+                    Nume
                   </label>
                   <input
                     type="text"
-                    placeholder="Your name"
+                    placeholder="Numele tău"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     className="w-full px-4 py-3  border-2 text-sm focus:outline-none transition-colors"
@@ -207,11 +207,11 @@ export default function LoginV6() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-1" style={{ color: C.darkBrown }}>
-                    Password
+                    Parolă
                   </label>
                   <input
                     type="password"
-                    placeholder="Choose a password"
+                    placeholder="Alege o parolă"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
@@ -226,7 +226,7 @@ export default function LoginV6() {
                   className="w-full py-3  text-sm font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-50"
                   style={{ backgroundColor: C.red }}
                 >
-                  {isSubmitting ? "Creating account..." : "Create Account"}
+                  {isSubmitting ? "Se creează contul..." : "Creează cont"}
                 </button>
               </form>
             )}
@@ -238,7 +238,7 @@ export default function LoginV6() {
               </div>
               <div className="relative flex justify-center text-xs uppercase">
                 <span className="px-2" style={{ backgroundColor: C.white, color: C.textBrown }}>
-                  Or continue with
+                  Sau continuă cu
                 </span>
               </div>
             </div>
@@ -267,12 +267,12 @@ export default function LoginV6() {
                   fill="#EA4335"
                 />
               </svg>
-              Continue with Google
+              Continuă cu Google
             </button>
 
             {/* Terms */}
             <p className="mt-6 text-center text-xs" style={{ color: C.textBrown }}>
-              By continuing, you agree to our Terms of Service and Privacy Policy.
+              Continuând, accepți Termenii și condițiile și Politica de confidențialitate.
             </p>
           </div>
         </div>

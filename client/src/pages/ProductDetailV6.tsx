@@ -124,22 +124,22 @@ export default function ProductDetailV6() {
     mutationFn: (productSlug: string) => addToCart(productSlug),
     onSuccess: (result) => {
       if (result.success) {
-        toast.success("Added to your box!");
+        toast.success("Adăugat în coș!");
         queryClient.invalidateQueries({ queryKey: ["cart"] });
         queryClient.invalidateQueries({ queryKey: ["cartCount"] });
       } else {
-        toast.error(result.error || "Failed to add item");
+        toast.error(result.error || "Nu s-a putut adăuga articolul");
       }
     },
     onError: () => {
-      toast.error("Failed to add item");
+      toast.error("Nu s-a putut adăuga articolul");
     },
   });
 
   const removeFromCartMutation = useMutation({
     mutationFn: (productSlug: string) => removeFromCart(productSlug),
     onSuccess: () => {
-      toast.success("Removed from your box");
+      toast.success("Eliminat din coș");
       queryClient.invalidateQueries({ queryKey: ["cart"] });
       queryClient.invalidateQueries({ queryKey: ["cartCount"] });
     },
@@ -148,8 +148,8 @@ export default function ProductDetailV6() {
   const handleAddToCart = () => {
     // In waitlist mode, show the waitlist modal with toast
     if (isWaitlistMode) {
-      toast("Join our waitlist to be first to rent this item!", {
-        description: "We're launching soon. Sign up to get early access.",
+      toast("Înscrie-te pe lista de așteptare!", {
+        description: "Lansăm în curând. Înregistrează-te pentru acces anticipat.",
       });
       setWaitlistModalOpen(true);
       return;
@@ -216,7 +216,7 @@ export default function ProductDetailV6() {
             style={{ color: C.textBrown }}
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Catalog
+            Înapoi la catalog
           </Link>
 
           <div className="grid md:grid-cols-2 gap-8 md:gap-12">
@@ -332,7 +332,7 @@ export default function ProductDetailV6() {
                   style={{ backgroundColor: C.lavender, color: C.darkBrown }}
                 >
                   <Sparkles className="w-3 h-3 mr-1" />
-                  Insurance Included
+                  Asigurare inclusă
                 </span>
               </div>
 
@@ -345,38 +345,38 @@ export default function ProductDetailV6() {
               {/* Specs Table */}
               <div className="space-y-0 mb-8 text-sm">
                 <div className="flex justify-between py-3 border-b" style={{ borderColor: C.lavender }}>
-                  <span style={{ color: C.textBrown }}>Category</span>
+                  <span style={{ color: C.textBrown }}>Categorie</span>
                   <span className="capitalize" style={{ color: C.darkBrown }}>{product.category}</span>
                 </div>
                 {product.ageRange && (
                   <div className="flex justify-between py-3 border-b" style={{ borderColor: C.lavender }}>
-                    <span style={{ color: C.textBrown }}>Age Range</span>
+                    <span style={{ color: C.textBrown }}>Vârstă</span>
                     <span style={{ color: C.darkBrown }}>{product.ageRange}</span>
                   </div>
                 )}
                 {product.season && (
                   <div className="flex justify-between py-3 border-b" style={{ borderColor: C.lavender }}>
-                    <span style={{ color: C.textBrown }}>Season</span>
+                    <span style={{ color: C.textBrown }}>Sezon</span>
                     <span className="capitalize" style={{ color: C.darkBrown }}>{product.season}</span>
                   </div>
                 )}
                 {product.rrpPrice && (
                   <div className="flex justify-between py-3 border-b" style={{ borderColor: C.lavender }}>
-                    <span style={{ color: C.textBrown }}>Retail Price</span>
+                    <span style={{ color: C.textBrown }}>Preț retail</span>
                     <span style={{ color: C.darkBrown }}>€{product.rrpPrice}</span>
                   </div>
                 )}
                 <div className="flex justify-between py-3">
-                  <span style={{ color: C.textBrown }}>Availability</span>
+                  <span style={{ color: C.textBrown }}>Disponibilitate</span>
                   <span style={{ color: availableCount > 0 ? "#22c55e" : C.red }}>
-                    {availableCount > 0 ? `${availableCount} available` : "Out of stock"}
+                    {availableCount > 0 ? `${availableCount} disponibile` : "Stoc epuizat"}
                   </span>
                 </div>
               </div>
 
               {/* What's Included */}
               <div className=" p-6 mb-8" style={{ backgroundColor: C.white }}>
-                <h3 className="font-semibold mb-3" style={{ color: C.darkBrown }}>What's Included</h3>
+                <h3 className="font-semibold mb-3" style={{ color: C.darkBrown }}>Ce e inclus</h3>
                 <ul className="space-y-2 text-sm" style={{ color: C.textBrown }}>
                   <li className="flex items-start">
                     <span className="mr-2" style={{ color: C.red }}>✓</span>
@@ -384,15 +384,15 @@ export default function ProductDetailV6() {
                   </li>
                   <li className="flex items-start">
                     <span className="mr-2" style={{ color: C.red }}>✓</span>
-                    Full insurance coverage for wear and tear
+                    Asigurare completă pentru uzură
                   </li>
                   <li className="flex items-start">
                     <span className="mr-2" style={{ color: C.red }}>✓</span>
-                    Pre-paid return label included in your box
+                    Etichetă de retur inclusă în pachet
                   </li>
                   <li className="flex items-start">
                     <span className="mr-2" style={{ color: C.red }}>✓</span>
-                    Part of your 350 RON quarterly subscription
+                    Parte din abonamentul de 350 lei/sezon
                   </li>
                 </ul>
               </div>
@@ -408,7 +408,7 @@ export default function ProductDetailV6() {
                   >
                     {removeFromCartMutation.isPending && <Loader2 className="w-4 h-4 animate-spin" />}
                     <Minus className="w-4 h-4" />
-                    Remove from Box
+                    Elimină din coș
                   </button>
                 ) : (
                   <button
@@ -420,12 +420,12 @@ export default function ProductDetailV6() {
                     {addToCartMutation.isPending && <Loader2 className="w-4 h-4 animate-spin" />}
                     {!addToCartMutation.isPending && !isWaitlistMode && <Plus className="w-4 h-4" />}
                     {isWaitlistMode
-                      ? "Join Waitlist"
+                      ? "Intră pe waitlist"
                       : outOfStock
-                      ? "Out of Stock"
+                      ? "Stoc epuizat"
                       : !canAddMore
-                      ? "Box is Full (5/5)"
-                      : "Add to Box"}
+                      ? "Coș plin (5/5)"
+                      : "Adaugă în coș"}
                   </button>
                 )}
                 <FavoriteButton
@@ -437,7 +437,7 @@ export default function ProductDetailV6() {
 
               {isAuthenticated && !isWaitlistMode && cartCount !== undefined && (
                 <p className="text-center text-sm mt-4" style={{ color: C.textBrown }}>
-                  {cartCount} of 5 items selected
+                  {cartCount} din 5 articole selectate
                 </p>
               )}
             </div>

@@ -167,10 +167,10 @@ export default function DashboardV6() {
           <div className="text-center max-w-md">
             <Loader2 className="w-12 h-12 animate-spin mx-auto mb-6" style={{ color: C.red }} />
             <h1 className="text-2xl md:text-3xl mb-4" style={{ color: C.darkBrown }}>
-              Activating Your Subscription...
+              Se activează abonamentul...
             </h1>
             <p style={{ color: C.textBrown }}>
-              Please wait while we set up your account and reserve your items.
+              Te rugăm să aștepți în timp ce îți configurăm contul și rezervăm articolele.
             </p>
           </div>
         </div>
@@ -193,13 +193,13 @@ export default function DashboardV6() {
               <AlertCircle className="w-10 h-10" style={{ color: C.red }} />
             </div>
             <h1 className="text-2xl md:text-3xl mb-4" style={{ color: C.darkBrown }}>
-              Something Went Wrong
+              Ceva nu a funcționat
             </h1>
             <p className="mb-6" style={{ color: C.textBrown }}>
               {checkoutError}
             </p>
             <p className="mb-8 text-sm" style={{ color: C.textBrown }}>
-              Your payment was successful. Please contact support at support@babyseasons.ro and we'll resolve this immediately.
+              Plata ta a fost procesată cu succes. Te rugăm să contactezi support@babyseasons.ro și vom rezolva imediat.
             </p>
             <button
               onClick={() => {
@@ -209,7 +209,7 @@ export default function DashboardV6() {
               className="px-8 py-3 text-base font-medium border-2 hover:opacity-70 transition-opacity"
               style={{ borderColor: C.darkBrown, color: C.darkBrown }}
             >
-              Try Again
+              Încearcă din nou
             </button>
           </div>
         </div>
@@ -233,13 +233,13 @@ export default function DashboardV6() {
                 <PartyPopper className="w-10 h-10" style={{ color: C.red }} />
               </div>
               <h1 className="text-3xl md:text-4xl mb-4" style={{ color: C.darkBrown }}>
-                Subscription Activated!
+                Abonament activat!
               </h1>
               <p className="mb-2 text-lg" style={{ color: C.textBrown }}>
-                Welcome to Seasons! Your payment was successful.
+                Bine ai venit la Seasons! Plata ta a fost procesată cu succes.
               </p>
               <p className="mb-8" style={{ color: C.textBrown }}>
-                We're preparing your first box with the items you selected. You'll receive a confirmation email shortly.
+                Pregătim primul tău pachet cu articolele selectate. Vei primi un email de confirmare în curând.
               </p>
               <div className="space-y-3">
                 <Link href="/catalog">
@@ -247,7 +247,7 @@ export default function DashboardV6() {
                     className="w-full px-8 py-3 text-base font-medium text-white hover:opacity-90 transition-opacity"
                     style={{ backgroundColor: C.red }}
                   >
-                    Continue Browsing
+                    Continuă să explorezi
                   </button>
                 </Link>
                 <button
@@ -255,7 +255,7 @@ export default function DashboardV6() {
                   className="w-full px-8 py-3 text-base font-medium border-2 hover:opacity-70 transition-opacity"
                   style={{ borderColor: C.darkBrown, color: C.darkBrown }}
                 >
-                  View Dashboard
+                  Vezi panoul de control
                 </button>
               </div>
             </div>
@@ -271,17 +271,17 @@ export default function DashboardV6() {
         <div className="flex-1 flex items-center justify-center px-6">
           <div className="text-center">
             <h1 className="text-3xl md:text-4xl mb-4" style={{ color: C.darkBrown }}>
-              No Active Subscription
+              Niciun abonament activ
             </h1>
             <p className="mb-8" style={{ color: C.textBrown }}>
-              Start your journey with Seasons by selecting your first 5 items.
+              Începe călătoria cu Seasons selectând primele 5 articole.
             </p>
             <Link href="/catalog">
               <button
                 className="px-8 py-3  text-base font-medium text-white hover:opacity-90 transition-opacity"
                 style={{ backgroundColor: C.red }}
               >
-                Browse Collection
+                Explorează colecția
               </button>
             </Link>
           </div>
@@ -306,9 +306,9 @@ export default function DashboardV6() {
           <div className="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
               <h1 className="text-3xl md:text-4xl mb-2" style={{ color: C.darkBrown }}>
-                Welcome back, {user?.name}
+                Bine ai revenit, {user?.name}
               </h1>
-              <p style={{ color: C.textBrown }}>Manage your subscription and wardrobe</p>
+              <p style={{ color: C.textBrown }}>Gestionează abonamentul și garderoba</p>
             </div>
             <button
               onClick={async () => {
@@ -319,7 +319,7 @@ export default function DashboardV6() {
               style={{ borderColor: C.textBrown, color: C.textBrown }}
             >
               <LogOut className="w-4 h-4" />
-              Sign Out
+              Deconectare
             </button>
           </div>
 
@@ -329,11 +329,11 @@ export default function DashboardV6() {
             <div className=" p-6" style={{ backgroundColor: C.white }}>
               <div className="flex items-center gap-3 mb-2">
                 <Calendar className="w-5 h-5" style={{ color: C.textBrown }} />
-                <h3 className="font-medium" style={{ color: C.darkBrown }}>Days Remaining</h3>
+                <h3 className="font-medium" style={{ color: C.darkBrown }}>Zile rămase</h3>
               </div>
               <p className="text-4xl font-light" style={{ color: C.darkBrown }}>{daysRemaining}</p>
               <p className="text-sm mt-1" style={{ color: C.textBrown }}>
-                Until {new Date(subscription.cycle_end_date).toLocaleDateString()}
+                Până la {new Date(subscription.cycle_end_date).toLocaleDateString()}
               </p>
             </div>
 
@@ -341,11 +341,11 @@ export default function DashboardV6() {
             <div className=" p-6" style={{ backgroundColor: C.white }}>
               <div className="flex items-center gap-3 mb-2">
                 <Package className="w-5 h-5" style={{ color: C.textBrown }} />
-                <h3 className="font-medium" style={{ color: C.darkBrown }}>Next Billing</h3>
+                <h3 className="font-medium" style={{ color: C.darkBrown }}>Următoarea facturare</h3>
               </div>
-              <p className="text-4xl font-light" style={{ color: C.darkBrown }}>350 RON</p>
+              <p className="text-4xl font-light" style={{ color: C.darkBrown }}>350 lei</p>
               <p className="text-sm mt-1" style={{ color: C.textBrown }}>
-                On {new Date(subscription.next_billing_date).toLocaleDateString()}
+                Pe {new Date(subscription.next_billing_date).toLocaleDateString()}
               </p>
             </div>
 
@@ -360,14 +360,14 @@ export default function DashboardV6() {
                     color: C.darkBrown,
                   }}
                 >
-                  {subscription.status.charAt(0).toUpperCase() + subscription.status.slice(1)}
+                  {subscription.status === 'active' ? 'Activ' : subscription.status.charAt(0).toUpperCase() + subscription.status.slice(1)}
                 </span>
                 {swapWindowOpen && (
                   <span
                     className="px-3 py-1  text-sm font-medium text-white"
                     style={{ backgroundColor: C.red }}
                   >
-                    Swap Window Open
+                    Fereastră de schimb deschisă
                   </span>
                 )}
               </div>
@@ -383,10 +383,10 @@ export default function DashboardV6() {
               <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                 <div>
                   <h3 className="font-semibold mb-2" style={{ color: C.darkBrown }}>
-                    Time to Select Your Next Box!
+                    E timpul să alegi următorul pachet!
                   </h3>
                   <p className="text-sm md:text-base" style={{ color: C.darkBrown }}>
-                    Your swap window is now open. Select your next 5 items before your current cycle ends.
+                    Fereastra de schimb e deschisă. Selectează următoarele 5 articole înainte să se termine ciclul curent.
                   </p>
                 </div>
                 <Link href="/swap-selection">
@@ -394,7 +394,7 @@ export default function DashboardV6() {
                     className="flex items-center gap-2 px-6 py-3  text-sm font-medium text-white whitespace-nowrap hover:opacity-90 transition-opacity"
                     style={{ backgroundColor: C.red }}
                   >
-                    Select Next Box
+                    Alege următorul pachet
                     <ArrowRight className="w-4 h-4" />
                   </button>
                 </Link>
@@ -404,7 +404,7 @@ export default function DashboardV6() {
 
           {/* Current Wardrobe */}
           <div className="mb-8">
-            <h2 className="text-2xl mb-6" style={{ color: C.darkBrown }}>Current Wardrobe</h2>
+            <h2 className="text-2xl mb-6" style={{ color: C.darkBrown }}>Garderoba curentă</h2>
             {boxItemsWithProducts.length > 0 ? (
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
                 {boxItemsWithProducts.map((item, index) => {
@@ -443,7 +443,7 @@ export default function DashboardV6() {
               </div>
             ) : (
               <div className=" p-12 text-center" style={{ backgroundColor: C.white }}>
-                <p style={{ color: C.textBrown }}>No items in your current box</p>
+                <p style={{ color: C.textBrown }}>Niciun articol în pachetul curent</p>
               </div>
             )}
           </div>
@@ -451,9 +451,9 @@ export default function DashboardV6() {
           {/* Return Label */}
           {currentBox && subscription && (
             <div className=" p-6 mb-8" style={{ backgroundColor: C.white }}>
-              <h3 className="font-semibold mb-4" style={{ color: C.darkBrown }}>Return Your Box</h3>
+              <h3 className="font-semibold mb-4" style={{ color: C.darkBrown }}>Returnează pachetul</h3>
               <p className="text-sm mb-4" style={{ color: C.textBrown }}>
-                Return by: {new Date(currentBox.return_by_date).toLocaleDateString()}
+                Termen retur: {new Date(currentBox.return_by_date).toLocaleDateString()}
               </p>
               <button
                 onClick={() => {
@@ -470,21 +470,21 @@ export default function DashboardV6() {
                 style={{ borderColor: C.darkBrown, color: C.darkBrown }}
               >
                 <Download className="w-4 h-4" />
-                Download Return Label
+                Descarcă eticheta de retur
               </button>
               <p className="text-xs mt-3" style={{ color: C.textBrown }}>
-                A pre-paid return label is also included in your box
+                O etichetă de retur preplătită e inclusă în pachetul tău
               </p>
             </div>
           )}
 
           {/* Subscription Management */}
           <div className=" p-6" style={{ backgroundColor: C.white }}>
-            <h3 className="font-semibold mb-4" style={{ color: C.darkBrown }}>Manage Subscription</h3>
+            <h3 className="font-semibold mb-4" style={{ color: C.darkBrown }}>Gestionare abonament</h3>
             <div className="flex flex-wrap gap-3">
               <button
                 onClick={() => {
-                  if (confirm("Are you sure you want to cancel your subscription? You'll need to return your current items.")) {
+                  if (confirm("Ești sigur/ă că vrei să anulezi abonamentul? Va trebui să returnezi articolele curente.")) {
                     cancelSubscriptionMutation.mutate();
                   }
                 }}
@@ -493,7 +493,7 @@ export default function DashboardV6() {
                 style={{ borderColor: C.darkBrown, color: C.darkBrown }}
               >
                 {cancelSubscriptionMutation.isPending && <Loader2 className="w-4 h-4 animate-spin" />}
-                {cancelSubscriptionMutation.isPending ? "Cancelling..." : "Cancel Subscription"}
+                {cancelSubscriptionMutation.isPending ? "Se anulează..." : "Anulează abonamentul"}
               </button>
             </div>
           </div>

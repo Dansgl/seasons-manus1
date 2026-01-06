@@ -66,7 +66,7 @@ export default function FavoritesV6() {
   const removeFromFavoritesMutation = useMutation({
     mutationFn: (slug: string) => removeFromFavorites(slug),
     onSuccess: () => {
-      toast.success("Removed from favorites");
+      toast.success("Eliminat din favorite");
       queryClient.invalidateQueries({ queryKey: ["favorites"] });
       queryClient.invalidateQueries({ queryKey: ["favoritesCount"] });
     },
@@ -76,7 +76,7 @@ export default function FavoritesV6() {
     mutationFn: (slug: string) => addToCart(slug),
     onSuccess: (result) => {
       if (result.success) {
-        toast.success("Added to your box!");
+        toast.success("Adăugat în coș!");
         queryClient.invalidateQueries({ queryKey: ["cart"] });
         queryClient.invalidateQueries({ queryKey: ["cartCount"] });
       } else {
@@ -90,7 +90,7 @@ export default function FavoritesV6() {
       const newFavorites = localFavorites.filter(s => s !== slug);
       setLocalFavorites(newFavorites);
       localStorage.setItem(WAITLIST_FAVORITES_KEY, JSON.stringify(newFavorites));
-      toast.success("Removed from favorites");
+      toast.success("Eliminat din favorite");
     } else {
       removeFromFavoritesMutation.mutate(slug);
     }
@@ -98,11 +98,11 @@ export default function FavoritesV6() {
 
   const handleAddToCart = (slug: string) => {
     if (isWaitlistMode) {
-      toast.info("Sign up to start renting!");
+      toast.info("Înregistrează-te pentru a închiria!");
       return;
     }
     if (!isAuthenticated) {
-      toast.error("Please sign in to add items to your box");
+      toast.error("Te rugăm să te autentifici pentru a adăuga articole în coș");
       return;
     }
     addToCartMutation.mutate(slug);
@@ -118,16 +118,16 @@ export default function FavoritesV6() {
         <div className="flex-1 flex items-center justify-center px-6">
           <div className="p-8 text-center max-w-md" style={{ backgroundColor: C.white }}>
             <Heart className="w-16 h-16 mx-auto mb-4" style={{ color: C.lavender }} />
-            <h2 className="text-2xl mb-4" style={{ color: C.darkBrown }}>Sign In Required</h2>
+            <h2 className="text-2xl mb-4" style={{ color: C.darkBrown }}>Autentificare necesară</h2>
             <p className="mb-6" style={{ color: C.textBrown }}>
-              Please sign in to view your favorites
+              Te rugăm să te autentifici pentru a vedea favoritele
             </p>
             <Link href="/login">
               <button
                 className="px-8 py-3 text-base font-medium text-white hover:opacity-90 transition-opacity"
                 style={{ backgroundColor: C.red }}
               >
-                Sign In
+                Autentifică-te
               </button>
             </Link>
           </div>
@@ -153,10 +153,10 @@ export default function FavoritesV6() {
         <div className="max-w-6xl mx-auto px-6 py-8 md:py-12">
           <div className="mb-8">
             <h1 className="text-3xl md:text-4xl mb-2" style={{ color: C.darkBrown }}>
-              My Favorites
+              Favoritele mele
             </h1>
             <p className="text-base" style={{ color: C.textBrown }}>
-              {favoriteCount} {favoriteCount === 1 ? 'item' : 'items'} saved
+              {favoriteCount} {favoriteCount === 1 ? 'articol salvat' : 'articole salvate'}
             </p>
           </div>
 
@@ -165,17 +165,17 @@ export default function FavoritesV6() {
               <div className="p-8 inline-block" style={{ backgroundColor: C.white }}>
                 <Heart className="w-20 h-20 mx-auto mb-4" style={{ color: C.lavender }} />
                 <h2 className="text-2xl mb-4" style={{ color: C.darkBrown }}>
-                  No favorites yet
+                  Niciun favorit încă
                 </h2>
                 <p className="mb-6 max-w-md" style={{ color: C.textBrown }}>
-                  Browse our collection and tap the heart icon to save your favorite items
+                  Răsfoiește colecția și apasă pe inimioară pentru a salva articolele preferate
                 </p>
                 <Link href="/catalog">
                   <button
                     className="px-8 py-3 text-base font-medium text-white hover:opacity-90 transition-opacity"
                     style={{ backgroundColor: C.red }}
                   >
-                    Browse Collection
+                    Explorează colecția
                   </button>
                 </Link>
               </div>
@@ -246,7 +246,7 @@ export default function FavoritesV6() {
                         ) : (
                           <>
                             <Plus className="w-4 h-4" />
-                            Add to Box
+                            Adaugă în coș
                           </>
                         )}
                       </button>
@@ -256,7 +256,7 @@ export default function FavoritesV6() {
                           className="w-full flex items-center justify-center gap-1 px-4 py-2 text-sm font-medium text-white transition-colors hover:opacity-90"
                           style={{ backgroundColor: C.red }}
                         >
-                          Sign up to Rent
+                          Înregistrează-te
                         </button>
                       </Link>
                     )}

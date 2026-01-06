@@ -108,8 +108,8 @@ export function FavoriteButton({ productSlug, className = "", size = "md" }: Fav
       style={{
         backgroundColor: isFavorited ? C.red : "rgba(255, 255, 255, 0.9)",
       }}
-      title={isFavorited ? "Remove from favorites" : "Add to favorites"}
-      aria-label={isFavorited ? "Remove from favorites" : "Add to favorites"}
+      title={isFavorited ? "Elimină din favorite" : "Adaugă la favorite"}
+      aria-label={isFavorited ? "Elimină din favorite" : "Adaugă la favorite"}
     >
       <Heart
         className={`${iconSize} transition-colors`}

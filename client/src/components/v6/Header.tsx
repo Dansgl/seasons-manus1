@@ -68,14 +68,14 @@ export function Header({ announcement }: HeaderProps) {
                 className="hover:opacity-70 transition-colors text-sm"
                 style={{ color: C.textBrown }}
               >
-                All Products
+                Toate produsele
               </Link>
               <Link
                 href="/brands"
                 className="hover:opacity-70 transition-colors text-sm"
                 style={{ color: C.textBrown }}
               >
-                Brands
+                Branduri
               </Link>
               <Link
                 href="/blog"
@@ -107,7 +107,7 @@ export function Header({ announcement }: HeaderProps) {
                     className="px-4 py-2 text-sm font-medium text-white transition-opacity hover:opacity-90"
                     style={{ backgroundColor: C.red }}
                   >
-                    Join Waitlist
+                    Intră pe waitlist
                   </button>
                 </>
               ) : (
@@ -153,7 +153,7 @@ export function Header({ announcement }: HeaderProps) {
                 style={{ color: C.textBrown }}
                 onClick={() => setMobileMenuOpen(false)}
               >
-                All Products
+                Toate produsele
               </Link>
               <Link
                 href="/brands"
@@ -161,7 +161,7 @@ export function Header({ announcement }: HeaderProps) {
                 style={{ color: C.textBrown }}
                 onClick={() => setMobileMenuOpen(false)}
               >
-                Brands
+                Branduri
               </Link>
               <Link
                 href="/blog"
@@ -180,7 +180,7 @@ export function Header({ announcement }: HeaderProps) {
                   className="block w-full text-left hover:opacity-70 transition-colors font-medium"
                   style={{ color: C.red }}
                 >
-                  Join Waitlist
+                  Intră pe waitlist
                 </button>
               ) : (
                 <>
@@ -190,7 +190,7 @@ export function Header({ announcement }: HeaderProps) {
                     style={{ color: C.textBrown }}
                     onClick={() => setMobileMenuOpen(false)}
                   >
-                    My Favorites
+                    Favoritele mele
                   </Link>
                   <Link
                     href="/dashboard"
@@ -198,7 +198,7 @@ export function Header({ announcement }: HeaderProps) {
                     style={{ color: C.textBrown }}
                     onClick={() => setMobileMenuOpen(false)}
                   >
-                    My Account
+                    Contul meu
                   </Link>
                 </>
               )}

@@ -24,10 +24,10 @@ export default function BlogV6() {
           {/* Header */}
           <div className="mb-10 md:mb-12">
             <h1 className="text-3xl md:text-5xl mb-4" style={{ color: C.darkBrown }}>
-              From Our Blog
+              Blog
             </h1>
             <p style={{ color: C.textBrown }}>
-              Stories, tips, and insights on sustainable parenting
+              Povești, sfaturi și inspirație pentru părinți moderni
             </p>
           </div>
 
@@ -89,7 +89,7 @@ export default function BlogV6() {
 
                         {/* Excerpt */}
                         <p className="text-sm line-clamp-2 flex-grow" style={{ color: C.textBrown }}>
-                          {post.excerpt || "Read more..."}
+                          {post.excerpt || "Citește mai mult..."}
                         </p>
                       </div>
                     </div>

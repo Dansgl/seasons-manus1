@@ -87,7 +87,7 @@ export default function CatalogV6() {
     onSuccess: (result, slug) => {
       setAddingSlug(null);
       if (result.success) {
-        toast.success("Added to your box!");
+        toast.success("Adăugat în coș!");
         queryClient.invalidateQueries({ queryKey: ["cart"] });
         queryClient.invalidateQueries({ queryKey: ["cartCount"] });
 
@@ -103,7 +103,7 @@ export default function CatalogV6() {
           });
         }
       } else {
-        toast.error(result.error || "Failed to add item");
+        toast.error(result.error || "Nu s-a putut adăuga articolul");
 
         // Track cart full attempt
         if (result.error?.includes('full') || result.error?.includes('5')) {
@@ -113,14 +113,14 @@ export default function CatalogV6() {
     },
     onError: () => {
       setAddingSlug(null);
-      toast.error("Failed to add item");
+      toast.error("Nu s-a putut adăuga articolul");
     },
   });
 
   const removeFromCartMutation = useMutation({
     mutationFn: (slug: string) => removeFromCart(slug),
     onSuccess: (result, slug) => {
-      toast.success("Removed from your box");
+      toast.success("Eliminat din coș");
       queryClient.invalidateQueries({ queryKey: ["cart"] });
       queryClient.invalidateQueries({ queryKey: ["cartCount"] });
 
@@ -172,8 +172,8 @@ export default function CatalogV6() {
   const handleAddToCart = (slug: string) => {
     // In waitlist mode, show the waitlist modal with toast
     if (isWaitlistMode) {
-      toast("Join our waitlist to be first to rent this item!", {
-        description: "We're launching soon. Sign up to get early access.",
+      toast("Înscrie-te pe lista de așteptare!", {
+        description: "Lansăm în curând. Înregistrează-te pentru acces anticipat.",
       });
       setWaitlistModalOpen(true);
       return;
@@ -259,7 +259,7 @@ export default function CatalogV6() {
       <div>
         <h3 className="text-sm font-semibold mb-3" style={{ color: C.darkBrown }}>Brand</h3>
         <div className="space-y-1">
-          <FilterButton label="All Brands" active={selectedBrand === ""} onClick={() => handleBrandFilter("")} />
+          <FilterButton label="Toate brandurile" active={selectedBrand === ""} onClick={() => handleBrandFilter("")} />
           {brands?.map((brand) => (
             <FilterButton
               key={brand._id}
@@ -273,9 +273,9 @@ export default function CatalogV6() {
 
       {/* Category Filter */}
       <div>
-        <h3 className="text-sm font-semibold mb-3" style={{ color: C.darkBrown }}>Category</h3>
+        <h3 className="text-sm font-semibold mb-3" style={{ color: C.darkBrown }}>Categorie</h3>
         <div className="space-y-1">
-          <FilterButton label="All Categories" active={selectedCategory === ""} onClick={() => handleCategoryFilter("")} />
+          <FilterButton label="Toate categoriile" active={selectedCategory === ""} onClick={() => handleCategoryFilter("")} />
           {filterOptions.categories.map((cat) => (
             <FilterButton
               key={cat}
@@ -289,9 +289,9 @@ export default function CatalogV6() {
 
       {/* Age Range Filter */}
       <div>
-        <h3 className="text-sm font-semibold mb-3" style={{ color: C.darkBrown }}>Age Range</h3>
+        <h3 className="text-sm font-semibold mb-3" style={{ color: C.darkBrown }}>Vârstă</h3>
         <div className="space-y-1">
-          <FilterButton label="All Ages" active={selectedAgeRange === ""} onClick={() => handleAgeRangeFilter("")} />
+          <FilterButton label="Toate vârstele" active={selectedAgeRange === ""} onClick={() => handleAgeRangeFilter("")} />
           {filterOptions.ageRanges.map((age) => (
             <FilterButton
               key={age}
@@ -305,9 +305,9 @@ export default function CatalogV6() {
 
       {/* Season Filter */}
       <div>
-        <h3 className="text-sm font-semibold mb-3" style={{ color: C.darkBrown }}>Season</h3>
+        <h3 className="text-sm font-semibold mb-3" style={{ color: C.darkBrown }}>Sezon</h3>
         <div className="space-y-1">
-          <FilterButton label="All Seasons" active={selectedSeason === ""} onClick={() => handleSeasonFilter("")} />
+          <FilterButton label="Toate sezoanele" active={selectedSeason === ""} onClick={() => handleSeasonFilter("")} />
           {filterOptions.seasons.map((season) => (
             <FilterButton
               key={season}
@@ -326,7 +326,7 @@ export default function CatalogV6() {
           style={{ borderColor: C.darkBrown, color: C.darkBrown }}
         >
           <X className="w-4 h-4" />
-          Clear Filters
+          Șterge filtrele
         </button>
       )}
     </div>
@@ -342,7 +342,7 @@ export default function CatalogV6() {
           <div className="max-w-7xl mx-auto px-6">
             <div className="flex items-center justify-between mb-2">
               <span className="text-sm font-medium" style={{ color: C.darkBrown }}>
-                {cartCount} of 5 items selected
+                {cartCount} din 5 articole selectate
               </span>
               {cartCount === 5 && (
                 <Link href="/checkout">
@@ -350,7 +350,7 @@ export default function CatalogV6() {
                     className="px-6 py-2  text-sm font-medium text-white transition-colors hover:opacity-90"
                     style={{ backgroundColor: C.red }}
                   >
-                    Proceed to Checkout
+                    Finalizează comanda
                   </button>
                 </Link>
               )}
@@ -375,7 +375,7 @@ export default function CatalogV6() {
                 style={{ backgroundColor: C.white, color: C.darkBrown }}
               >
                 <Filter className="w-4 h-4" />
-                Filters
+                Filtre
                 {hasActiveFilters && (
                   <span
                     className="ml-2 px-2 py-0.5  text-xs text-white"
@@ -388,7 +388,7 @@ export default function CatalogV6() {
             </SheetTrigger>
             <SheetContent side="left" className="w-[300px] overflow-y-auto">
               <SheetHeader>
-                <SheetTitle style={{ color: C.darkBrown }}>Filters</SheetTitle>
+                <SheetTitle style={{ color: C.darkBrown }}>Filtre</SheetTitle>
               </SheetHeader>
               <div className="mt-6">
                 <FilterSidebar />
@@ -409,9 +409,9 @@ export default function CatalogV6() {
           <main className="flex-1">
             <div className="mb-8">
               <h1 className="text-3xl md:text-4xl mb-2" style={{ color: C.darkBrown }}>
-                Rent Collection
+                Colecția de închiriat
               </h1>
-              <p style={{ color: C.textBrown }}>{products?.length || 0} pieces available</p>
+              <p style={{ color: C.textBrown }}>{products?.length || 0} piese disponibile</p>
             </div>
 
             {isLoading ? (
@@ -451,7 +451,7 @@ export default function CatalogV6() {
                               className="absolute top-3 left-3 px-3 py-1  text-xs text-white"
                               style={{ backgroundColor: C.red }}
                             >
-                              Only {availableCount} left
+                              Doar {availableCount} {availableCount === 1 ? 'rămas' : 'rămase'}
                             </span>
                           )}
                           {outOfStock && (
@@ -459,7 +459,7 @@ export default function CatalogV6() {
                               className="absolute top-3 left-3 px-3 py-1  text-xs text-white"
                               style={{ backgroundColor: C.darkBrown }}
                             >
-                              Out of Stock
+                              Stoc epuizat
                             </span>
                           )}
                           {inCart && (
@@ -500,7 +500,7 @@ export default function CatalogV6() {
                             style={{ borderColor: C.darkBrown, color: C.darkBrown }}
                           >
                             <Minus className="w-4 h-4" />
-                            Remove
+                            Elimină
                           </button>
                         ) : (
                           <button
@@ -516,12 +516,12 @@ export default function CatalogV6() {
                               <Loader2 className="w-4 h-4 animate-spin" />
                             ) : isWaitlistMode ? (
                               <>
-                                Join Waitlist
+                                Intră pe waitlist
                               </>
                             ) : (
                               <>
                                 <Plus className="w-4 h-4" />
-                                Add
+                                Adaugă
                               </>
                             )}
                           </button>
@@ -535,14 +535,14 @@ export default function CatalogV6() {
 
             {!isLoading && products?.length === 0 && (
               <div className="text-center py-20">
-                <p style={{ color: C.textBrown }}>No products found with the selected filters.</p>
+                <p style={{ color: C.textBrown }}>Niciun produs găsit cu filtrele selectate.</p>
                 {hasActiveFilters && (
                   <button
                     onClick={clearFilters}
                     className="mt-4 underline"
                     style={{ color: C.red }}
                   >
-                    Clear all filters
+                    Șterge toate filtrele
                   </button>
                 )}
               </div>

@@ -88,13 +88,13 @@ function CheckoutV6Content() {
         <Header />
         <div className="flex-1 flex items-center justify-center px-6">
           <div className=" p-8 text-center max-w-md" style={{ backgroundColor: C.white }}>
-            <p className="mb-6" style={{ color: C.textBrown }}>Please sign in to checkout</p>
+            <p className="mb-6" style={{ color: C.textBrown }}>Te rugăm să te autentifici pentru a finaliza</p>
             <Link href="/login">
               <button
                 className="px-8 py-3  text-base font-medium text-white hover:opacity-90 transition-opacity"
                 style={{ backgroundColor: C.red }}
               >
-                Sign In
+                Autentifică-te
               </button>
             </Link>
           </div>
@@ -118,16 +118,16 @@ function CheckoutV6Content() {
         <Header />
         <div className="flex-1 flex items-center justify-center px-6">
           <div className=" p-8 text-center max-w-md" style={{ backgroundColor: C.white }}>
-            <h2 className="text-2xl mb-4" style={{ color: C.darkBrown }}>Almost There!</h2>
+            <h2 className="text-2xl mb-4" style={{ color: C.darkBrown }}>Aproape gata!</h2>
             <p className="mb-6" style={{ color: C.textBrown }}>
-              You need exactly 5 items to start your subscription. Currently selected: {cartCount}
+              Ai nevoie de exact 5 articole pentru a începe abonamentul. Selectate: {cartCount}
             </p>
             <Link href="/catalog">
               <button
                 className="px-8 py-3  text-base font-medium text-white hover:opacity-90 transition-opacity"
                 style={{ backgroundColor: C.red }}
               >
-                Continue Shopping
+                Continuă cumpărăturile
               </button>
             </Link>
           </div>
@@ -144,7 +144,7 @@ function CheckoutV6Content() {
       <main className="flex-1">
         <div className="max-w-6xl mx-auto px-6 py-8 md:py-12">
           <h1 className="text-3xl md:text-4xl mb-8" style={{ color: C.darkBrown }}>
-            Complete Your Subscription
+            Finalizează abonamentul
           </h1>
 
           <div className="grid lg:grid-cols-3 gap-8">
@@ -153,12 +153,12 @@ function CheckoutV6Content() {
               {/* Shipping Information */}
               <div className=" p-6" style={{ backgroundColor: C.white }}>
                 <h2 className="text-xl font-semibold mb-6" style={{ color: C.darkBrown }}>
-                  Shipping Information
+                  Informații livrare
                 </h2>
                 <form className="space-y-4">
                   <div>
                     <label className="block text-sm font-medium mb-2" style={{ color: C.darkBrown }}>
-                      Full Name
+                      Nume complet
                     </label>
                     <input
                       type="text"
@@ -184,7 +184,7 @@ function CheckoutV6Content() {
 
                   <div>
                     <label className="block text-sm font-medium mb-2" style={{ color: C.darkBrown }}>
-                      Phone Number (Optional)
+                      Telefon (opțional)
                     </label>
                     <input
                       type="tel"
@@ -198,12 +198,12 @@ function CheckoutV6Content() {
 
                   <div>
                     <label className="block text-sm font-medium mb-2" style={{ color: C.darkBrown }}>
-                      Shipping Address *
+                      Adresă de livrare *
                     </label>
                     <textarea
                       value={shippingAddress}
                       onChange={(e) => setShippingAddress(e.target.value)}
-                      placeholder="Street address, city, postal code, country"
+                      placeholder="Strada, număr, oraș, cod poștal"
                       rows={4}
                       required
                       className="w-full px-4 py-3  border-2 text-sm focus:outline-none transition-colors resize-none"
@@ -216,26 +216,26 @@ function CheckoutV6Content() {
               {/* Subscription Terms */}
               <div className=" p-6" style={{ backgroundColor: C.white }}>
                 <h2 className="text-xl font-semibold mb-6" style={{ color: C.darkBrown }}>
-                  Subscription Agreement
+                  Termeni abonament
                 </h2>
                 <div className="space-y-4 text-sm" style={{ color: C.textBrown }}>
-                  <p>By subscribing to Seasons, you agree to the following terms:</p>
+                  <p>Prin abonare la Seasons, accepți următorii termeni:</p>
                   <ul className="space-y-3">
                     <li className="flex items-start">
                       <span className="mr-3" style={{ color: C.red }}>•</span>
-                      <span>Quarterly billing of 350 RON every 3 months</span>
+                      <span>Facturare trimestrială de 350 lei la fiecare 3 luni</span>
                     </li>
                     <li className="flex items-start">
                       <span className="mr-3" style={{ color: C.red }}>•</span>
-                      <span>You will receive 5 luxury baby items per cycle</span>
+                      <span>Vei primi 5 articole premium pe ciclu</span>
                     </li>
                     <li className="flex items-start">
                       <span className="mr-3" style={{ color: C.red }}>•</span>
-                      <span>Items must be returned at the end of each 3-month cycle</span>
+                      <span>Articolele trebuie returnate la sfârșitul fiecărui ciclu de 3 luni</span>
                     </li>
                     <li className="flex items-start">
                       <span className="mr-3" style={{ color: C.red }}>•</span>
-                      <span>Normal wear and tear is included in your subscription</span>
+                      <span>Uzura normală este inclusă în abonament</span>
                     </li>
                     <li className="flex items-start">
                       <span className="mr-3" style={{ color: C.red }}>•</span>
@@ -243,7 +243,7 @@ function CheckoutV6Content() {
                     </li>
                     <li className="flex items-start">
                       <span className="mr-3" style={{ color: C.red }}>•</span>
-                      <span>You can cancel your subscription at any time</span>
+                      <span>Poți anula abonamentul oricând</span>
                     </li>
                   </ul>
 
@@ -264,7 +264,7 @@ function CheckoutV6Content() {
                       className="text-sm cursor-pointer"
                       style={{ color: C.darkBrown }}
                     >
-                      I agree to the subscription terms and conditions
+                      Sunt de acord cu termenii și condițiile abonamentului
                     </label>
                   </div>
                 </div>
@@ -280,12 +280,12 @@ function CheckoutV6Content() {
                 {isRedirecting ? (
                   <>
                     <Loader2 className="w-5 h-5 animate-spin" />
-                    Redirecting to payment...
+                    Redirecționare către plată...
                   </>
                 ) : (
                   <>
                     <CreditCard className="w-5 h-5" />
-                    Proceed to Payment
+                    Continuă la plată
                   </>
                 )}
               </button>
@@ -295,7 +295,7 @@ function CheckoutV6Content() {
             <div>
               <div className=" p-6 sticky top-32" style={{ backgroundColor: C.white }}>
                 <h2 className="text-xl font-semibold mb-6" style={{ color: C.darkBrown }}>
-                  Your Box
+                  Coșul tău
                 </h2>
 
                 {/* Cart Items */}
@@ -328,26 +328,26 @@ function CheckoutV6Content() {
                 {/* Summary */}
                 <div className="border-t pt-4 space-y-2" style={{ borderColor: C.lavender }}>
                   <div className="flex justify-between text-sm">
-                    <span style={{ color: C.textBrown }}>Quarterly Subscription</span>
-                    <span style={{ color: C.darkBrown }}>350 RON</span>
+                    <span style={{ color: C.textBrown }}>Abonament trimestrial</span>
+                    <span style={{ color: C.darkBrown }}>350 lei</span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span style={{ color: C.textBrown }}>Items</span>
-                    <span style={{ color: C.darkBrown }}>5 pieces</span>
+                    <span style={{ color: C.textBrown }}>Articole</span>
+                    <span style={{ color: C.darkBrown }}>5 piese</span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span style={{ color: C.textBrown }}>Cycle Duration</span>
-                    <span style={{ color: C.darkBrown }}>3 months</span>
+                    <span style={{ color: C.textBrown }}>Durată ciclu</span>
+                    <span style={{ color: C.darkBrown }}>3 luni</span>
                   </div>
                 </div>
 
                 <div className="border-t mt-4 pt-4" style={{ borderColor: C.lavender }}>
                   <div className="flex justify-between items-center">
-                    <span className="font-medium" style={{ color: C.darkBrown }}>Total Today</span>
-                    <span className="text-3xl font-light" style={{ color: C.darkBrown }}>350 RON</span>
+                    <span className="font-medium" style={{ color: C.darkBrown }}>Total azi</span>
+                    <span className="text-3xl font-light" style={{ color: C.darkBrown }}>350 lei</span>
                   </div>
                   <p className="text-xs mt-2" style={{ color: C.textBrown }}>
-                    Billed quarterly. Next payment in 3 months.
+                    Facturat trimestrial. Următoarea plată în 3 luni.
                   </p>
                 </div>
 
@@ -355,7 +355,7 @@ function CheckoutV6Content() {
                 <div className="mt-6 pt-6 border-t space-y-3" style={{ borderColor: C.lavender }}>
                   <div className="flex items-center gap-2 text-xs" style={{ color: C.textBrown }}>
                     <Shield className="w-4 h-4" style={{ color: C.red }} />
-                    <span>Insurance included</span>
+                    <span>Asigurare inclusă</span>
                   </div>
                   <div className="flex items-center gap-2 text-xs" style={{ color: C.textBrown }}>
                     <Sparkles className="w-4 h-4" style={{ color: C.red }} />
@@ -363,7 +363,7 @@ function CheckoutV6Content() {
                   </div>
                   <div className="flex items-center gap-2 text-xs" style={{ color: C.textBrown }}>
                     <Package className="w-4 h-4" style={{ color: C.red }} />
-                    <span>Pre-paid return label</span>
+                    <span>Etichetă de retur inclusă</span>
                   </div>
                 </div>
               </div>

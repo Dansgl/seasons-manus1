@@ -11,21 +11,21 @@ export function Footer() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {/* Rent Column */}
             <div>
-              <h3 className="mb-4 font-semibold">Rent</h3>
+              <h3 className="mb-4 font-semibold">Închiriază</h3>
               <ul className="space-y-2 text-white/80 text-sm">
                 <li>
                   <Link href="/catalog" className="hover:text-white transition-colors">
-                    All Products
+                    Toate produsele
                   </Link>
                 </li>
                 <li>
                   <Link href="/brands" className="hover:text-white transition-colors">
-                    Brands
+                    Branduri
                   </Link>
                 </li>
                 <li>
                   <Link href="/how-it-works" className="hover:text-white transition-colors">
-                    How It Works
+                    Cum funcționează
                   </Link>
                 </li>
               </ul>
@@ -33,11 +33,11 @@ export function Footer() {
 
             {/* Company Column */}
             <div>
-              <h3 className="mb-4 font-semibold">Company</h3>
+              <h3 className="mb-4 font-semibold">Despre noi</h3>
               <ul className="space-y-2 text-white/80 text-sm">
                 <li>
                   <Link href="/about" className="hover:text-white transition-colors">
-                    About Us
+                    Povestea Seasons
                   </Link>
                 </li>
                 <li>
@@ -55,21 +55,21 @@ export function Footer() {
 
             {/* Support Column */}
             <div>
-              <h3 className="mb-4 font-semibold">Support</h3>
+              <h3 className="mb-4 font-semibold">Asistență</h3>
               <ul className="space-y-2 text-white/80 text-sm">
                 <li>
                   <Link href="/faq" className="hover:text-white transition-colors">
-                    FAQ
+                    Întrebări frecvente
                   </Link>
                 </li>
                 <li>
                   <Link href="/returns" className="hover:text-white transition-colors">
-                    Returns
+                    Retururi
                   </Link>
                 </li>
                 <li>
                   <Link href="/sizing" className="hover:text-white transition-colors">
-                    Sizing Guide
+                    Ghid mărimi
                   </Link>
                 </li>
               </ul>
@@ -93,7 +93,7 @@ export function Footer() {
               >
                 SEASONS
               </h2>
-              <p className="text-white/60 text-xs mt-2">© 2025 Seasons. Premium baby rental.</p>
+              <p className="text-white/60 text-xs mt-2">© 2025 Seasons. Închiriere haine premium pentru bebeluși.</p>
             </div>
 
             {/* Social Icons */}

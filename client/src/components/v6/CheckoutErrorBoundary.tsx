@@ -48,12 +48,12 @@ export class CheckoutErrorBoundary extends Component<Props, State> {
               </div>
 
               <h1 className="text-2xl md:text-3xl mb-4" style={{ color: C.darkBrown }}>
-                Something went wrong
+                Ceva nu a funcționat
               </h1>
 
               <p className="mb-6" style={{ color: C.textBrown }}>
-                We encountered an error during checkout. Don't worry - if you completed a payment,
-                your order is safe. Our system will process it shortly.
+                Am întâmpinat o eroare la finalizare. Nu-ți face griji - dacă ai efectuat plata,
+                comanda ta este în siguranță. Sistemul nostru o va procesa în curând.
               </p>
 
               <div className="space-y-3">
@@ -66,7 +66,7 @@ export class CheckoutErrorBoundary extends Component<Props, State> {
                   style={{ backgroundColor: C.red }}
                 >
                   <RefreshCw className="w-5 h-5" />
-                  Try Again
+                  Încearcă din nou
                 </button>
 
                 <a
@@ -75,7 +75,7 @@ export class CheckoutErrorBoundary extends Component<Props, State> {
                   style={{ borderColor: C.darkBrown, color: C.darkBrown }}
                 >
                   <ArrowLeft className="w-5 h-5" />
-                  Go to Dashboard
+                  Mergi la contul meu
                 </a>
 
                 <a
@@ -84,14 +84,14 @@ export class CheckoutErrorBoundary extends Component<Props, State> {
                   style={{ color: C.textBrown }}
                 >
                   <MessageSquare className="w-4 h-4" />
-                  Contact Support
+                  Contactează suportul
                 </a>
               </div>
 
               {process.env.NODE_ENV === "development" && this.state.error && (
                 <details className="mt-8 text-left">
                   <summary className="text-xs cursor-pointer" style={{ color: C.textBrown }}>
-                    Technical Details
+                    Detalii tehnice
                   </summary>
                   <pre
                     className="mt-2 p-4 text-xs overflow-auto"

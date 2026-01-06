@@ -77,16 +77,16 @@ export default function CartV6() {
         <div className="flex-1 flex items-center justify-center px-6">
           <div className="p-8 text-center max-w-md" style={{ backgroundColor: C.white }}>
             <ShoppingBag className="w-16 h-16 mx-auto mb-4" style={{ color: C.lavender }} />
-            <h2 className="text-2xl mb-4" style={{ color: C.darkBrown }}>Sign In Required</h2>
+            <h2 className="text-2xl mb-4" style={{ color: C.darkBrown }}>Autentificare necesară</h2>
             <p className="mb-6" style={{ color: C.textBrown }}>
-              Please sign in to view your cart and start your subscription
+              Te rugăm să te autentifici pentru a vedea coșul
             </p>
             <Link href="/login">
               <button
                 className="px-8 py-3 text-base font-medium text-white hover:opacity-90 transition-opacity"
                 style={{ backgroundColor: C.red }}
               >
-                Sign In
+                Autentifică-te
               </button>
             </Link>
           </div>
@@ -114,10 +114,10 @@ export default function CartV6() {
       <main className="flex-1">
         <div className="max-w-6xl mx-auto px-6 py-8 md:py-12">
           <h1 className="text-3xl md:text-4xl mb-2" style={{ color: C.darkBrown }}>
-            Your Box
+            Coșul tău
           </h1>
           <p className="text-base mb-8" style={{ color: C.textBrown }}>
-            Select 5 items to start your quarterly subscription
+            Selectează 5 articole pentru a începe abonamentul sezonier
           </p>
 
           {cartCount === 0 ? (
@@ -125,17 +125,17 @@ export default function CartV6() {
               <div className="p-8 inline-block" style={{ backgroundColor: C.white }}>
                 <ShoppingBag className="w-20 h-20 mx-auto mb-4" style={{ color: C.lavender }} />
                 <h2 className="text-2xl mb-4" style={{ color: C.darkBrown }}>
-                  Your box is empty
+                  Coșul tău e gol
                 </h2>
                 <p className="mb-6 max-w-md" style={{ color: C.textBrown }}>
-                  Browse our collection of premium baby clothing and add 5 items to your box to get started
+                  Răsfoiește colecția noastră de haine premium și adaugă 5 articole în coș
                 </p>
                 <Link href="/catalog">
                   <button
                     className="px-8 py-3 text-base font-medium text-white hover:opacity-90 transition-opacity"
                     style={{ backgroundColor: C.red }}
                   >
-                    Browse Collection
+                    Explorează colecția
                   </button>
                 </Link>
               </div>
@@ -148,11 +148,11 @@ export default function CartV6() {
                 <div className="p-6" style={{ backgroundColor: C.white }}>
                   <div className="flex items-center justify-between mb-4">
                     <h2 className="text-lg font-semibold" style={{ color: C.darkBrown }}>
-                      Items in Box: {cartCount} / 5
+                      Articole în coș: {cartCount} / 5
                     </h2>
                     {!canCheckout && (
                       <span className="text-sm" style={{ color: C.textBrown }}>
-                        {itemsRemaining} more {itemsRemaining === 1 ? 'item' : 'items'} needed
+                        Mai {itemsRemaining === 1 ? 'e nevoie de 1 articol' : `sunt necesare ${itemsRemaining} articole`}
                       </span>
                     )}
                   </div>
@@ -171,7 +171,7 @@ export default function CartV6() {
                   {canCheckout && (
                     <div className="mt-4 flex items-center gap-2 text-sm" style={{ color: C.green }}>
                       <Package className="w-4 h-4" />
-                      <span className="font-medium">Your box is ready for checkout!</span>
+                      <span className="font-medium">Coșul tău e gata pentru finalizare!</span>
                     </div>
                   )}
                 </div>
@@ -241,7 +241,7 @@ export default function CartV6() {
                         disabled={removeFromCartMutation.isPending}
                         className="flex-shrink-0 w-8 h-8 flex items-center justify-center hover:opacity-70 transition-opacity disabled:opacity-50"
                         style={{ color: C.textBrown }}
-                        title="Remove from box"
+                        title="Elimină din coș"
                       >
                         {removeFromCartMutation.isPending ? (
                           <Loader2 className="w-5 h-5 animate-spin" />
@@ -264,7 +264,7 @@ export default function CartV6() {
                         backgroundColor: "transparent",
                       }}
                     >
-                      Continue Shopping
+                      Continuă cumpărăturile
                     </button>
                   </Link>
                 )}
@@ -274,33 +274,33 @@ export default function CartV6() {
               <div>
                 <div className="p-6 sticky top-32" style={{ backgroundColor: C.white }}>
                   <h2 className="text-xl font-semibold mb-6" style={{ color: C.darkBrown }}>
-                    Subscription Summary
+                    Sumar abonament
                   </h2>
 
                   <div className="space-y-4 mb-6">
                     <div className="flex justify-between text-sm">
-                      <span style={{ color: C.textBrown }}>Quarterly Price</span>
-                      <span className="font-medium" style={{ color: C.darkBrown }}>350 RON</span>
+                      <span style={{ color: C.textBrown }}>Preț trimestrial</span>
+                      <span className="font-medium" style={{ color: C.darkBrown }}>350 lei</span>
                     </div>
                     <div className="flex justify-between text-sm">
-                      <span style={{ color: C.textBrown }}>Items Selected</span>
+                      <span style={{ color: C.textBrown }}>Articole selectate</span>
                       <span className="font-medium" style={{ color: C.darkBrown }}>
                         {cartCount} / 5
                       </span>
                     </div>
                     <div className="flex justify-between text-sm">
-                      <span style={{ color: C.textBrown }}>Cycle Duration</span>
-                      <span className="font-medium" style={{ color: C.darkBrown }}>3 months</span>
+                      <span style={{ color: C.textBrown }}>Durată ciclu</span>
+                      <span className="font-medium" style={{ color: C.darkBrown }}>3 luni</span>
                     </div>
                   </div>
 
                   <div className="border-t pt-6 mb-6" style={{ borderColor: C.lavender }}>
                     <div className="flex justify-between items-center mb-2">
                       <span className="font-medium" style={{ color: C.darkBrown }}>Total</span>
-                      <span className="text-3xl font-light" style={{ color: C.darkBrown }}>350 RON</span>
+                      <span className="text-3xl font-light" style={{ color: C.darkBrown }}>350 lei</span>
                     </div>
                     <p className="text-xs" style={{ color: C.textBrown }}>
-                      Billed every 3 months
+                      Facturat la fiecare 3 luni
                     </p>
                   </div>
 
@@ -310,13 +310,13 @@ export default function CartV6() {
                     className="w-full flex items-center justify-center gap-2 py-4 text-base font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
                     style={{ backgroundColor: C.red }}
                   >
-                    Proceed to Checkout
+                    Finalizează comanda
                     <ArrowRight className="w-5 h-5" />
                   </button>
 
                   {!canCheckout && (
                     <p className="text-xs text-center mt-3" style={{ color: C.textBrown }}>
-                      Add {itemsRemaining} more {itemsRemaining === 1 ? 'item' : 'items'} to checkout
+                      Mai adaugă {itemsRemaining} {itemsRemaining === 1 ? 'articol' : 'articole'} pentru a finaliza
                     </p>
                   )}
 
@@ -324,7 +324,7 @@ export default function CartV6() {
                   <div className="mt-6 pt-6 border-t space-y-3" style={{ borderColor: C.lavender }}>
                     <div className="flex items-center gap-2 text-xs" style={{ color: C.textBrown }}>
                       <Sparkles className="w-4 h-4 flex-shrink-0" style={{ color: C.red }} />
-                      <span>Premium European brands</span>
+                      <span>Branduri premium europene</span>
                     </div>
                     <div className="flex items-center gap-2 text-xs" style={{ color: C.textBrown }}>
                       <Sparkles className="w-4 h-4 flex-shrink-0" style={{ color: C.red }} />
@@ -332,7 +332,7 @@ export default function CartV6() {
                     </div>
                     <div className="flex items-center gap-2 text-xs" style={{ color: C.textBrown }}>
                       <Package className="w-4 h-4 flex-shrink-0" style={{ color: C.red }} />
-                      <span>Pre-paid return shipping</span>
+                      <span>Etichetă de retur inclusă</span>
                     </div>
                   </div>
                 </div>

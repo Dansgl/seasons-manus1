@@ -72,14 +72,14 @@ function Header() {
                 className="hover:opacity-70 transition-colors text-sm"
                 style={{ color: C.textBrown }}
               >
-                Rent
+                Toate produsele
               </Link>
               <Link
                 href="/brands"
                 className="hover:opacity-70 transition-colors text-sm"
                 style={{ color: C.textBrown }}
               >
-                Brands
+                Branduri
               </Link>
               <Link
                 href="/blog"
@@ -127,16 +127,16 @@ function HeroSection({ heroImage, isWaitlistMode, onOpenWaitlist }: HeroSectionP
           {/* Left Side - Title and Subhead */}
           <div>
             <h1
-              className="text-2xl md:text-4xl leading-tight tracking-tight"
+              className="text-5xl md:text-7xl tracking-tighter"
               style={{ fontFamily: "Arial Black, sans-serif", fontWeight: 900, color: C.red }}
             >
-              De ce să plătești prețul întreg pentru haine purtate 6 săptămâni?
+              SEASONS
             </h1>
-            <p className="text-base mt-6 leading-relaxed" style={{ color: C.textBrown }}>
-              Copiii cresc peste noapte. Teancul de haine pe care trebuie să le dai mai departe parcă și mai repede.
-            </p>
-            <p className="text-sm mt-4 leading-relaxed" style={{ color: C.textBrown }}>
-              De ce să nu încerci ceva nou? Alege haine noi în fiecare sezon, de purtat cât îi vin, de returnat când încep să rămână mici. De sortat, curățat, pozat, trimis mai departe ne ocupăm noi.
+            <h2 className="text-xl md:text-2xl mt-6 leading-tight" style={{ color: C.darkBrown }}>
+              De ce să plătești prețul întreg pentru haine purtate 6 săptămâni?
+            </h2>
+            <p className="text-base mt-4 leading-relaxed" style={{ color: C.textBrown }}>
+              Copiii cresc peste noapte. Teancul de haine pe care trebuie să le dai mai departe parcă și mai repede. Azi îi cumperi primul body cu "I'm new here", peste două luni nu se mai închid capsele între picioare, peste încă o lună îl retragi în fundul dulapului. Și tot așa în primii ani, când copiii mici trec prin 7 mărimi la haine în 24 de luni.
             </p>
 
             {/* CTA Button */}
@@ -374,7 +374,7 @@ function MostLoved({ sectionTitle }: MostLovedProps) {
             className="flex items-center gap-1 text-sm hover:opacity-70"
             style={{ color: C.textBrown }}
           >
-            View all <ArrowRight className="w-4 h-4" />
+            Vezi tot <ArrowRight className="w-4 h-4" />
           </Link>
         </div>
       </div>
@@ -466,7 +466,7 @@ function Collections({ sectionTitle }: CollectionsProps) {
               className="flex items-center gap-1 text-sm hover:opacity-70"
               style={{ color: C.textBrown }}
             >
-              View all <ArrowRight className="w-4 h-4" />
+              Vezi tot <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
         </div>
@@ -569,17 +569,17 @@ function Newsletter({ title, content }: NewsletterProps) {
       <div className="max-w-4xl mx-auto">
         <div className="mb-8">
           <h2 className="text-white text-3xl md:text-4xl mb-4">
-            {title || "Join the waitlist"}
+            {title || "Intră pe waitlist"}
           </h2>
           <p className="text-white/90 text-base">
-            {content || "Be the first to know when we launch. Get exclusive access to our curated baby fashion collection."}
+            {content || "Fii primul care află când lansăm. Primește acces exclusiv la colecția noastră de haine pentru bebeluși."}
           </p>
         </div>
 
         <form className="flex flex-col sm:flex-row gap-4 max-w-xl">
           <input
             type="email"
-            placeholder="Enter your email"
+            placeholder="Adresa ta de email"
             className="flex-1 px-6 py-3 bg-white/10 border-2 border-white text-white placeholder:text-white/60 focus:outline-none focus:bg-white/20"
           />
           <button
@@ -587,7 +587,7 @@ function Newsletter({ title, content }: NewsletterProps) {
             className="px-8 py-3 text-white hover:opacity-90 transition-colors whitespace-nowrap"
             style={{ backgroundColor: C.red }}
           >
-            Sign up
+            Înscrie-te
           </button>
         </form>
       </div>
@@ -620,14 +620,14 @@ function BlogPreview({ sectionTitle }: BlogPreviewProps) {
       <div className="px-6 py-8">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <h2 className="text-3xl md:text-4xl" style={{ color: C.darkBrown }}>
-            {sectionTitle || "From the blog"}
+            {sectionTitle || "De pe blog"}
           </h2>
           <Link
             href="/blog"
             className="flex items-center gap-1 text-sm hover:opacity-70"
             style={{ color: C.darkBrown }}
           >
-            View all <ArrowRight className="w-4 h-4" />
+            Vezi tot <ArrowRight className="w-4 h-4" />
           </Link>
         </div>
       </div>
@@ -685,21 +685,21 @@ function Footer() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {/* Rent Column */}
             <div>
-              <h3 className="mb-4 font-semibold">Rent</h3>
+              <h3 className="mb-4 font-semibold">Închiriază</h3>
               <ul className="space-y-2 text-white/80 text-sm">
                 <li>
                   <Link href="/catalog" className="hover:text-white transition-colors">
-                    All Products
+                    Toate produsele
                   </Link>
                 </li>
                 <li>
                   <Link href="/brands" className="hover:text-white transition-colors">
-                    Brands
+                    Branduri
                   </Link>
                 </li>
                 <li>
                   <Link href="/how-it-works" className="hover:text-white transition-colors">
-                    How It Works
+                    Cum funcționează
                   </Link>
                 </li>
               </ul>
@@ -707,11 +707,11 @@ function Footer() {
 
             {/* Company Column */}
             <div>
-              <h3 className="mb-4 font-semibold">Company</h3>
+              <h3 className="mb-4 font-semibold">Despre noi</h3>
               <ul className="space-y-2 text-white/80 text-sm">
                 <li>
                   <Link href="/about" className="hover:text-white transition-colors">
-                    About Us
+                    Povestea Seasons
                   </Link>
                 </li>
                 <li>
@@ -729,21 +729,21 @@ function Footer() {
 
             {/* Support Column */}
             <div>
-              <h3 className="mb-4 font-semibold">Support</h3>
+              <h3 className="mb-4 font-semibold">Asistență</h3>
               <ul className="space-y-2 text-white/80 text-sm">
                 <li>
                   <Link href="/faq" className="hover:text-white transition-colors">
-                    FAQ
+                    Întrebări frecvente
                   </Link>
                 </li>
                 <li>
                   <Link href="/returns" className="hover:text-white transition-colors">
-                    Returns
+                    Retururi
                   </Link>
                 </li>
                 <li>
                   <Link href="/sizing" className="hover:text-white transition-colors">
-                    Sizing Guide
+                    Ghid mărimi
                   </Link>
                 </li>
               </ul>
@@ -767,7 +767,7 @@ function Footer() {
               >
                 SEASONS
               </h2>
-              <p className="text-white/60 text-xs mt-2">© 2025 Seasons. Premium baby rental.</p>
+              <p className="text-white/60 text-xs mt-2">© 2025 Seasons. Închiriere haine premium pentru bebeluși.</p>
             </div>
 
             {/* Social Icons */}
